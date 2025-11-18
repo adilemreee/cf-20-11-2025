@@ -8,6 +8,16 @@
 	<string>Bu uygulama tunnel yönetimi için sistem komutları çalıştırmalıdır.</string>
 	<key>NSSystemAdministrationUsageDescription</key>
 	<string>Cloudflared ve MAMP gibi servisleri yönetmek için sistem izinleri gereklidir.</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Web projelerinize tunnel oluşturmak için proje dosyalarınıza erişim gereklidir.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Belgeler klasöründeki web projelerinize erişmek için izin gereklidir.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>İndirilenler klasöründeki proje dosyalarına erişim için izin gereklidir.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Network üzerindeki web projelerinize erişim için izin gereklidir.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Harici disklerdeki web projelerinize erişim için izin gereklidir.</string>
 	<key>LSUIElement</key>
 	<false/>
 	<key>NSSupportsAutomaticTermination</key>

@@ -731,28 +731,48 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/bin/sh") // Betiği shell ile çalıştır
             process.arguments = [scriptPath]
-            process.environment = ProcessInfo.processInfo.environment
+            
+            // Tam ortam değişkenlerini kopyala ve PATH'i genişlet
+            var environment = ProcessInfo.processInfo.environment
+            let additionalPaths = [
+                "/usr/local/bin",
+                "/opt/homebrew/bin",
+                "/Applications/MAMP/Library/bin",
+                "/Applications/MAMP/bin/php",
+                self.mampBinPath
+            ].joined(separator: ":")
+            
+            if let existingPath = environment["PATH"] {
+                environment["PATH"] = "\(additionalPaths):\(existingPath)"
+            } else {
+                environment["PATH"] = additionalPaths
+            }
+            
+            process.environment = environment
             process.currentDirectoryURL = URL(fileURLWithPath: self.mampBinPath)
 
-            // Çıktıyı yakalamak istersen (debugging için yararlı olabilir):
-            // let outputPipe = Pipe()
-            // let errorPipe = Pipe()
-            // process.standardOutput = outputPipe
-            // process.standardError = errorPipe
+            // Çıktıyı yakala
+            let outputPipe = Pipe()
+            let errorPipe = Pipe()
+            process.standardOutput = outputPipe
+            process.standardError = errorPipe
 
             do {
                 print("🚀 MAMP komutu çalıştırılıyor: \(scriptPath)")
+                print("   Working Directory: \(self.mampBinPath)")
+                print("   PATH: \(environment["PATH"] ?? "none")")
+                
                 try process.run()
                 process.waitUntilExit() // İşlemin bitmesini bekle
 
-                // Çıktıyı oku (opsiyonel)
-                // let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-                // let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-                // let outputString = String(data: outputData, encoding: .utf8) ?? ""
-                // let errorString = String(data: errorData, encoding: .utf8) ?? ""
-                // if !outputString.isEmpty { print("MAMP Output [\(scriptName)]: \(outputString)") }
-                // if !errorString.isEmpty { print("MAMP Error [\(scriptName)]: \(errorString)") }
-
+                // Çıktıyı oku
+                let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
+                let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+                let outputString = String(data: outputData, encoding: .utf8) ?? ""
+                let errorString = String(data: errorData, encoding: .utf8) ?? ""
+                
+                if !outputString.isEmpty { print("MAMP Output [\(scriptName)]:\n\(outputString)") }
+                if !errorString.isEmpty { print("MAMP Error [\(scriptName)]:\n\(errorString)") }
 
                 // Ana iş parçacığına dönerek UI güncellemesi yap
                 DispatchQueue.main.async {
@@ -760,7 +780,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                         print("✅ MAMP komutu başarıyla tamamlandı: \(scriptName)")
                         self.sendUserNotification(identifier: "mamp_action_\(scriptName)_\(UUID().uuidString)", title: "MAMP İşlemi", body: successMessage)
                     } else {
-                        let errorDetail = "MAMP betiği '\(scriptName)' (Çıkış Kodu: \(process.terminationStatus)) ile başarısız oldu." // \nError Output: \(errorString)"
+                        var errorDetail = "MAMP betiği '\(scriptName)' (Çıkış Kodu: \(process.terminationStatus)) ile başarısız oldu."
+                        if !errorString.isEmpty {
+                            errorDetail += "\n\nHata Detayı:\n\(errorString)"
+                        }
+                        if !outputString.isEmpty {
+                            errorDetail += "\n\nÇıktı:\n\(outputString)"
+                        }
                         print("❌ MAMP Betik Hatası: \(errorDetail)")
                         self.showErrorAlert(message: "\(failureMessage)\nDetay: \(errorDetail)")
                     }

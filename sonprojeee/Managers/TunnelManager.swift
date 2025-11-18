@@ -382,6 +382,33 @@ class TunnelManager: ObservableObject {
     private func invalidateCloudflaredBookmarkIfNeeded() {
         // No longer needed with bundled cloudflared approach
     }
+    
+    private func enhancedEnvironment() -> [String: String] {
+        var environment = ProcessInfo.processInfo.environment
+        
+        // PATH'i genişlet
+        let additionalPaths = [
+            "/usr/local/bin",
+            "/opt/homebrew/bin",
+            "/usr/bin",
+            "/bin",
+            "/usr/sbin",
+            "/sbin",
+            cloudflaredDirectoryPath
+        ].joined(separator: ":")
+        
+        if let existingPath = environment["PATH"] {
+            environment["PATH"] = "\(additionalPaths):\(existingPath)"
+        } else {
+            environment["PATH"] = additionalPaths
+        }
+        
+        // Cloudflared için önemli environment variables
+        environment["TUNNEL_ORIGIN_CERT"] = (cloudflaredDirectoryPath as NSString).appendingPathComponent("cert.pem")
+        environment["HOME"] = FileManager.default.homeDirectoryForCurrentUser.path
+        
+        return environment
+    }
 
     private func cloudflaredBookmark(_ bookmarkedURL: URL, matches standardizedPath: String) -> Bool {
         let currentURL = URL(fileURLWithPath: standardizedPath)
@@ -569,7 +596,7 @@ class TunnelManager: ObservableObject {
         let process = Process()
         process.executableURL = resolvedCloudflaredExecutableURL()
         process.currentDirectoryURL = URL(fileURLWithPath: cloudflaredDirectoryPath)
-        process.environment = ProcessInfo.processInfo.environment
+        process.environment = enhancedEnvironment()
         let tunnelIdentifier = tunnel.uuidFromConfig ?? tunnel.name
         process.arguments = ["tunnel", "--config", configPath, "run", tunnelIdentifier]
 
@@ -767,7 +794,7 @@ class TunnelManager: ObservableObject {
         let process = Process()
         process.executableURL = resolvedCloudflaredExecutableURL()
         process.currentDirectoryURL = URL(fileURLWithPath: cloudflaredDirectoryPath)
-        process.environment = ProcessInfo.processInfo.environment
+        process.environment = enhancedEnvironment()
         process.arguments = ["tunnel", "create", name]
 
         let outputPipe = Pipe(); let errorPipe = Pipe()
@@ -1297,7 +1324,7 @@ class TunnelManager: ObservableObject {
 
         process.executableURL = execURL
         process.currentDirectoryURL = URL(fileURLWithPath: cloudflaredDirectoryPath)
-        process.environment = ProcessInfo.processInfo.environment
+        process.environment = enhancedEnvironment()
         // Yeni cloudflared versiyonları için güncellenmiş argümanlar
         process.arguments = ["tunnel", "--url", localURL, "--no-autoupdate"]
         

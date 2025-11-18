@@ -767,6 +767,20 @@ struct SettingsView: View {
                 Text((path as NSString).abbreviatingWithTildeInPath)
                     .font(.caption)
                     .foregroundColor(.secondary)
+                
+                // İzin durumu göstergesi
+                if FileManager.default.fileExists(atPath: path) {
+                    let isReadable = FileManager.default.isReadableFile(atPath: path)
+                    let isWritable = FileManager.default.isWritableFile(atPath: path)
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: isReadable ? "eye" : "eye.slash")
+                        Image(systemName: isWritable ? "pencil" : "pencil.slash")
+                        Text(isWritable ? "Düzenlenebilir" : "Salt Okunur")
+                    }
+                    .font(.system(size: 9))
+                    .foregroundColor(isWritable ? .green : .orange)
+                }
             }
             
             Spacer()
@@ -783,10 +797,13 @@ struct SettingsView: View {
                 .disabled(!FileManager.default.fileExists(atPath: path))
                 
                 Button(action: { openFileInEditor(path) }) {
-                    Image(systemName: "arrow.up.right.square")
-                        .foregroundColor(.secondary)
+                    HStack(spacing: 4) {
+                        Image(systemName: "pencil.circle")
+                        Text("Düzenle")
+                    }
+                    .font(.caption)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.borderless)
                 .disabled(!FileManager.default.fileExists(atPath: path))
             }
         }
@@ -1209,9 +1226,76 @@ struct SettingsView: View {
         let expandedPath = (path as NSString).expandingTildeInPath
         let url = URL(fileURLWithPath: expandedPath)
         
-        if FileManager.default.fileExists(atPath: expandedPath) {
+        guard FileManager.default.fileExists(atPath: expandedPath) else { return }
+        
+        // Dosyanın okunabilir olup olmadığını kontrol et
+        if FileManager.default.isReadableFile(atPath: expandedPath) {
             // Dosyayı varsayılan editör ile aç
             NSWorkspace.shared.open(url)
+        } else {
+            // İzin yoksa, sudo ile açmayı öner
+            showPermissionAlert(for: expandedPath)
+        }
+    }
+    
+    private func showPermissionAlert(for filePath: String) {
+        let alert = NSAlert()
+        alert.messageText = "İzin Gerekli"
+        alert.informativeText = """
+        Bu dosyayı düzenlemek için yönetici izinleri gerekebilir:
+        \(filePath)
+        
+        Terminalde şu komutla açabilirsiniz:
+        sudo nano \(filePath)
+        
+        veya
+        
+        Dosya izinlerini değiştirin:
+        sudo chmod 644 \(filePath)
+        """
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Kapat")
+        alert.addButton(withTitle: "Terminal'de Aç")
+        alert.addButton(withTitle: "Kopyala")
+        
+        let response = alert.runModal()
+        
+        if response == .alertSecondButtonReturn {
+            // Terminal'de sudo nano ile aç
+            openInTerminalWithSudo(filePath)
+        } else if response == .alertThirdButtonReturn {
+            // Komutu panoya kopyala
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString("sudo nano \(filePath)", forType: .string)
+        }
+    }
+    
+    private func openInTerminalWithSudo(_ filePath: String) {
+        // AppleScript ile Terminal'de sudo komutunu çalıştır
+        let script = """
+        tell application "Terminal"
+            activate
+            do script "sudo nano '\(filePath)'"
+        end tell
+        """
+        
+        if let appleScript = NSAppleScript(source: script) {
+            var error: NSDictionary?
+            appleScript.executeAndReturnError(&error)
+            
+            if let error = error {
+                print("⚠️ Terminal açma hatası: \(error)")
+                // Hata durumunda komutu kopyala
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.setString("sudo nano \(filePath)", forType: .string)
+                
+                let fallbackAlert = NSAlert()
+                fallbackAlert.messageText = "Terminal Açılamadı"
+                fallbackAlert.informativeText = "Komut panoya kopyalandı. Terminal'i açıp yapıştırabilirsiniz."
+                fallbackAlert.runModal()
+            }
         }
     }
 }
