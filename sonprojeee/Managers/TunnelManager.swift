@@ -71,12 +71,126 @@ class TunnelManager: ObservableObject {
         }
     }
 
-    let cloudflaredDirectoryPath: String
-    var mampConfigDirectoryPath: String { (mampBasePath as NSString).appendingPathComponent("conf/apache") } // MAMP Apache config file DIRECTORY
-    var mampSitesDirectoryPath: String { (mampBasePath as NSString).appendingPathComponent("sites") } // MAMP Sites (or htdocs) DIRECTORY
-    var mampVHostConfPath: String { (mampBasePath as NSString).appendingPathComponent("conf/apache/extra/httpd-vhosts.conf") }      // Full path to MAMP vHost file
-    var mampHttpdConfPath: String { (mampBasePath as NSString).appendingPathComponent("conf/apache/httpd.conf") }
-    // MAMP Apache default port
+    @Published var cloudflaredDirectoryPath: String {
+        didSet {
+            let trimmed = cloudflaredDirectoryPath.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else {
+                cloudflaredDirectoryPath = oldValue
+                return
+            }
+            let expanded = (trimmed as NSString).expandingTildeInPath
+            if expanded != cloudflaredDirectoryPath {
+                cloudflaredDirectoryPath = expanded
+                return
+            }
+            if cloudflaredDirectoryPath != oldValue {
+                UserDefaults.standard.set(cloudflaredDirectoryPath, forKey: "cloudflaredDirectoryPath")
+                print("Cloudflared dizini güncellendi: \(cloudflaredDirectoryPath)")
+                findManagedTunnels() // Yeni dizinde tünelleri tara
+            }
+        }
+    }
+    
+    @Published var customMampSitesPath: String? {
+        didSet {
+            if let path = customMampSitesPath {
+                let trimmed = path.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmed.isEmpty {
+                    customMampSitesPath = nil
+                    UserDefaults.standard.removeObject(forKey: "customMampSitesPath")
+                } else {
+                    let standardized = (trimmed as NSString).standardizingPath
+                    UserDefaults.standard.set(standardized, forKey: "customMampSitesPath")
+                    print("Özel MAMP sites dizini ayarlandı: \(standardized)")
+                }
+            } else {
+                UserDefaults.standard.removeObject(forKey: "customMampSitesPath")
+            }
+        }
+    }
+    
+    @Published var customMampApacheConfigPath: String? {
+        didSet {
+            if let path = customMampApacheConfigPath {
+                let trimmed = path.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmed.isEmpty {
+                    customMampApacheConfigPath = nil
+                    UserDefaults.standard.removeObject(forKey: "customMampApacheConfigPath")
+                } else {
+                    let standardized = (trimmed as NSString).standardizingPath
+                    UserDefaults.standard.set(standardized, forKey: "customMampApacheConfigPath")
+                    print("Özel Apache config dizini ayarlandı: \(standardized)")
+                }
+            } else {
+                UserDefaults.standard.removeObject(forKey: "customMampApacheConfigPath")
+            }
+        }
+    }
+    
+    @Published var customMampVHostConfPath: String? {
+        didSet {
+            if let path = customMampVHostConfPath {
+                let trimmed = path.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmed.isEmpty {
+                    customMampVHostConfPath = nil
+                    UserDefaults.standard.removeObject(forKey: "customMampVHostConfPath")
+                } else {
+                    let standardized = (trimmed as NSString).standardizingPath
+                    UserDefaults.standard.set(standardized, forKey: "customMampVHostConfPath")
+                    print("Özel vHost config dosyası ayarlandı: \(standardized)")
+                }
+            } else {
+                UserDefaults.standard.removeObject(forKey: "customMampVHostConfPath")
+            }
+        }
+    }
+    
+    @Published var customMampHttpdConfPath: String? {
+        didSet {
+            if let path = customMampHttpdConfPath {
+                let trimmed = path.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmed.isEmpty {
+                    customMampHttpdConfPath = nil
+                    UserDefaults.standard.removeObject(forKey: "customMampHttpdConfPath")
+                } else {
+                    let standardized = (trimmed as NSString).standardizingPath
+                    UserDefaults.standard.set(standardized, forKey: "customMampHttpdConfPath")
+                    print("Özel httpd.conf dosyası ayarlandı: \(standardized)")
+                }
+            } else {
+                UserDefaults.standard.removeObject(forKey: "customMampHttpdConfPath")
+            }
+        }
+    }
+    
+    var mampConfigDirectoryPath: String { 
+        if let custom = customMampApacheConfigPath, !custom.isEmpty {
+            return custom
+        }
+        return (mampBasePath as NSString).appendingPathComponent("conf/apache")
+    }
+    
+    var mampSitesDirectoryPath: String { 
+        if let custom = customMampSitesPath, !custom.isEmpty {
+            return custom
+        }
+        return (mampBasePath as NSString).appendingPathComponent("sites")
+    }
+    
+    var mampVHostConfPath: String { 
+        if let custom = customMampVHostConfPath, !custom.isEmpty {
+            return custom
+        }
+        return (mampBasePath as NSString).appendingPathComponent("conf/apache/extra/httpd-vhosts.conf")
+    }
+    
+    var mampHttpdConfPath: String { 
+        if let custom = customMampHttpdConfPath, !custom.isEmpty {
+            return custom
+        }
+        return (mampBasePath as NSString).appendingPathComponent("conf/apache/httpd.conf")
+    }
+    
     let defaultMampPort = 8888
 
     // ---------------------
@@ -215,18 +329,30 @@ class TunnelManager: ObservableObject {
     }
 
     init() {
-        cloudflaredDirectoryPath = ("~/.cloudflared" as NSString).expandingTildeInPath
+        // Load cloudflared directory from UserDefaults or use default
+        let storedCloudflaredDir = UserDefaults.standard.string(forKey: "cloudflaredDirectoryPath")
+        cloudflaredDirectoryPath = storedCloudflaredDir?.isEmpty == false ? 
+            (storedCloudflaredDir! as NSString).expandingTildeInPath : 
+            ("~/.cloudflared" as NSString).expandingTildeInPath
+        
+        // Load custom MAMP paths if set
+        customMampSitesPath = UserDefaults.standard.string(forKey: "customMampSitesPath")
+        customMampApacheConfigPath = UserDefaults.standard.string(forKey: "customMampApacheConfigPath")
+        customMampVHostConfPath = UserDefaults.standard.string(forKey: "customMampVHostConfPath")
+        customMampHttpdConfPath = UserDefaults.standard.string(forKey: "customMampHttpdConfPath")
+        
         cloudflaredExecutablePath = TunnelManager.resolveInitialCloudflaredPath()
         mampBasePath = TunnelManager.resolveInitialMampBasePath()
 
         // Persist resolved defaults for future launches
         UserDefaults.standard.set(cloudflaredExecutablePath, forKey: "cloudflaredPath")
         UserDefaults.standard.set(mampBasePath, forKey: "mampBasePath")
+        UserDefaults.standard.set(cloudflaredDirectoryPath, forKey: "cloudflaredDirectoryPath")
         print("Cloudflared directory path: \(cloudflaredDirectoryPath)")
         print("Mamp Config directory path: \(mampConfigDirectoryPath)")
         print("Mamp Sites directory path: \(mampSitesDirectoryPath)")
         print("Mamp vHost path: \(mampVHostConfPath)")
-        print("Mamp httpd.conf path: \(mampHttpdConfPath)") // <<< LOG EKLE (opsiyonel) >>>
+        print("Mamp httpd.conf path: \(mampHttpdConfPath)")
         // Initial check for cloudflared executable
         checkCloudflaredExecutable()
 

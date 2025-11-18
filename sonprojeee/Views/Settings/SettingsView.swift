@@ -13,7 +13,12 @@ struct SettingsView: View {
     @AppStorage("pythonProjectPath") private var storedPythonProjectPath: String = ""
     
     @State private var tempCloudflaredPath: String = ""
+    @State private var tempCloudflaredDirPath: String = ""
     @State private var tempMampPath: String = "/Applications/MAMP"
+    @State private var tempMampSitesPath: String = ""
+    @State private var tempMampApacheConfigPath: String = ""
+    @State private var tempMampVHostConfPath: String = ""
+    @State private var tempMampHttpdConfPath: String = ""
     @State private var tempPythonProjectPath: String = ""
     @State private var intervalString: String = ""
     @State private var isWorking: Bool = false
@@ -362,6 +367,45 @@ struct SettingsView: View {
     
     private var pathsTabContent: some View {
         LazyVStack(spacing: 24) {
+            // Cloudflared Paths
+            modernCard("Cloudflared Dizinleri", icon: "network") {
+                VStack(spacing: 16) {
+                    modernFormField("Tünel Yapılandırma Dizini (.cloudflared)", value: $tempCloudflaredDirPath) {
+                        HStack(spacing: 8) {
+                            Button("Gözat") { chooseCloudflaredDirectory() }
+                                .buttonStyle(ModernButtonStyle(color: .cyan, size: .small))
+                            
+                            Button("Kaydet") { saveCloudflaredDirectory() }
+                                .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
+                                .disabled(tempCloudflaredDirPath.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                            
+                            Button("Varsayılan") { resetCloudflaredDirectory() }
+                                .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
+                        }
+                    }
+                    
+                    HStack {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(.blue)
+                        Text("Tünel config dosyalarınızın (*.yml) saklandığı dizin")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        Button(action: { openInFinder(manager.cloudflaredDirectoryPath) }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "folder")
+                                Text("Finder'da Aç")
+                            }
+                            .font(.caption)
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                    .padding(.horizontal, 4)
+                }
+            }
+            
             // MAMP Paths
             modernCard("MAMP Yapılandırması", icon: "server.rack") {
                 VStack(spacing: 16) {
@@ -376,10 +420,101 @@ struct SettingsView: View {
                         }
                     }
                     
-                    pathDisplayCard("Apache Config", path: manager.mampConfigDirectoryPath, icon: "folder.badge.gearshape")
-                    pathDisplayCard("Sites Directory", path: manager.mampSitesDirectoryPath, icon: "folder")
-                    pathDisplayCard("vHost Config", path: manager.mampVHostConfPath, icon: "doc.text")
-                    pathDisplayCard("httpd.conf", path: manager.mampHttpdConfPath, icon: "doc.text.fill")
+                    Divider()
+                    
+                    modernFormField("Sites Dizini (Özel)", value: $tempMampSitesPath) {
+                        HStack(spacing: 8) {
+                            Button("Gözat") { chooseMampSitesPath() }
+                                .buttonStyle(ModernButtonStyle(color: .green, size: .small))
+                            
+                            Button("Kaydet") { saveMampSitesPath() }
+                                .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
+                            
+                            Button("Varsayılan") { resetMampSitesPath() }
+                                .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
+                        }
+                    }
+                    
+                    HStack {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(.blue)
+                        Text("Boş bırakılırsa: MAMP_ANA_DİZİN/sites kullanılır")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        Button(action: { openInFinder(manager.mampSitesDirectoryPath) }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "folder")
+                                Text("Finder'da Aç")
+                            }
+                            .font(.caption)
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                    .padding(.horizontal, 4)
+                    
+                    Divider()
+                    
+                    modernFormField("Apache Config Dizini (Özel)", value: $tempMampApacheConfigPath) {
+                        HStack(spacing: 8) {
+                            Button("Gözat") { chooseMampApacheConfigPath() }
+                                .buttonStyle(ModernButtonStyle(color: .orange, size: .small))
+                            
+                            Button("Kaydet") { saveMampApacheConfigPath() }
+                                .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
+                            
+                            Button("Varsayılan") { resetMampApacheConfigPath() }
+                                .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    modernFormField("vHost Config Dosyası (Özel)", value: $tempMampVHostConfPath) {
+                        HStack(spacing: 8) {
+                            Button("Gözat") { chooseMampVHostConfPath() }
+                                .buttonStyle(ModernButtonStyle(color: .purple, size: .small))
+                            
+                            Button("Kaydet") { saveMampVHostConfPath() }
+                                .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
+                            
+                            Button("Varsayılan") { resetMampVHostConfPath() }
+                                .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    modernFormField("httpd.conf Dosyası (Özel)", value: $tempMampHttpdConfPath) {
+                        HStack(spacing: 8) {
+                            Button("Gözat") { chooseMampHttpdConfPath() }
+                                .buttonStyle(ModernButtonStyle(color: .red, size: .small))
+                            
+                            Button("Kaydet") { saveMampHttpdConfPath() }
+                                .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
+                            
+                            Button("Varsayılan") { resetMampHttpdConfPath() }
+                                .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    VStack(spacing: 8) {
+                        HStack {
+                            Text("Aktif Yollar:")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                        }
+                        
+                        pathDisplayCard("Apache Config", path: manager.mampConfigDirectoryPath, icon: "folder.badge.gearshape")
+                        pathDisplayCard("Sites Directory", path: manager.mampSitesDirectoryPath, icon: "folder")
+                        pathDisplayCard("vHost Config", path: manager.mampVHostConfPath, icon: "doc.text")
+                        pathDisplayCard("httpd.conf", path: manager.mampHttpdConfPath, icon: "doc.text.fill")
+                    }
                 }
             }
             
@@ -636,14 +771,24 @@ struct SettingsView: View {
             
             Spacer()
             
-            Button(action: {
-                NSWorkspace.shared.open(URL(fileURLWithPath: path))
-            }) {
-                Image(systemName: "arrow.up.right.square")
-                    .foregroundColor(.secondary)
+            HStack(spacing: 8) {
+                Button(action: { openInFinder(path) }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "folder")
+                        Text("Aç")
+                    }
+                    .font(.caption)
+                }
+                .buttonStyle(.borderless)
+                .disabled(!FileManager.default.fileExists(atPath: path))
+                
+                Button(action: { openFileInEditor(path) }) {
+                    Image(systemName: "arrow.up.right.square")
+                        .foregroundColor(.secondary)
+                }
+                .buttonStyle(.plain)
+                .disabled(!FileManager.default.fileExists(atPath: path))
             }
-            .buttonStyle(.plain)
-            .disabled(!FileManager.default.fileExists(atPath: path))
         }
         .padding(12)
         .background(.ultraThinMaterial)
@@ -725,7 +870,12 @@ struct SettingsView: View {
     // MARK: - Helper Functions
     private func setupInitialValues() {
         tempCloudflaredPath = manager.cloudflaredExecutablePath
+        tempCloudflaredDirPath = manager.cloudflaredDirectoryPath
         tempMampPath = manager.mampBasePath
+        tempMampSitesPath = manager.customMampSitesPath ?? ""
+        tempMampApacheConfigPath = manager.customMampApacheConfigPath ?? ""
+        tempMampVHostConfPath = manager.customMampVHostConfPath ?? ""
+        tempMampHttpdConfPath = manager.customMampHttpdConfPath ?? ""
         intervalString = String(Int(manager.checkInterval))
         if let appDelegate = NSApp.delegate as? AppDelegate {
             let resolvedPythonPath = appDelegate.pythonProjectDirectoryPath
@@ -775,6 +925,192 @@ struct SettingsView: View {
         if panel.runModal() == .OK, let url = panel.url {
             tempPythonProjectPath = url.path
         }
+    }
+    
+    private func chooseCloudflaredDirectory() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.title = "Cloudflared Tünel Dizinini Seçin"
+        panel.message = "Tünel yapılandırma dosyalarınızın (.yml) bulunduğu dizini seçin"
+        panel.prompt = "Seç"
+        panel.canCreateDirectories = true
+        
+        if panel.runModal() == .OK, let url = panel.url {
+            // Sandbox için security-scoped bookmark oluştur
+            if url.startAccessingSecurityScopedResource() {
+                defer { url.stopAccessingSecurityScopedResource() }
+                tempCloudflaredDirPath = url.path
+            } else {
+                tempCloudflaredDirPath = url.path
+            }
+        }
+    }
+    
+    private func saveCloudflaredDirectory() {
+        let trimmed = tempCloudflaredDirPath.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        let expanded = (trimmed as NSString).expandingTildeInPath
+        manager.cloudflaredDirectoryPath = expanded
+        tempCloudflaredDirPath = manager.cloudflaredDirectoryPath
+    }
+    
+    private func resetCloudflaredDirectory() {
+        let defaultPath = ("~/.cloudflared" as NSString).expandingTildeInPath
+        tempCloudflaredDirPath = defaultPath
+        manager.cloudflaredDirectoryPath = defaultPath
+    }
+    
+    private func chooseMampSitesPath() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.title = "MAMP Sites Dizinini Seçin"
+        panel.message = "Web sitelerinizin bulunduğu dizini seçin (htdocs, sites vb.)"
+        panel.prompt = "Seç"
+        panel.canCreateDirectories = true
+        
+        if panel.runModal() == .OK, let url = panel.url {
+            // Sandbox için security-scoped bookmark oluştur
+            if url.startAccessingSecurityScopedResource() {
+                defer { url.stopAccessingSecurityScopedResource() }
+                tempMampSitesPath = url.path
+            } else {
+                tempMampSitesPath = url.path
+            }
+        }
+    }
+    
+    private func saveMampSitesPath() {
+        let trimmed = tempMampSitesPath.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            manager.customMampSitesPath = nil
+            tempMampSitesPath = ""
+        } else {
+            let standardized = (trimmed as NSString).standardizingPath
+            manager.customMampSitesPath = standardized
+            tempMampSitesPath = standardized
+        }
+    }
+    
+    private func resetMampSitesPath() {
+        tempMampSitesPath = ""
+        manager.customMampSitesPath = nil
+    }
+    
+    private func chooseMampApacheConfigPath() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.title = "Apache Config Dizinini Seçin"
+        panel.message = "Apache yapılandırma dosyalarının bulunduğu dizini seçin"
+        panel.prompt = "Seç"
+        panel.canCreateDirectories = true
+        
+        if panel.runModal() == .OK, let url = panel.url {
+            if url.startAccessingSecurityScopedResource() {
+                defer { url.stopAccessingSecurityScopedResource() }
+                tempMampApacheConfigPath = url.path
+            } else {
+                tempMampApacheConfigPath = url.path
+            }
+        }
+    }
+    
+    private func saveMampApacheConfigPath() {
+        let trimmed = tempMampApacheConfigPath.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            manager.customMampApacheConfigPath = nil
+            tempMampApacheConfigPath = ""
+        } else {
+            let standardized = (trimmed as NSString).standardizingPath
+            manager.customMampApacheConfigPath = standardized
+            tempMampApacheConfigPath = standardized
+        }
+    }
+    
+    private func resetMampApacheConfigPath() {
+        tempMampApacheConfigPath = ""
+        manager.customMampApacheConfigPath = nil
+    }
+    
+    private func chooseMampVHostConfPath() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.title = "vHost Config Dosyasını Seçin"
+        panel.message = "httpd-vhosts.conf dosyasını seçin"
+        panel.prompt = "Seç"
+        panel.allowedContentTypes = [.init(filenameExtension: "conf")].compactMap { $0 }
+        panel.allowsOtherFileTypes = true
+        
+        if panel.runModal() == .OK, let url = panel.url {
+            if url.startAccessingSecurityScopedResource() {
+                defer { url.stopAccessingSecurityScopedResource() }
+                tempMampVHostConfPath = url.path
+            } else {
+                tempMampVHostConfPath = url.path
+            }
+        }
+    }
+    
+    private func saveMampVHostConfPath() {
+        let trimmed = tempMampVHostConfPath.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            manager.customMampVHostConfPath = nil
+            tempMampVHostConfPath = ""
+        } else {
+            let standardized = (trimmed as NSString).standardizingPath
+            manager.customMampVHostConfPath = standardized
+            tempMampVHostConfPath = standardized
+        }
+    }
+    
+    private func resetMampVHostConfPath() {
+        tempMampVHostConfPath = ""
+        manager.customMampVHostConfPath = nil
+    }
+    
+    private func chooseMampHttpdConfPath() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.title = "httpd.conf Dosyasını Seçin"
+        panel.message = "Ana Apache yapılandırma dosyasını seçin"
+        panel.prompt = "Seç"
+        panel.allowedContentTypes = [.init(filenameExtension: "conf")].compactMap { $0 }
+        panel.allowsOtherFileTypes = true
+        
+        if panel.runModal() == .OK, let url = panel.url {
+            if url.startAccessingSecurityScopedResource() {
+                defer { url.stopAccessingSecurityScopedResource() }
+                tempMampHttpdConfPath = url.path
+            } else {
+                tempMampHttpdConfPath = url.path
+            }
+        }
+    }
+    
+    private func saveMampHttpdConfPath() {
+        let trimmed = tempMampHttpdConfPath.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            manager.customMampHttpdConfPath = nil
+            tempMampHttpdConfPath = ""
+        } else {
+            let standardized = (trimmed as NSString).standardizingPath
+            manager.customMampHttpdConfPath = standardized
+            tempMampHttpdConfPath = standardized
+        }
+    }
+    
+    private func resetMampHttpdConfPath() {
+        tempMampHttpdConfPath = ""
+        manager.customMampHttpdConfPath = nil
     }
     
     private func saveMampPath() {
@@ -832,6 +1168,51 @@ struct SettingsView: View {
         minimizeToTray = true
         showStatusInMenuBar = true
         accentColorName = "blue"
+    }
+    
+    private func openInFinder(_ path: String) {
+        let url = URL(fileURLWithPath: path)
+        
+        // Sandbox güvenli açma
+        let expandedPath = (path as NSString).expandingTildeInPath
+        let expandedURL = URL(fileURLWithPath: expandedPath)
+        
+        // Önce dizinin var olup olmadığını kontrol et
+        var isDirectory: ObjCBool = false
+        if FileManager.default.fileExists(atPath: expandedPath, isDirectory: &isDirectory) {
+            if isDirectory.boolValue {
+                // Dizin varsa Finder'da göster
+                NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: expandedPath)
+            } else {
+                // Dosya ise parent dizini aç
+                NSWorkspace.shared.selectFile(expandedPath, inFileViewerRootedAtPath: expandedURL.deletingLastPathComponent().path)
+            }
+        } else {
+            // Dizin yoksa, oluşturmaya çalış (sandbox izni varsa)
+            do {
+                try FileManager.default.createDirectory(at: expandedURL, withIntermediateDirectories: true)
+                NSWorkspace.shared.open(expandedURL)
+            } catch {
+                // Oluşturulamazsa parent dizini göster (home directory genelde erişilebilir)
+                let parentURL = expandedURL.deletingLastPathComponent()
+                if FileManager.default.fileExists(atPath: parentURL.path) {
+                    NSWorkspace.shared.open(parentURL)
+                } else {
+                    // En son çare: home directory aç
+                    NSWorkspace.shared.open(FileManager.default.homeDirectoryForCurrentUser)
+                }
+            }
+        }
+    }
+    
+    private func openFileInEditor(_ path: String) {
+        let expandedPath = (path as NSString).expandingTildeInPath
+        let url = URL(fileURLWithPath: expandedPath)
+        
+        if FileManager.default.fileExists(atPath: expandedPath) {
+            // Dosyayı varsayılan editör ile aç
+            NSWorkspace.shared.open(url)
+        }
     }
 }
 
