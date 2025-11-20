@@ -32,6 +32,89 @@ Cloudflared Manager, yerel bilgisayarınızdaki servisleri **güvenli bir şekil
 
 ---
 
+## 📸 **Ekran Görüntüleri**
+
+<div align="center">
+
+### Ana Gösterge Paneli
+
+<img src="assets/Screenshot 2025-11-20 at 19.39.34.png" alt="Dashboard" width="800"/>
+
+*Modern, kullanıcı dostu arayüz ile tüm tünellerinizi tek yerden yönetin*
+
+---
+
+### Tünel Yönetimi ve Oluşturma
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/Screenshot 2025-11-20 at 19.39.40.png" alt="Tunnel Management"/>
+      <p align="center"><b>Yönetilen Tüneller</b></p>
+    </td>
+    <td width="50%">
+      <img src="assets/Screenshot 2025-11-20 at 19.39.44.png" alt="Create Tunnel"/>
+      <p align="center"><b>Yeni Tünel Oluştur</b></p>
+    </td>
+  </tr>
+</table>
+
+---
+
+### Hızlı Tünel ve MAMP Entegrasyonu
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/Screenshot 2025-11-20 at 19.39.46.png" alt="Quick Tunnel"/>
+      <p align="center"><b>Hızlı Tünel</b></p>
+      <p align="center"><i>Tek tıkla geçici tünel oluşturun</i></p>
+    </td>
+    <td width="50%">
+      <img src="assets/Screenshot 2025-11-20 at 19.39.53.png" alt="MAMP Integration"/>
+      <p align="center"><b>MAMP Entegrasyonu</b></p>
+      <p align="center"><i>Otomatik proje algılama</i></p>
+    </td>
+  </tr>
+</table>
+
+---
+
+### Dosya Paylaşımı
+
+<img src="assets/Screenshot 2025-11-20 at 19.39.56.png" alt="File Sharing" width="700"/>
+
+*Dosya ve klasörlerinizi hızlıca paylaşın*
+
+---
+
+### Ayarlar ve Özelleştirme
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/Screenshot 2025-11-20 at 19.39.58.png" alt="Settings"/>
+      <p align="center"><b>Genel Ayarlar</b></p>
+    </td>
+    <td width="50%">
+      <img src="assets/Screenshot 2025-11-20 at 19.40.02.png" alt="Theme Settings"/>
+      <p align="center"><b>Tema Seçenekleri</b></p>
+    </td>
+  </tr>
+</table>
+
+---
+
+### Menü Çubuğu Entegrasyonu
+
+<img src="assets/Screenshot 2025-11-20 at 19.40.09.png" alt="Menu Bar" width="500"/>
+
+*macOS menü çubuğundan hızlı erişim - tüm kontroller elinizin altında*
+
+</div>
+
+---
+
 ## ✨ **Özellikler**
 
 ### 🌐 **3 Tür Tünel Desteği**
