@@ -14,9 +14,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     weak var settingsWindow: NSWindow?
     weak var createManagedTunnelWindow: NSWindow?
     weak var createFromMampWindow: NSWindow?
+    weak var createFromDockerWindow: NSWindow? // New Docker Window
     weak var quickTunnelWindow: NSWindow?
     weak var dashboardWindow: NSWindow?
     weak var onboardingWindow: NSWindow?
+    weak var fileShareWindow: NSWindow?
 
     // --- MAMP Control Constants ---
     internal let mampStartScript = "start.sh"
@@ -84,62 +86,108 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // Check executable status on launch
         tunnelManager.checkCloudflaredExecutable()
         
-        // 7. Auto-start MAMP if enabled
+        // 7. Set default values for first launch
+        setupDefaultSettings()
+        
+        // 8. Auto-start MAMP if enabled
         if UserDefaults.standard.bool(forKey: "autoStartMamp") {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
                 self?.startMampServersAction()
             }
         }
         
-        // --- NEW: Auto-start Tunnels ---
+        // 9. Auto-start Tunnels
         if UserDefaults.standard.bool(forKey: "autoStartTunnels") {
              DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
                  print("🚀 Otomatik tünel başlatma tetiklendi.")
                  self?.tunnelManager?.startAllManagedTunnels()
              }
         }
-        // --- END NEW ---
         
-        // Check if this is an existing user (migration)
-        if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
-            let existingPath = UserDefaults.standard.string(forKey: "cloudflaredPath")
-            if let path = existingPath, !path.isEmpty {
-                // Existing user, skip onboarding
-                UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-            }
-        }
+        // 10. Check for Onboarding (using app version to detect fresh install)
+        checkAndShowOnboarding()
         
-        // 8. Check for Onboarding
-        if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                self?.openOnboardingWindowAction()
-            }
-        }
-        
-        // 9. Listen for Onboarding Completion
+        // 11. Listen for Onboarding Completion
         NotificationCenter.default.addObserver(forName: Notification.Name("OpenDashboardRequested"), object: nil, queue: .main) { [weak self] _ in
             self?.openDashboardWindowAction()
         }
         
-        // 10. Observe Settings Changes
+        // 12. Observe Settings Changes
         UserDefaults.standard.addObserver(self, forKeyPath: "showStatusInMenuBar", options: [.new, .initial], context: nil)
+    }
+    
+    // MARK: - Default Settings Setup
+    private func setupDefaultSettings() {
+        let defaults = UserDefaults.standard
+        
+        // Check if this is the first launch
+        if defaults.object(forKey: "hasLaunchedBefore") == nil {
+            print("🆕 İlk yükleme tespit edildi - varsayılan ayarlar yapılıyor...")
+            
+            // Set all defaults to true for better first experience
+            defaults.set(true, forKey: "minimizeToTray")
+            defaults.set(true, forKey: "showStatusInMenuBar")
+            defaults.set(true, forKey: "notificationsEnabled")
+            
+            // Mark that app has been launched
+            defaults.set(true, forKey: "hasLaunchedBefore")
+            
+            print("✅ Varsayılan ayarlar yapılandırıldı")
+        }
+    }
+    
+    private func checkAndShowOnboarding() {
+        let defaults = UserDefaults.standard
+        
+        // Get app version
+        let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
+        let lastVersion = defaults.string(forKey: "lastAppVersion")
+        
+        // Check if onboarding was completed
+        let hasCompletedOnboarding = defaults.bool(forKey: "hasCompletedOnboarding")
+        
+        // Show onboarding if:
+        // 1. Never completed before, OR
+        // 2. App version changed (fresh install after delete)
+        if !hasCompletedOnboarding || lastVersion != currentVersion {
+            print("📱 Onboarding gösteriliyor (Version: \(currentVersion), Last: \(lastVersion ?? "none"), Completed: \(hasCompletedOnboarding))")
+            
+            // Reset onboarding flag for fresh install/version change
+            defaults.set(false, forKey: "hasCompletedOnboarding")
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.openOnboardingWindowAction()
+            }
+            
+            // DON'T update version here - wait for onboarding completion
+        } else {
+            print("✅ Onboarding atlandı (Version: \(currentVersion), Completed: \(hasCompletedOnboarding))")
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        print("Uygulama kapanıyor...")
+        print("🛑 Uygulama kapanıyor...")
         NotificationCenter.default.removeObserver(self) // Clean up observer
         tunnelManager?.stopMonitoringCloudflaredDirectory()
-        // Stop all tunnels synchronously during shutdown
-        tunnelManager?.stopAllTunnels(synchronous: true)
         
-        // Stop MAMP if auto-start is enabled
-        if UserDefaults.standard.bool(forKey: "autoStartMamp") {
-            stopMampServersAction()
-            Thread.sleep(forTimeInterval: 1.0) // Wait for MAMP to stop
+        // 1. Stop all tunnels synchronously
+        print("   Tüneller durduruluyor...")
+        tunnelManager?.stopAllTunnels(synchronous: true)
+        Thread.sleep(forTimeInterval: 0.5)
+        
+        // 2. Stop Python app if running
+        if let pythonProcess = pythonAppProcess, pythonProcess.isRunning {
+            print("   Python betiği durduruluyor...")
+            pythonProcess.terminate()
+            Thread.sleep(forTimeInterval: 0.3)
         }
         
-        print("Kapanış işlemleri tamamlandı.")
-        Thread.sleep(forTimeInterval: 0.2) // Brief pause for async ops
+        // 3. Stop MAMP servers
+        print("   MAMP durduruluyor...")
+        stopMampServersAction()
+        Thread.sleep(forTimeInterval: 1.0)
+        
+        print("✅ Kapanış işlemleri tamamlandı.")
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
@@ -512,6 +560,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         guard let tunnelID = sender.representedObject as? UUID, let tunnelManager = tunnelManager else { return }
         tunnelManager.stopQuickTunnel(id: tunnelID)
     }
+
     @objc func copyQuickTunnelURLAction(_ sender: NSMenuItem) {
         guard let tunnelData = sender.representedObject as? QuickTunnelData, let urlString = tunnelData.publicURL else {
             sendUserNotification(identifier: "copy_fail_\(UUID().uuidString)", title: "Kopyalanamadı", body: "Tünel URL'si henüz mevcut değil.")
@@ -701,6 +750,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         )
     }
 
+    @objc func openCreateFromDockerWindow() {
+        let createView = CreateFromDockerView()
+        showWindow(
+            { newWindow in self.createFromDockerWindow = newWindow },
+            { self.createFromDockerWindow },
+            title: "Docker Konteynerinden Tünel Oluştur",
+            view: createView
+        )
+    }
+
     @objc func openQuickTunnelWindow() {
         let quickTunnelView = QuickTunnelView()
         showWindow(
@@ -715,13 +774,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let dashboardView = DashboardView(
             openSettingsAction: { [weak self] in self?.openSettingsWindowAction() },
             openQuickTunnelAction: { [weak self] in self?.openQuickTunnelWindow() },
-            openManagedTunnelAction: { [weak self] in self?.openCreateManagedTunnelWindow() }
+            openManagedTunnelAction: { [weak self] in self?.openCreateManagedTunnelWindow() },
+            openFileShareAction: { [weak self] in self?.openFileShareWindow() }
         )
         showWindow(
             { newWindow in self.dashboardWindow = newWindow },
             { self.dashboardWindow },
             title: "Gösterge Paneli",
             view: dashboardView
+        )
+    }
+    
+    @objc func openFileShareWindow() {
+        let fileShareView = FileShareView()
+            .environmentObject(tunnelManager)
+        showWindow(
+            { self.fileShareWindow = $0 },
+            { self.fileShareWindow },
+            title: "Dosya Paylaşımı",
+            view: fileShareView
         )
     }
     

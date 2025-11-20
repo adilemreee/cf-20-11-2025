@@ -6,6 +6,10 @@ struct OnboardingView: View {
     @State private var currentStep = 0
     @Environment(\.presentationMode) var presentationMode
     
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
+    }
+    
     var body: some View {
         VStack {
             // Header / Progress
@@ -72,6 +76,9 @@ struct OnboardingView: View {
     
     private func completeOnboarding() {
         hasCompletedOnboarding = true
+        UserDefaults.standard.set(appVersion, forKey: "lastAppVersion")
+        print("✅ Onboarding tamamlandı - Version: \(appVersion) kaydedildi")
+        
         // Close window
         if let window = NSApp.windows.first(where: { $0.contentView?.subviews.first?.className.contains("OnboardingView") ?? false }) {
             window.close()

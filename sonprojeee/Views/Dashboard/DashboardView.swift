@@ -8,6 +8,7 @@ struct DashboardView: View {
     let openSettingsAction: (() -> Void)?
     let openQuickTunnelAction: (() -> Void)?
     let openManagedTunnelAction: (() -> Void)?
+    let openFileShareAction: (() -> Void)?
     
     // Time based greeting
     private var greeting: String {
@@ -22,13 +23,16 @@ struct DashboardView: View {
 
     init(openSettingsAction: (() -> Void)? = nil,
          openQuickTunnelAction: (() -> Void)? = nil,
-         openManagedTunnelAction: (() -> Void)? = nil) {
+         openManagedTunnelAction: (() -> Void)? = nil,
+         openFileShareAction: (() -> Void)? = nil) {
         self.openSettingsAction = openSettingsAction
         self.openQuickTunnelAction = openQuickTunnelAction
         self.openManagedTunnelAction = openManagedTunnelAction
+        self.openFileShareAction = openFileShareAction
     }
 
     private var managedTunnels: [TunnelInfo] { manager.tunnels.filter { $0.isManaged } }
+    private var runningManagedTunnels: [TunnelInfo] { managedTunnels.filter { $0.status == .running } }
     private var runningManagedCount: Int { managedTunnels.filter { $0.status == .running }.count }
     private var totalManagedCount: Int { managedTunnels.count }
     private var quickTunnelCount: Int { manager.quickTunnels.count }
@@ -99,7 +103,7 @@ struct DashboardView: View {
                 }
             }
         }
-        .frame(width: 850, height: 600)
+        .frame(minWidth: 850, minHeight: 600)
     }
 
     // MARK: - Components
@@ -219,6 +223,10 @@ struct DashboardView: View {
                 
                 actionButton(title: "Yeni Tünel", icon: "plus", color: .blue) {
                     openManagedTunnelCreator()
+                }
+                
+                actionButton(title: "Dosya Paylaş", icon: "folder.badge.gearshape", color: .orange) {
+                    openFileShare()
                 }
                 
                 actionButton(title: "Ayarlar", icon: "gearshape.fill", color: .gray) {
@@ -380,6 +388,11 @@ private extension DashboardView {
 
     func openManagedTunnelCreator() {
         guard let action = openManagedTunnelAction else { return }
+        action()
+    }
+    
+    func openFileShare() {
+        guard let action = openFileShareAction else { return }
         action()
     }
 }

@@ -945,22 +945,24 @@ class TunnelManager: ObservableObject {
     }
 
     // createConfigFile fonksiyonunu bulun ve içini aşağıdaki gibi düzenleyin:
-    func createConfigFile(configName: String, tunnelUUID: String, credentialsPath: String, hostname: String, port: String, documentRoot: String?, completion: @escaping (Result<String, Error>) -> Void) {
-         print("📄 Yapılandırma dosyası oluşturuluyor: \(configName).yml")
+    func createConfigFile(configName: String, tunnelUUID: String, credentialsPath: String, hostname: String, port: String, documentRoot: String?, protocolType: String = "http", completion: @escaping (Result<String, Error>) -> Void) {
+         print("📄 Yapılandırma dosyası oluşturuluyor: \(configName).yml (Protokol: \(protocolType))")
             let fileManager = FileManager.default
             
-            // Port conflict check
-            if let portInt = Int(port) {
-                let portCheckResult = PortChecker.shared.checkPort(portInt)
-                if case .failure(let error) = portCheckResult {
-                    print("⚠️ Port \(port) zaten kullanımda")
-                    // Warn but continue - user might want to use it anyway
-                    ErrorHandler.shared.handle(error, context: "Port Kontrolü", showAlert: false)
-                    postUserNotification(
-                        identifier: "port_conflict_\(port)",
-                        title: "Port Uyası",
-                        body: error.localizedDescription + "\n\nDevam ediliyor, ancak tünel bağlanmayabilir."
-                    )
+            // Port conflict check (Only for HTTP/HTTPS where we bind local ports)
+            if protocolType == "http" || protocolType == "https" {
+                if let portInt = Int(port) {
+                    let portCheckResult = PortChecker.shared.checkPort(portInt)
+                    if case .failure(let error) = portCheckResult {
+                        print("⚠️ Port \(port) zaten kullanımda")
+                        // Warn but continue - user might want to use it anyway
+                        ErrorHandler.shared.handle(error, context: "Port Kontrolü", showAlert: false)
+                        postUserNotification(
+                            identifier: "port_conflict_\(port)",
+                            title: "Port Uyası",
+                            body: error.localizedDescription + "\n\nDevam ediliyor, ancak tünel bağlanmayabilir."
+                        )
+                    }
                 }
             }
 
@@ -987,6 +989,17 @@ class TunnelManager: ObservableObject {
              // Use the absolute path for credentials-file as provided by `tunnel create`
              let absoluteCredentialsPath = (credentialsPath as NSString).standardizingPath
 
+             // Determine service URL based on protocol
+             let serviceUrl: String
+             switch protocolType.lowercased() {
+             case "ssh":
+                 serviceUrl = "ssh://localhost:\(port)"
+             case "rdp":
+                 serviceUrl = "rdp://localhost:\(port)"
+             default:
+                 serviceUrl = "http://localhost:\(port)"
+             }
+
              let yamlContent = """
              # Tunnel Configuration managed by Cloudflared Manager App
              # Tunnel UUID: \(tunnelUUID)
@@ -997,7 +1010,7 @@ class TunnelManager: ObservableObject {
 
              ingress:
                - hostname: \(hostname)
-                 service: http://localhost:\(port)
+                 service: \(serviceUrl)
                # Catch-all rule MUST be last
                - service: http_status:404
              """
@@ -1465,7 +1478,8 @@ class TunnelManager: ObservableObject {
         process.currentDirectoryURL = URL(fileURLWithPath: cloudflaredDirectoryPath)
         process.environment = enhancedEnvironment()
         // Yeni cloudflared versiyonları için güncellenmiş argümanlar
-        process.arguments = ["tunnel", "--url", localURL, "--no-autoupdate"]
+        // --metrics localhost:0 prevents port conflicts if multiple tunnels run
+        process.arguments = ["tunnel", "--url", localURL, "--no-autoupdate", "--metrics", "localhost:0"]
         
         print("   🔧 Cloudflared komutu: \(execPath) \(process.arguments?.joined(separator: " ") ?? "")")
 
@@ -1502,98 +1516,91 @@ class TunnelManager: ObservableObject {
         }
 
         process.terminationHandler = { [weak self] terminatedProcess in
-                     outputPipe.fileHandleForReading.readabilityHandler = nil
-                     errorPipe.fileHandleForReading.readabilityHandler = nil
+            outputPipe.fileHandleForReading.readabilityHandler = nil
+            errorPipe.fileHandleForReading.readabilityHandler = nil
 
-                     bufferLock.lock()
-                     let finalCombinedOutput = combinedOutputBuffer
-                     bufferLock.unlock()
+            bufferLock.lock()
+            let finalCombinedOutput = combinedOutputBuffer
+            bufferLock.unlock()
 
-                     DispatchQueue.main.async {
-                         guard let self = self else { return }
-                         let status = terminatedProcess.terminationStatus
-                         let reason = terminatedProcess.terminationReason
-                         print("🏁 Hızlı tünel (\(tunnelID) - \(localURL)) sonlandı. Kod: \(status), Neden: \(reason == .exit ? "Exit" : "Signal")")
-                        // if !finalCombinedOutput.isEmpty { print("   🏁 Son Buffer [\(tunnelID)]:\n---\n\(finalCombinedOutput)\n---") }
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                let status = terminatedProcess.terminationStatus
+                let reason = terminatedProcess.terminationReason
+                print("🏁 Hızlı tünel (\(tunnelID) - \(localURL)) sonlandı. Kod: \(status), Neden: \(reason == .exit ? "Exit" : "Signal")")
+                
+                // Log the last output for debugging
+                if status != 0 {
+                    print("   📝 Hata Çıktısı:\n\(finalCombinedOutput.suffix(1000))")
+                }
 
-                         guard let index = self.quickTunnels.firstIndex(where: { $0.id == tunnelID }) else {
-                             print("   Termination handler: Quick tunnel \(tunnelID) listede bulunamadı.")
-                             self.runningQuickProcesses.removeValue(forKey: tunnelID)
-                             return
-                         }
+                guard let index = self.quickTunnels.firstIndex(where: { $0.id == tunnelID }) else {
+                    print("   Termination handler: Quick tunnel \(tunnelID) listede bulunamadı.")
+                    self.runningQuickProcesses.removeValue(forKey: tunnelID)
+                    return
+                }
 
-                         var tunnelData = self.quickTunnels[index]
-                         let urlWasFound = tunnelData.publicURL != nil
-                         let wasStoppedIntentionally = self.runningQuickProcesses[tunnelID] == nil || (reason == .exit && status == 0) || (reason == .uncaughtSignal && status == SIGTERM)
+                var tunnelData = self.quickTunnels[index]
+                let urlWasFound = tunnelData.publicURL != nil
+                let wasStoppedIntentionally = self.runningQuickProcesses[tunnelID] == nil || (reason == .exit && status == 0) || (reason == .uncaughtSignal && status == SIGTERM)
 
-                         // Hata Durumu: Sadece URL bulunamadıysa VE beklenmedik şekilde sonlandıysa
-                         if !urlWasFound && !wasStoppedIntentionally && !(reason == .exit && status == 0) {
-                             print("   ‼️ Hızlı Tünel: URL bulunamadı ve beklenmedik şekilde sonlandı [\(tunnelID)].")
-                             print("   📝 Son çıktı (\(finalCombinedOutput.count) karakter):\n---\n\(finalCombinedOutput.suffix(500))\n---")
-                             
-                             let errorLines = finalCombinedOutput.split(separator: "\n").filter {
-                                 $0.lowercased().contains("error") || $0.lowercased().contains("fail") || $0.lowercased().contains("fatal") || $0.lowercased().contains("unable") || $0.lowercased().contains("refused")
-                             }.map(String.init)
-                             var finalError = errorLines.prefix(3).joined(separator: "\n")
-                             if finalError.isEmpty {
-                                 // Daha detaylı hata mesajı
-                                 let lastLines = finalCombinedOutput.split(separator: "\n").suffix(3).joined(separator: "\n")
-                                 finalError = "Tünel başlatılamadı (Çıkış Kodu: \(status)).\nSon çıktı:\n\(lastLines)"
-                             }
-                             tunnelData.lastError = finalError // Hatayı ayarla
-                             print("   Hata mesajı ayarlandı: \(finalError)")
-                             // Hata kaydı ve bildirimi
-                             self.logError(tunnelName: localURL, errorMessage: finalError, errorCode: Int(status), source: .quick)
-                             self.postUserNotification(identifier: "quick_fail_\(tunnelID)", title: "Hızlı Tünel Hatası", body: "\(localURL)\n\(finalError.prefix(100))...", type: .error, tunnelName: localURL)
-                         } else if wasStoppedIntentionally {
-                              print("   Hızlı tünel durduruldu veya normal sonlandı (\(tunnelID)).")
-                              // Başarılı durdurma bildirimi (URL bulunduysa veya temiz çıkışsa)
-                              if urlWasFound || (reason == .exit && status == 0) {
-                                  self.postUserNotification(identifier: "quick_stopped_\(tunnelID)", title: "Hızlı Tünel Durduruldu", body: "\(localURL)")
-                              }
-                         }
-                         // else: URL bulundu ve normal şekilde çalışmaya devam ediyordu (kapatma sinyali gelene kadar) - hata yok.
-
-                         // Listeden ve haritadan kaldır
-                         self.quickTunnels.remove(at: index)
-                         self.runningQuickProcesses.removeValue(forKey: tunnelID)
-                     }
-                 }
-
-
+                // Hata Durumu: Sadece URL bulunamadıysa VE beklenmedik şekilde sonlandıysa
+                if !urlWasFound && !wasStoppedIntentionally && !(reason == .exit && status == 0) {
+                    print("   ‼️ Hızlı Tünel: URL bulunamadı ve beklenmedik şekilde sonlandı [\(tunnelID)].")
+                    
+                    // Extract error message
+                    let errorMessage = finalCombinedOutput.components(separatedBy: "\n")
+                        .filter { $0.contains("error") || $0.contains("Error") || $0.contains("ERR") }
+                        .last ?? "Bilinmeyen hata (Kod: \(status))"
+                    
+                    tunnelData.lastError = errorMessage
+                    self.quickTunnels[index] = tunnelData
+                    
+                    self.postUserNotification(identifier: "quick_tunnel_failed_\(tunnelID)", title: "Hızlı Tünel Başarısız", body: "Tünel beklenmedik şekilde kapandı: \(errorMessage)", type: .error)
+                } else if !wasStoppedIntentionally {
+                    // URL bulundu ama tünel çöktü
+                    print("   ‼️ Hızlı Tünel: Çalışırken çöktü [\(tunnelID)].")
+                    tunnelData.lastError = "Tünel bağlantısı koptu (Kod: \(status))"
+                    self.quickTunnels[index] = tunnelData
+                }
+                
+                // Clean up process reference
+                self.runningQuickProcesses.removeValue(forKey: tunnelID)
+            }
+        }
 
         // --- İşlemi başlatma kısmı ---
-              do {
-                  DispatchQueue.main.async {
-                       // Başlangıçta lastError = nil olsun - ID'yi manuel geç
-                       let tunnelData = QuickTunnelData(id: tunnelID, process: process, publicURL: nil, localURL: localURL, processIdentifier: nil, lastError: nil)
-                       self.quickTunnels.append(tunnelData)
-                       self.runningQuickProcesses[tunnelID] = process
-                       print("   ✅ QuickTunnel eklendi: ID=\(tunnelID), LocalURL=\(localURL)")
-                  }
-                  try process.run()
-                  let pid = process.processIdentifier
-                  DispatchQueue.main.async {
-                       if let index = self.quickTunnels.firstIndex(where: { $0.id == tunnelID }) {
-                           self.quickTunnels[index].processIdentifier = pid
-                       }
-                       print("   Hızlı tünel işlemi başlatıldı (PID: \(pid), ID: \(tunnelID)). Çıktı bekleniyor...")
-                       completion(.success(tunnelID))
-                  }
+        do {
+            DispatchQueue.main.async {
+                // Başlangıçta lastError = nil olsun - ID'yi manuel geç
+                let tunnelData = QuickTunnelData(id: tunnelID, process: process, publicURL: nil, localURL: localURL, processIdentifier: nil, lastError: nil)
+                self.quickTunnels.append(tunnelData)
+                self.runningQuickProcesses[tunnelID] = process
+                print("   ✅ QuickTunnel eklendi: ID=\(tunnelID), LocalURL=\(localURL)")
+            }
+            try process.run()
+            let pid = process.processIdentifier
+            DispatchQueue.main.async {
+                if let index = self.quickTunnels.firstIndex(where: { $0.id == tunnelID }) {
+                    self.quickTunnels[index].processIdentifier = pid
+                }
+                print("   Hızlı tünel işlemi başlatıldı (PID: \(pid), ID: \(tunnelID)). Çıktı bekleniyor...")
+                completion(.success(tunnelID))
+            }
 
         } catch {
             print("❌ Hızlı tünel işlemi başlatılamadı (try process.run() hatası): \(error)")
             // Başlatma sırasında hata olursa temizle
             DispatchQueue.main.async {
-                     self.quickTunnels.removeAll { $0.id == tunnelID }
-                     self.runningQuickProcesses.removeValue(forKey: tunnelID)
-                     self.postUserNotification(identifier: "quick_start_run_fail_\(tunnelID)", title: "Hızlı Tünel Başlatma Hatası", body: "İşlem başlatılamadı: \(error.localizedDescription)")
-                     completion(.failure(error))
-                }
-                outputPipe.fileHandleForReading.readabilityHandler = nil
-                errorPipe.fileHandleForReading.readabilityHandler = nil
-           }
-       } /// startQuickTunnel Sonu
+                self.quickTunnels.removeAll { $0.id == tunnelID }
+                self.runningQuickProcesses.removeValue(forKey: tunnelID)
+                self.postUserNotification(identifier: "quick_start_run_fail_\(tunnelID)", title: "Hızlı Tünel Başlatma Hatası", body: "İşlem başlatılamadı: \(error.localizedDescription)")
+                completion(.failure(error))
+            }
+            outputPipe.fileHandleForReading.readabilityHandler = nil
+            errorPipe.fileHandleForReading.readabilityHandler = nil
+        }
+    }
 
 
     // Sadece URL arar, hata aramaz. URL bulursa durumu günceller.
@@ -1974,3 +1981,4 @@ class TunnelManager: ObservableObject {
          return SMAppService.mainApp.status == .enabled
      }
 }
+

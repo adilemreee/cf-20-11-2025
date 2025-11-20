@@ -152,7 +152,7 @@ struct TunnelInfo: Identifiable, Hashable {
 }
 
 // Represents a temporary "quick tunnel" created via a URL
-struct QuickTunnelData: Identifiable { // Identifiable is enough
+struct QuickTunnelData: Identifiable, Equatable { // Identifiable is enough
     let id: UUID // Unique ID for tracking this specific instance
     let process: Process // Reference to the running process
     var publicURL: String? // Initially nil, found by parsing output
@@ -178,4 +178,13 @@ struct QuickTunnelData: Identifiable { // Identifiable is enough
         self.processIdentifier = processIdentifier
         self.lastError = lastError
     }
+    
+    static func == (lhs: QuickTunnelData, rhs: QuickTunnelData) -> Bool {
+        return lhs.id == rhs.id &&
+               lhs.publicURL == rhs.publicURL &&
+               lhs.localURL == rhs.localURL &&
+               lhs.isRunning == rhs.isRunning &&
+               lhs.lastError == rhs.lastError
+    }
 }
+

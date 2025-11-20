@@ -12,6 +12,8 @@ struct CreateManagedTunnelView: View {
     @State private var portString: String = "80"
     @State private var documentRoot: String = ""
     @State private var updateVHost: Bool = false
+    @State private var selectedProtocol: String = "HTTP"
+    let protocols = ["HTTP", "SSH", "RDP"]
 
     // UI State
     @State private var isCreating: Bool = false
@@ -170,6 +172,26 @@ struct CreateManagedTunnelView: View {
                 )
                 
                 HStack(spacing: 12) {
+                    // Protocol Picker
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Protokol")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        
+                        Picker("", selection: $selectedProtocol) {
+                            ForEach(protocols, id: \.self) { proto in
+                                Text(proto).tag(proto)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .frame(width: 80)
+                        .onChange(of: selectedProtocol) { _, newValue in
+                            if newValue == "SSH" { portString = "22" }
+                            else if newValue == "RDP" { portString = "3389" }
+                            else if newValue == "HTTP" { portString = "80" }
+                        }
+                    }
+
                     Image(systemName: "network")
                         .foregroundColor(.blue)
                         .frame(width: 20)
@@ -197,46 +219,43 @@ struct CreateManagedTunnelView: View {
         }
     }
 
+    @ViewBuilder
     private var modernMampIntegrationCard: some View {
-        TunnelCard(title: "MAMP Entegrasyonu", icon: "server.rack") {
-            VStack(spacing: 16) {
-                HStack(spacing: 12) {
-                    Image(systemName: "folder.fill")
-                        .foregroundColor(.orange)
-                        .frame(width: 20)
+        // Only show MAMP integration for HTTP
+        if selectedProtocol == "HTTP" {
+            TunnelCard(title: "MAMP Entegrasyonu (Opsiyonel)", icon: "server.rack") {
+                VStack(spacing: 16) {
+                    ModernToggle(
+                        title: "MAMP vHost Güncelle",
+                        subtitle: "httpd-vhosts.conf ve httpd.conf dosyalarını otomatik yapılandır",
+                        isOn: $updateVHost
+                    )
                     
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Proje Kök Dizini")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        
-                        HStack {
-                            TextField("MAMP site klasörü seçin", text: $documentRoot)
-                                .textFieldStyle(ModernTextFieldStyle())
+                    if updateVHost {
+                        HStack(spacing: 12) {
+                            ModernTextField(
+                                title: "Document Root",
+                                text: $documentRoot,
+                                placeholder: "/Applications/MAMP/htdocs/mysite",
+                                icon: "folder.fill"
+                            )
                             
-                            Button(action: browseForDocumentRoot) {
+                            Button(action: selectDocumentRoot) {
                                 Image(systemName: "folder.badge.plus")
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.white)
+                                    .frame(width: 32, height: 32)
+                                    .background(Color.blue)
+                                    .cornerRadius(6)
                             }
-                            .buttonStyle(TunnelIconButtonStyle())
+                            .buttonStyle(PlainButtonStyle())
+                            .padding(.top, 20)
                         }
+                        .transition(.move(edge: .top).combined(with: .opacity))
                     }
                 }
-                
-                ModernToggle(
-                    title: "MAMP vHost Dosyasını Güncelle",
-                    subtitle: "httpd-vhosts.conf dosyasına otomatik giriş ekler",
-                    isOn: $updateVHost
-                )
-                .disabled(documentRoot.isEmpty || !FileManager.default.fileExists(atPath: documentRoot))
-                
-                if updateVHost {
-                    ModernInfoBox(
-                        message: "Değişikliklerin etkili olması için MAMP sunucularını yeniden başlatmanız gerekecek.",
-                        type: .info
-                    )
-                }
             }
+        } else {
+            EmptyView()
         }
     }
 
@@ -345,7 +364,7 @@ struct CreateManagedTunnelView: View {
         }
     }
 
-    func browseForDocumentRoot() {
+    func selectDocumentRoot() {
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
@@ -402,7 +421,8 @@ struct CreateManagedTunnelView: View {
                         credentialsPath: tunnelData.jsonPath,
                         hostname: self.hostname,
                         port: self.portString,
-                        documentRoot: finalDocRoot
+                        documentRoot: finalDocRoot,
+                        protocolType: self.selectedProtocol
                     ) { configResult in
                         DispatchQueue.main.async {
                             self.isCreating = false

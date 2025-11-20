@@ -37,6 +37,9 @@ extension AppDelegate {
         // --- Creation Tools (MODERNIZED) ---
         createModernCreationSection(menu)
         
+        // --- Features Section (NEW) ---
+        createModernFeaturesSection(menu)
+        
         // --- Management Tools ---
         createManagementToolsSection(menu, tunnelManager: tunnelManager)
         
@@ -54,7 +57,7 @@ extension AppDelegate {
     private func createDashboardHeader(_ menu: NSMenu, tunnelManager: TunnelManager) {
         let dashboardView = MenuDashboardView(manager: tunnelManager)
         let controller = NSHostingController(rootView: dashboardView)
-        controller.view.frame = NSRect(x: 0, y: 0, width: 240, height: 100)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 280, height: 100) // Increased width
         let item = NSMenuItem()
         item.view = controller.view
         menu.addItem(item)
@@ -63,7 +66,7 @@ extension AppDelegate {
     private func createModernControlSection(_ menu: NSMenu, tunnelManager: TunnelManager) {
         let controlView = MenuControlGrid(manager: tunnelManager)
         let controller = NSHostingController(rootView: controlView)
-        controller.view.frame = NSRect(x: 0, y: 0, width: 240, height: 60)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 280, height: 60) // Increased width
         let item = NSMenuItem()
         item.view = controller.view
         menu.addItem(item)
@@ -73,7 +76,17 @@ extension AppDelegate {
     private func createModernCreationSection(_ menu: NSMenu) {
         let creationView = MenuCreationGrid()
         let controller = NSHostingController(rootView: creationView)
-        controller.view.frame = NSRect(x: 0, y: 0, width: 240, height: 60)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 280, height: 60) // Increased width
+        let item = NSMenuItem()
+        item.view = controller.view
+        menu.addItem(item)
+        menu.addItem(createStyledSeparator())
+    }
+    
+    private func createModernFeaturesSection(_ menu: NSMenu) {
+        let featuresView = MenuFeaturesGrid()
+        let controller = NSHostingController(rootView: featuresView)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 280, height: 60)
         let item = NSMenuItem()
         item.view = controller.view
         menu.addItem(item)
@@ -83,7 +96,7 @@ extension AppDelegate {
     private func createModernFooterSection(_ menu: NSMenu) {
         let footerView = MenuFooterGrid()
         let controller = NSHostingController(rootView: footerView)
-        controller.view.frame = NSRect(x: 0, y: 0, width: 240, height: 50)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 280, height: 50) // Increased width
         let item = NSMenuItem()
         item.view = controller.view
         menu.addItem(item)
@@ -235,15 +248,16 @@ extension AppDelegate {
             
             // Group tunnels by status
             let runningTunnels = managedTunnels.filter { $0.status == .running }
-            let stoppedTunnels = managedTunnels.filter { $0.status == .stopped }
-            let errorTunnels = managedTunnels.filter { $0.status == .error }
-            let otherTunnels = managedTunnels.filter { ![.running, .stopped, .error].contains($0.status) }
+            let otherTunnels = managedTunnels.filter { $0.status != .running }
             
-            // Create groups with pagination
-            createTunnelGroup(menu, title: "Çalışan", tunnels: runningTunnels, icon: "checkmark.circle.fill", color: .systemGreen, isCloudflaredAvailable: isCloudflaredAvailable)
-            createTunnelGroup(menu, title: "Durmuş", tunnels: stoppedTunnels, icon: "stop.circle.fill", color: .systemGray, isCloudflaredAvailable: isCloudflaredAvailable)
-            createTunnelGroup(menu, title: "Hatalı", tunnels: errorTunnels, icon: "exclamationmark.circle.fill", color: .systemRed, isCloudflaredAvailable: isCloudflaredAvailable)
-            createTunnelGroup(menu, title: "Diğer", tunnels: otherTunnels, icon: "clock.circle.fill", color: .systemOrange, isCloudflaredAvailable: isCloudflaredAvailable)
+            // Use the helper method to create compact groups
+            if !runningTunnels.isEmpty {
+                createTunnelGroup(menu, title: "Çalışanlar", tunnels: runningTunnels, icon: "bolt.fill", color: .systemGreen, isCloudflaredAvailable: isCloudflaredAvailable)
+            }
+            
+            if !otherTunnels.isEmpty {
+                createTunnelGroup(menu, title: "Diğerleri", tunnels: otherTunnels, icon: "circle", color: .secondaryLabelColor, isCloudflaredAvailable: isCloudflaredAvailable)
+            }
             
             menu.addItem(createStyledSeparator())
         } else if managedTunnels.isEmpty && tunnelManager.quickTunnels.isEmpty && isCloudflaredAvailable {
@@ -251,6 +265,7 @@ extension AppDelegate {
             menu.addItem(createStyledSeparator())
         }
     }
+    
     
     private func createControlActionsSection(_ menu: NSMenu, tunnelManager: TunnelManager, isCloudflaredAvailable: Bool) {
         let managedTunnels = tunnelManager.tunnels
@@ -522,4 +537,5 @@ extension AppDelegate {
         let deleteItem = createModernMenuItem(subMenu, title: "Sil...", icon: "trash.fill", action: #selector(deleteTunnelAction(_:)), color: .systemRed, isEnabled: canDelete, tooltip: "Cloudflare'dan kalıcı olarak siler!")
         deleteItem.representedObject = tunnel
     }
+    
 }

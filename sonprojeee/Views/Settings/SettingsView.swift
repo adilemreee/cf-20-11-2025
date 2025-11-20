@@ -1290,13 +1290,16 @@ struct SettingsView: View {
     }
     
     private func resetSettings() {
-        // Reset to defaults
+        // Reset to defaults (all behavior settings enabled)
         darkModeEnabled = false
         notificationsEnabled = true
         autoStartTunnels = false
         minimizeToTray = true
         showStatusInMenuBar = true
         accentColorName = "blue"
+        
+        // Ensure menu bar icon is visible immediately
+        UserDefaults.standard.set(true, forKey: "showStatusInMenuBar")
     }
     
     private func openInFinder(_ path: String) {

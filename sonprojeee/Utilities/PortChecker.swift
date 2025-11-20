@@ -78,4 +78,24 @@ class PortChecker {
         }
         return nil
     }
+    
+    /// Find the first available port starting from a given number
+    func findFreePort(startingFrom startPort: Int = 50000) -> Int? {
+        for port in startPort...65535 {
+            if isPortAvailable(port) {
+                return port
+            }
+        }
+        return nil
+    }
+    
+    /// Find a free port in a range
+    func findFreePort(startPort: Int = 8000, endPort: Int = 9000) -> Int? {
+        for port in startPort...endPort {
+            if isPortAvailable(port) {
+                return port
+            }
+        }
+        return nil
+    }
 }

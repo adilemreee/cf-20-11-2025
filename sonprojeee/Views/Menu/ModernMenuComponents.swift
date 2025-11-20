@@ -28,7 +28,7 @@ struct MenuControlGrid: View {
                 NSApp.sendAction(#selector(AppDelegate.refreshManagedTunnelListAction), to: nil, from: nil)
             }
         }
-        .frame(width: 240, height: 60)
+        .frame(width: 280, height: 60)
     }
 }
 
@@ -36,13 +36,13 @@ struct MenuControlGrid: View {
 struct MenuCreationGrid: View {
     var body: some View {
         HStack(spacing: 0) {
-            MenuGridButton(icon: "bolt.fill", title: "Hızlı Tünel", color: .purple) {
+            MenuGridButton(icon: "bolt.fill", title: "Hızlı", color: .purple) {
                 NSApp.sendAction(#selector(AppDelegate.openQuickTunnelWindowAction), to: nil, from: nil)
             }
             
             Divider().padding(.vertical, 8)
             
-            MenuGridButton(icon: "plus.circle.fill", title: "Yeni Tünel", color: .blue) {
+            MenuGridButton(icon: "plus.circle.fill", title: "Yeni", color: .blue) {
                 NSApp.sendAction(#selector(AppDelegate.openCreateManagedTunnelWindowAction), to: nil, from: nil)
             }
             
@@ -51,8 +51,26 @@ struct MenuCreationGrid: View {
             MenuGridButton(icon: "server.rack", title: "MAMP", color: .orange) {
                 NSApp.sendAction(#selector(AppDelegate.openCreateFromMampWindow), to: nil, from: nil)
             }
+            
+            Divider().padding(.vertical, 8)
+            
+            MenuGridButton(icon: "shippingbox.fill", title: "Docker", color: .cyan) {
+                NSApp.sendAction(#selector(AppDelegate.openCreateFromDockerWindow), to: nil, from: nil)
+            }
         }
-        .frame(width: 240, height: 60)
+        .frame(width: 280, height: 60) // Increased width to accommodate 4 buttons
+    }
+}
+
+// MARK: - Features Grid
+struct MenuFeaturesGrid: View {
+    var body: some View {
+        HStack(spacing: 0) {
+            MenuGridButton(icon: "folder.fill", title: "Dosya Paylaş", color: .orange) {
+                NSApp.sendAction(#selector(AppDelegate.openFileShareWindow), to: nil, from: nil)
+            }
+        }
+        .frame(width: 280, height: 60)
     }
 }
 
@@ -76,7 +94,7 @@ struct MenuFooterGrid: View {
                 NSApp.terminate(nil)
             }
         }
-        .frame(width: 240, height: 50)
+        .frame(width: 280, height: 50)
     }
 }
 
