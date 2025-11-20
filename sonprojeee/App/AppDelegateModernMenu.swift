@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import SwiftUI
 
 // Modern Menu Extension for AppDelegate
 extension AppDelegate {
@@ -17,6 +18,10 @@ extension AppDelegate {
         // Update menu bar icon based on status
         updateMenuBarIcon(isCloudflaredAvailable: isCloudflaredAvailable, tunnels: tunnelManager.tunnels, quickTunnels: tunnelManager.quickTunnels)
 
+        // --- Dashboard Header (NEW) ---
+        createDashboardHeader(menu, tunnelManager: tunnelManager)
+        menu.addItem(createStyledSeparator())
+
         // --- Header Section ---
         createHeaderSection(menu, isCloudflaredAvailable: isCloudflaredAvailable)
         
@@ -26,11 +31,11 @@ extension AppDelegate {
         // --- Managed Tunnels Section ---
         createManagedTunnelsSection(menu, managedTunnels: tunnelManager.tunnels, isCloudflaredAvailable: isCloudflaredAvailable)
         
-        // --- Control Actions ---
-        createControlActionsSection(menu, tunnelManager: tunnelManager, isCloudflaredAvailable: isCloudflaredAvailable)
+        // --- Control Actions (MODERNIZED) ---
+        createModernControlSection(menu, tunnelManager: tunnelManager)
         
-        // --- Creation Tools ---
-        createCreationToolsSection(menu, tunnelManager: tunnelManager, isCloudflaredAvailable: isCloudflaredAvailable)
+        // --- Creation Tools (MODERNIZED) ---
+        createModernCreationSection(menu)
         
         // --- Management Tools ---
         createManagementToolsSection(menu, tunnelManager: tunnelManager)
@@ -38,14 +43,52 @@ extension AppDelegate {
         // --- System Tools ---
         createSystemToolsSection(menu, tunnelManager: tunnelManager, isCloudflaredAvailable: isCloudflaredAvailable)
         
-        // --- Footer Section ---
-        createFooterSection(menu, tunnelManager: tunnelManager)
+        // --- Footer Section (MODERNIZED) ---
+        createModernFooterSection(menu)
 
         // Update the status item's menu
         statusItem?.menu = menu
     }
     
     // MARK: - Modern Menu Helpers
+    private func createDashboardHeader(_ menu: NSMenu, tunnelManager: TunnelManager) {
+        let dashboardView = MenuDashboardView(manager: tunnelManager)
+        let controller = NSHostingController(rootView: dashboardView)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 240, height: 100)
+        let item = NSMenuItem()
+        item.view = controller.view
+        menu.addItem(item)
+    }
+    
+    private func createModernControlSection(_ menu: NSMenu, tunnelManager: TunnelManager) {
+        let controlView = MenuControlGrid(manager: tunnelManager)
+        let controller = NSHostingController(rootView: controlView)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 240, height: 60)
+        let item = NSMenuItem()
+        item.view = controller.view
+        menu.addItem(item)
+        menu.addItem(createStyledSeparator())
+    }
+    
+    private func createModernCreationSection(_ menu: NSMenu) {
+        let creationView = MenuCreationGrid()
+        let controller = NSHostingController(rootView: creationView)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 240, height: 60)
+        let item = NSMenuItem()
+        item.view = controller.view
+        menu.addItem(item)
+        menu.addItem(createStyledSeparator())
+    }
+    
+    private func createModernFooterSection(_ menu: NSMenu) {
+        let footerView = MenuFooterGrid()
+        let controller = NSHostingController(rootView: footerView)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 240, height: 50)
+        let item = NSMenuItem()
+        item.view = controller.view
+        menu.addItem(item)
+    }
+    
     private func createErrorMenu() {
         let menu = NSMenu()
         createModernMenuItem(menu, title: "Yönetici Başlatılamadı", icon: "exclamationmark.triangle.fill", action: nil, color: .systemRed)
@@ -286,6 +329,7 @@ extension AppDelegate {
     }
     
     private func createFooterSection(_ menu: NSMenu, tunnelManager: TunnelManager) {
+        createModernMenuItem(menu, title: "Geçmiş ve Loglar", icon: "clock.arrow.circlepath", action: #selector(openHistoryWindowAction), color: .systemTeal)
         createModernMenuItem(menu, title: "Kurulum Kılavuzu", icon: "book.fill", action: #selector(openSetupPdfAction), color: .systemPurple)
         
         if #available(macOS 13.0, *) {
@@ -350,24 +394,31 @@ extension AppDelegate {
     }
     
     private func getQuickTunnelDisplayInfo(_ quickTunnelData: QuickTunnelData) -> (title: String, icon: String, color: NSColor, tooltip: String) {
-        var tooltip = "Yerel: \(quickTunnelData.localURL)"
+        var tooltip = "Yerel: \(quickTunnelData.localURL)\nPort: \(quickTunnelData.port)"
         
         if let url = quickTunnelData.publicURL {
-            let displayURL = url.replacingOccurrences(of: "https://", with: "")
+            var displayURL = url.replacingOccurrences(of: "https://", with: "")
+            // Link çok uzunsa daha agresif kısalt (örn: cool-name...com)
+            if displayURL.count > 20 {
+                displayURL = displayURL.prefix(8) + "..." + displayURL.suffix(5)
+            }
+            
+            let displayTitle = ":\(quickTunnelData.port) → \(displayURL)"
             tooltip += "\nGenel: \(url)\nTarayıcıda açmak için tıkla"
             if let pid = quickTunnelData.processIdentifier { tooltip += "\nPID: \(pid)" }
-            return (displayURL, "link.circle.fill", .systemGreen, tooltip)
+            return (displayTitle, "link.circle.fill", .systemGreen, tooltip)
         } else if let error = quickTunnelData.lastError {
             tooltip += "\nHata: \(error)"
-            return ("\(quickTunnelData.localURL) (Hata)", "exclamationmark.circle.fill", .systemRed, tooltip)
+            return (":\(quickTunnelData.port) (Hata)", "exclamationmark.circle.fill", .systemRed, tooltip)
         } else {
             tooltip += "\nURL bekleniyor..."
-            return ("\(quickTunnelData.localURL) (Başlatılıyor)", "clock.circle.fill", .systemOrange, tooltip)
+            return (":\(quickTunnelData.port) (Başlatılıyor)", "clock.circle.fill", .systemOrange, tooltip)
         }
     }
     
     private func getManagedTunnelDisplayInfo(_ tunnel: TunnelInfo) -> (title: String, icon: String, color: NSColor, tooltip: String) {
         var tooltipParts = ["Durum: \(tunnel.status.displayName)"]
+        if let port = tunnel.port { tooltipParts.append("Port: \(port)") }
         if let uuid = tunnel.uuidFromConfig { tooltipParts.append("UUID: \(uuid)") }
         if let path = tunnel.configPath { tooltipParts.append("Config: \((path as NSString).abbreviatingWithTildeInPath)") }
         if let pid = tunnel.processIdentifier { tooltipParts.append("PID: \(pid)") }
@@ -375,17 +426,24 @@ extension AppDelegate {
         
         let tooltip = tooltipParts.joined(separator: "\n")
         
+        // Tünel adının yanına port numarasını ekle
+        let displayName = if let port = tunnel.port {
+            "\(tunnel.name) :\(port)"
+        } else {
+            tunnel.name
+        }
+        
         switch tunnel.status {
         case .running:
-            return (tunnel.name, "checkmark.circle.fill", .systemGreen, tooltip)
+            return (displayName, "checkmark.circle.fill", .systemGreen, tooltip)
         case .stopped:
-            return (tunnel.name, "stop.circle.fill", .systemGray, tooltip)
+            return (displayName, "stop.circle.fill", .systemGray, tooltip)
         case .starting:
-            return ("\(tunnel.name) (Başlatılıyor)", "arrow.clockwise.circle", .systemOrange, tooltip)
+            return ("\(displayName) (Başlatılıyor)", "arrow.clockwise.circle", .systemOrange, tooltip)
         case .stopping:
-            return ("\(tunnel.name) (Durduruluyor)", "stop.circle", .systemOrange, tooltip)
+            return ("\(displayName) (Durduruluyor)", "stop.circle", .systemOrange, tooltip)
         case .error:
-            return ("\(tunnel.name) (Hata)", "exclamationmark.circle.fill", .systemRed, tooltip)
+            return ("\(displayName) (Hata)", "exclamationmark.circle.fill", .systemRed, tooltip)
         }
     }
     

@@ -33,6 +33,7 @@ struct SettingsView: View {
         case paths = "Yollar"
         case appearance = "Görünüm"
         case notifications = "Bildirimler"
+        case history = "Geçmiş"
         case backup = "Yedekleme"
         case advanced = "Gelişmiş"
         case about = "Hakkında"
@@ -43,6 +44,7 @@ struct SettingsView: View {
             case .paths: return "folder.badge.gearshape"
             case .appearance: return "paintbrush"
             case .notifications: return "bell"
+            case .history: return "clock.arrow.circlepath"
             case .backup: return "externaldrive.badge.timemachine"
             case .advanced: return "wrench.and.screwdriver"
             case .about: return "info.circle"
@@ -68,18 +70,33 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            HStack(spacing: 0) {
-                // Sidebar
-                sidebarView
-                    .frame(width: 200)
-                
-                // Main Content
-                mainContentView
-                    .frame(maxWidth: .infinity)
-            }
+        HStack(spacing: 24) {
+            // Sidebar
+            sidebarView
+                .frame(width: 240)
+                .background(
+                    RoundedRectangle(cornerRadius: 24)
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 24)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                )
+            
+            // Main Content
+            mainContentView
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 24)
+                        .fill(.ultraThinMaterial.opacity(0.5))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 24)
+                                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                        )
+                )
         }
-        .frame(width: 800, height: 600)
+        .padding(24)
+        .frame(width: 1000, height: 700)
         .background(modernBackground)
         .onAppear {
             setupInitialValues()
@@ -90,23 +107,29 @@ struct SettingsView: View {
     private var modernBackground: some View {
         ZStack {
             // Base background
-            Color(.windowBackgroundColor)
+            Color(.windowBackgroundColor).ignoresSafeArea()
             
-            // Gradient overlay
-            LinearGradient(
-                colors: [
-                    currentAccentColor.opacity(0.1),
-                    Color.clear,
-                    currentAccentColor.opacity(0.05)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            
-            // Subtle noise texture effect
-            Rectangle()
-                .fill(Color.white.opacity(0.02))
-                .blendMode(.overlay)
+            // Ambient Gradient
+            GeometryReader { proxy in
+                Circle()
+                    .fill(currentAccentColor.opacity(0.1))
+                    .frame(width: 500, height: 500)
+                    .blur(radius: 100)
+                    .offset(x: -150, y: -150)
+                
+                Circle()
+                    .fill(Color.blue.opacity(0.05))
+                    .frame(width: 400, height: 400)
+                    .blur(radius: 80)
+                    .offset(x: proxy.size.width - 200, y: proxy.size.height - 200)
+                
+                // Additional ambient light for settings
+                Circle()
+                    .fill(currentAccentColor.opacity(0.05))
+                    .frame(width: 300, height: 300)
+                    .blur(radius: 60)
+                    .offset(x: 100, y: proxy.size.height / 2)
+            }
         }
     }
     
@@ -135,9 +158,12 @@ struct SettingsView: View {
                 VStack(spacing: 4) {
                     Text("Cloudflared Manager")
                         .font(.headline.bold())
-                    Text("v1.0.0")
+                    Text("v6.5.0")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    Text("2025")
+                        .font(.caption2)
+                        .foregroundColor(.secondary.opacity(0.7))
                 }
             }
             .padding(.top, 30)
@@ -158,24 +184,6 @@ struct SettingsView: View {
                 .padding(.horizontal, 12)
                 .padding(.bottom, 20)
         }
-        .background {
-            // Sidebar background with glassmorphism
-            RoundedRectangle(cornerRadius: 0)
-                .fill(.ultraThinMaterial)
-                .overlay {
-                    Rectangle()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.1),
-                                    Color.clear
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                }
-        }
     }
     
     private func sidebarButton(for tab: SettingsTab) -> some View {
@@ -195,6 +203,13 @@ struct SettingsView: View {
                     .foregroundColor(selectedTab == tab ? .white : .primary)
                 
                 Spacer()
+                
+                if selectedTab == tab {
+                    Circle()
+                        .fill(.white.opacity(0.3))
+                        .frame(width: 6, height: 6)
+                        .transition(.scale.combined(with: .opacity))
+                }
             }
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
@@ -208,16 +223,20 @@ struct SettingsView: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .shadow(color: currentAccentColor.opacity(0.3), radius: 4, x: 0, y: 2)
+                        .shadow(color: currentAccentColor.opacity(0.4), radius: 8, x: 0, y: 4)
+                        .transition(.scale.combined(with: .opacity))
                 } else {
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.clear)
+                        .fill(hoveredButton == tab.rawValue ? Color.gray.opacity(0.1) : Color.clear)
                 }
             }
         }
         .buttonStyle(.plain)
         .scaleEffect(selectedTab == tab ? 1.02 : 1.0)
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selectedTab)
+        .onHover { isHovered in
+            hoveredButton = isHovered ? tab.rawValue : nil
+        }
     }
     
     private var statusIndicatorView: some View {
@@ -261,7 +280,7 @@ struct SettingsView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(selectedTab.rawValue)
-                        .font(.largeTitle.bold())
+                        .font(.system(size: 32, weight: .bold))
                         .foregroundColor(.primary)
                     
                     Text(headerSubtitle)
@@ -271,15 +290,16 @@ struct SettingsView: View {
                 
                 Spacer()
             }
-            .padding(.horizontal, 30)
-            .padding(.top, 30)
+            .padding(.horizontal, 32)
+            .padding(.top, 32)
             .padding(.bottom, 20)
             
             // Content
             ScrollView {
                 contentForSelectedTab
-                    .padding(.horizontal, 30)
-                    .padding(.bottom, 30)
+                    .padding(.horizontal, 32)
+                    .padding(.bottom, 32)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.8), value: selectedTab)
             }
         }
     }
@@ -290,6 +310,7 @@ struct SettingsView: View {
         case .paths: return "Dosya yolları ve dizin ayarları"
         case .appearance: return "Görünüm ve tema tercihleri"
         case .notifications: return "Bildirim ayarları ve tercihler"
+        case .history: return "Bildirimler, hatalar ve log kayıtları"
         case .backup: return "Yedekleme ve geri yükleme işlemleri"
         case .advanced: return "Gelişmiş özellikler ve araçlar"
         case .about: return "Uygulama hakkında bilgiler"
@@ -303,6 +324,7 @@ struct SettingsView: View {
         case .paths: pathsTabContent
         case .appearance: appearanceTabContent
         case .notifications: notificationsTabContent
+        case .history: HistoryView()
         case .backup: BackupRestoreView().environmentObject(manager)
         case .advanced: advancedTabContent
         case .about: aboutTabContent
@@ -611,6 +633,65 @@ struct SettingsView: View {
     
     private var advancedTabContent: some View {
         LazyVStack(spacing: 24) {
+            // MAMP Operations
+            modernCard("MAMP İşlemleri", icon: "server.rack") {
+                VStack(spacing: 12) {
+                    actionButton("MySQL Socket Düzelt", icon: "wrench.and.screwdriver", color: .orange) {
+                        MampManager.shared.fixMySQLSocket { result in
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success:
+                                    let alert = NSAlert()
+                                    alert.messageText = "Başarılı"
+                                    alert.informativeText = "MySQL socket bağlantısı düzeltildi (/tmp/mysql.sock -> MAMP)."
+                                    alert.runModal()
+                                case .failure(let error):
+                                    // Hata durumunda manuel çözüm öner
+                                    let command = "sudo mkdir -p /var/mysql && sudo ln -sf /Applications/MAMP/tmp/mysql/mysql.sock /tmp/mysql.sock && sudo ln -sf /Applications/MAMP/tmp/mysql/mysql.sock /var/mysql/mysql.sock"
+                                    let alert = NSAlert()
+                                    alert.messageText = "İşlem Başarısız"
+                                    alert.informativeText = "Hata: \(error.localizedDescription)\n\nEğer MAMP açıksa ve hala bu hatayı alıyorsanız, lütfen veritabanı bağlantı ayarlarınızda 'localhost' yerine '127.0.0.1' kullanın. Bu en kesin çözümdür."
+                                    alert.alertStyle = .warning
+                                    alert.addButton(withTitle: "Tamam")
+                                    alert.addButton(withTitle: "Komutu Kopyala")
+                                    
+                                    let response = alert.runModal()
+                                    if response == .alertSecondButtonReturn {
+                                        NSPasteboard.general.clearContents()
+                                        NSPasteboard.general.setString(command, forType: .string)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Text("MySQL 'No such file or directory' hatası alıyorsanız bunu kullanın.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    actionButton("phpMyAdmin Config Düzelt", icon: "gear.badge.checkmark", color: .purple) {
+                        MampManager.shared.fixPhpMyAdminConfig { result in
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success(let path):
+                                    let alert = NSAlert()
+                                    alert.messageText = "Başarılı"
+                                    alert.informativeText = "phpMyAdmin yapılandırması güncellendi (localhost -> 127.0.0.1).\n\nDosya: \(path)"
+                                    alert.runModal()
+                                case .failure(let error):
+                                    let alert = NSAlert()
+                                    alert.messageText = "Hata"
+                                    alert.informativeText = "Düzeltme başarısız: \(error.localizedDescription)"
+                                    alert.runModal()
+                                }
+                            }
+                        }
+                    }
+                    Text("phpMyAdmin bağlantı hatası alıyorsanız bunu kullanın.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
             // Cloudflare Operations
             modernCard("Cloudflare İşlemleri", icon: "cloud") {
                 VStack(spacing: 12) {
@@ -672,7 +753,7 @@ struct SettingsView: View {
                         Text("Cloudflared Manager")
                             .font(.title.bold())
                         
-                        Text("Version 1.0.0")
+                        Text("Version 1.1.0")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
@@ -686,9 +767,9 @@ struct SettingsView: View {
                     
                     VStack(spacing: 12) {
                         infoRow("Geliştirici", value: "Adil Emre Karayürek")
-                        infoRow("Platform", value: "macOS 12.0+")
+                        infoRow("Platform", value: "macOS 13.0+")
                         infoRow("Framework", value: "SwiftUI")
-                        infoRow("Son Güncelleme", value: "2024")
+                        infoRow("Son Güncelleme", value: "20 Kasım 2025")
                     }
                 }
             }
@@ -697,15 +778,26 @@ struct SettingsView: View {
     
     // MARK: - Helper Views
     private func modernCard<Content: View>(_ title: String, icon: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 20) {
             HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.title2)
-                    .foregroundColor(currentAccentColor)
-                    .frame(width: 24, height: 24)
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [currentAccentColor.opacity(0.2), currentAccentColor.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(currentAccentColor)
+                }
                 
                 Text(title)
-                    .font(.title2.bold())
+                    .font(.title3.bold())
                 
                 Spacer()
             }
@@ -724,10 +816,11 @@ struct SettingsView: View {
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
-                            lineWidth: 1
+                            lineWidth: 1.5
                         )
                 }
-                .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                .shadow(color: currentAccentColor.opacity(0.08), radius: 12, x: 0, y: 6)
+                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
         }
     }
     
@@ -1176,8 +1269,20 @@ struct SettingsView: View {
                 switch result {
                 case .success(let enabled):
                     launchAtLogin = enabled
-                case .failure(_):
+                    manager.postUserNotification(
+                        identifier: "launch_at_login_toggle",
+                        title: "Oturum Açıldığında Başlatma",
+                        body: enabled ? "Etkinleştirildi" : "Devre Dışı Bırakıldı",
+                        type: enabled ? .success : .info
+                    )
+                case .failure(let error):
                     launchAtLogin = manager.isLaunchAtLoginEnabled()
+                    manager.postUserNotification(
+                        identifier: "launch_at_login_error",
+                        title: "Hata",
+                        body: "Ayar değiştirilemedi: \(error.localizedDescription)",
+                        type: .error
+                    )
                 }
                 launchAtLoginLoading = false
             }
@@ -1375,17 +1480,28 @@ struct ModernToggleStyle: ToggleStyle {
             Spacer()
             
             RoundedRectangle(cornerRadius: 16)
-                .fill(configuration.isOn ? accentColor : Color.gray.opacity(0.3))
+                .fill(configuration.isOn ? 
+                    LinearGradient(
+                        colors: [accentColor, accentColor.opacity(0.8)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    ) : 
+                    LinearGradient(
+                        colors: [Color.gray.opacity(0.3), Color.gray.opacity(0.2)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
                 .frame(width: 50, height: 30)
                 .overlay {
                     Circle()
                         .fill(.white)
                         .frame(width: 26, height: 26)
+                        .shadow(color: .black.opacity(0.15), radius: 3, x: 0, y: 2)
                         .offset(x: configuration.isOn ? 10 : -10)
-                        .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
                 }
                 .onTapGesture {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.65)) {
                         configuration.isOn.toggle()
                     }
                 }

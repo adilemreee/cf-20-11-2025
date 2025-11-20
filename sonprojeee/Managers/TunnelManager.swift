@@ -23,6 +23,8 @@ class TunnelManager: ObservableObject {
     // Store Combine cancellables
     var cancellables = Set<AnyCancellable>()
 
+    @Published var isCloudflaredInstalled: Bool = false // Track installation status
+
     // --- CONFIGURATION (UserDefaults) ---
     @Published var cloudflaredExecutablePath: String {
         didSet {
@@ -353,6 +355,11 @@ class TunnelManager: ObservableObject {
         print("Mamp Sites directory path: \(mampSitesDirectoryPath)")
         print("Mamp vHost path: \(mampVHostConfPath)")
         print("Mamp httpd.conf path: \(mampHttpdConfPath)")
+        
+        // Log initialization
+        HistoryManager.shared.log("Cloudflared Manager başlatıldı", level: .info, category: "System")
+        HistoryManager.shared.log("Cloudflared yolu: \(cloudflaredExecutablePath)", level: .debug, category: "System")
+        
         // Initial check for cloudflared executable
         checkCloudflaredExecutable()
 
@@ -455,7 +462,7 @@ class TunnelManager: ObservableObject {
     }
     
     // Helper to send notification via NotificationCenter
-    internal func postUserNotification(identifier: String, title: String, body: String?) {
+    internal func postUserNotification(identifier: String, title: String, body: String?, type: NotificationHistoryEntry.NotificationType = .info, tunnelName: String? = nil) {
         let userInfo: [String: Any] = [
             "identifier": identifier,
             "title": title,
@@ -463,13 +470,33 @@ class TunnelManager: ObservableObject {
         ]
         // Post notification for AppDelegate to handle
         NotificationCenter.default.post(name: .sendUserNotification, object: self, userInfo: userInfo)
+        
+        // Add to history
+        HistoryManager.shared.addNotification(title: title, body: body, type: type, tunnelName: tunnelName)
+        
+        // Log the notification
+        HistoryManager.shared.log("Bildirim: \(title)", level: .info, category: "Notification")
+    }
+    
+    // Helper to log errors
+    internal func logError(tunnelName: String, errorMessage: String, errorCode: Int? = nil, source: ErrorLogEntry.ErrorSource) {
+        HistoryManager.shared.addErrorLog(tunnelName: tunnelName, errorMessage: errorMessage, errorCode: errorCode, source: source)
+        HistoryManager.shared.log("Hata [\(source.rawValue)]: \(tunnelName) - \(errorMessage)", level: .error, category: "Error")
     }
 
     func checkCloudflaredExecutable() {
         let resolvedPath = resolvedCloudflaredExecutablePath()
-        if !FileManager.default.fileExists(atPath: resolvedPath) {
+        let exists = FileManager.default.fileExists(atPath: resolvedPath)
+        
+        if isCloudflaredInstalled != exists {
+            DispatchQueue.main.async { self.isCloudflaredInstalled = exists }
+        }
+        
+        if !exists {
             print("⚠️ UYARI: cloudflared şurada bulunamadı: \(resolvedPath)")
-            postUserNotification(identifier:"cloudflared_not_found", title: "Cloudflared Bulunamadı", body: "'\(resolvedPath)' konumunda bulunamadı. Lütfen Ayarlar'dan yolu düzeltin.")
+            // Only send notification if it was previously thought to be installed (to avoid spam on every check)
+            // But for now, we rely on the user fixing it.
+            // postUserNotification(identifier:"cloudflared_not_found", title: "Cloudflared Bulunamadı", body: "'\(resolvedPath)' konumunda bulunamadı. Lütfen Ayarlar'dan yolu düzeltin.")
         }
     }
 
@@ -525,10 +552,12 @@ class TunnelManager: ObservableObject {
                     let tunnelName = (item as NSString).deletingPathExtension
                     let tunnelUUID = parseValueFromYaml(key: "tunnel", filePath: configPath)
 
+                    let port = parsePortFromConfig(configPath: configPath)
+                    
                     if let existingProcess = runningManagedProcesses[configPath], existingProcess.isRunning {
-                         discoveredTunnelsDict[configPath] = TunnelInfo(name: tunnelName, configPath: configPath, status: .running, processIdentifier: existingProcess.processIdentifier, uuidFromConfig: tunnelUUID)
+                         discoveredTunnelsDict[configPath] = TunnelInfo(name: tunnelName, configPath: configPath, status: .running, processIdentifier: existingProcess.processIdentifier, uuidFromConfig: tunnelUUID, port: port)
                     } else {
-                        discoveredTunnelsDict[configPath] = TunnelInfo(name: tunnelName, configPath: configPath, uuidFromConfig: tunnelUUID)
+                        discoveredTunnelsDict[configPath] = TunnelInfo(name: tunnelName, configPath: configPath, uuidFromConfig: tunnelUUID, port: port)
                     }
                 }
             }
@@ -601,6 +630,19 @@ class TunnelManager: ObservableObject {
 
     func startManagedTunnel(_ tunnel: TunnelInfo) {
         guard tunnel.isManaged, let configPath = tunnel.configPath else { return }
+        
+        // Internet Connection Check
+        if !NetworkMonitor.shared.isConnected {
+            print("❌ İnternet bağlantısı yok. Tünel başlatılamadı: \(tunnel.name)")
+            postUserNotification(identifier: "no_internet_\(tunnel.id)", title: "İnternet Bağlantısı Yok", body: "Tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin.", type: .error)
+            // UI'da hata durumunu göstermek için (opsiyonel)
+            if let index = tunnels.firstIndex(where: { $0.id == tunnel.id }) {
+                DispatchQueue.main.async {
+                    self.tunnels[index].lastError = "İnternet bağlantısı yok."
+                }
+            }
+            return
+        }
         
         // Thread-safe check - must be on main thread
         DispatchQueue.main.async { [weak self] in
@@ -699,7 +741,8 @@ class TunnelManager: ObservableObject {
                          self.tunnels[idx].lastError = nil
                          if !wasStopping { // Notify only if stop wasn't already in progress UI-wise
                              print("   Tünel durduruldu (termination handler).")
-                             self.postUserNotification(identifier:"stopped_\(self.tunnels[idx].id)", title: "Tünel Durduruldu", body: "'\(self.tunnels[idx].name)' başarıyla durduruldu.")
+                             HistoryManager.shared.log("Tünel durduruldu: \(self.tunnels[idx].name)", level: .info, category: "Managed Tunnel")
+                             self.postUserNotification(identifier:"stopped_\(self.tunnels[idx].id)", title: "Tünel Durduruldu", body: "'\(self.tunnels[idx].name)' başarıyla durduruldu.", type: .info, tunnelName: self.tunnels[idx].name)
                          }
                      } else { // Unintentional termination
                          self.tunnels[idx].status = .error
@@ -707,7 +750,8 @@ class TunnelManager: ObservableObject {
                          self.tunnels[idx].lastError = errorMessage.split(separator: "\n").prefix(3).joined(separator: "\n")
 
                          print("   Hata: Tünel beklenmedik şekilde sonlandı.")
-                         self.postUserNotification(identifier:"error_\(self.tunnels[idx].id)", title: "Tünel Hatası: \(self.tunnels[idx].name)", body: self.tunnels[idx].lastError ?? "Bilinmeyen hata.")
+                         self.logError(tunnelName: self.tunnels[idx].name, errorMessage: errorMessage, errorCode: Int(status), source: .managed)
+                         self.postUserNotification(identifier:"error_\(self.tunnels[idx].id)", title: "Tünel Hatası: \(self.tunnels[idx].name)", body: self.tunnels[idx].lastError ?? "Bilinmeyen hata.", type: .error, tunnelName: self.tunnels[idx].name)
                      }
                  }
             } // End DispatchQueue.main.async
@@ -729,13 +773,15 @@ class TunnelManager: ObservableObject {
                      if let runningProcess = self.runningManagedProcesses[configPath], runningProcess.isRunning {
                          self.tunnels[index].status = .running
                          print("   Durum güncellendi -> Çalışıyor (\(self.tunnels[index].name))")
-                         self.postUserNotification(identifier:"started_\(tunnel.id)", title: "Tünel Başlatıldı", body: "'\(tunnel.name)' başarıyla başlatıldı.")
+                         HistoryManager.shared.log("Tünel başlatıldı: \(tunnel.name)", level: .info, category: "Managed Tunnel")
+                         self.postUserNotification(identifier:"started_\(tunnel.id)", title: "Tünel Başlatıldı", body: "'\(tunnel.name)' başarıyla başlatıldı.", type: .success, tunnelName: tunnel.name)
                      } else {
                          print("   Başlatma sırasında tünel sonlandı (\(self.tunnels[index].name)). Durum -> Hata.")
                          self.tunnels[index].status = .error
                          if self.tunnels[index].lastError == nil {
                              self.tunnels[index].lastError = "Başlatma sırasında işlem sonlandı."
                          }
+                         self.logError(tunnelName: tunnel.name, errorMessage: "Başlatma sırasında işlem sonlandı", source: .managed)
                          self.runningManagedProcesses.removeValue(forKey: configPath) // Ensure removed
                      }
                  }
@@ -744,6 +790,7 @@ class TunnelManager: ObservableObject {
              DispatchQueue.main.async {
                  if let index = self.tunnels.firstIndex(where: { $0.id == tunnel.id }) {
                     self.tunnels[index].status = .error;
+                    self.logError(tunnelName: tunnel.name, errorMessage: error.localizedDescription, source: .managed);
                     self.tunnels[index].processIdentifier = nil
                     self.tunnels[index].lastError = "İşlem başlatılamadı: \(error.localizedDescription)"
                  }
@@ -923,7 +970,7 @@ class TunnelManager: ObservableObject {
                  do {
                      try fileManager.createDirectory(atPath: cloudflaredDirectoryPath, withIntermediateDirectories: true, attributes: nil)
                  } catch {
-                     completion(.failure(NSError(domain: "FileSystemError", code: 4, userInfo: [NSLocalizedDescriptionKey:"~/.cloudflared dizini oluşturulamadı: \(error.localizedDescription)"]))); return
+                     completion(.failure(NSError(domain: "FileSystemError", code: 4, userInfo: [NSLocalizedDescriptionKey: " ~ /.cloudflared dizini oluşturulamadı: \(error.localizedDescription)"]))); return
                  }
              }
 
@@ -1123,8 +1170,7 @@ class TunnelManager: ObservableObject {
         let outputPipe = Pipe(); let errorPipe = Pipe()
         process.standardOutput = outputPipe; process.standardError = errorPipe
 
-        process.terminationHandler = { [weak self] terminatedProcess in
-            guard let self = self else { return }
+        process.terminationHandler = { terminatedProcess in
             let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
             let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
             let outputString = String(data: outputData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
@@ -1210,6 +1256,32 @@ class TunnelManager: ObservableObject {
         if trimmedValue.hasPrefix("\"") && trimmedValue.hasSuffix("\"") { return String(trimmedValue.dropFirst().dropLast()) }
         if trimmedValue.hasPrefix("'") && trimmedValue.hasSuffix("'") { return String(trimmedValue.dropFirst().dropLast()) }
         return String(trimmedValue)
+    }
+    
+    // Parse port number from config file (looks for localhost:PORT, 127.0.0.1:PORT or http://localhost:PORT patterns)
+    private func parsePortFromConfig(configPath: String) -> Int? {
+        guard FileManager.default.fileExists(atPath: configPath) else { return nil }
+        do {
+            let content = try String(contentsOfFile: configPath, encoding: .utf8)
+            
+            // Look for patterns like "localhost:8080", "127.0.0.1:8080" or "http://localhost:8080"
+            // Pattern açıklaması:
+            // (localhost|127\.0\.0\.1) - localhost veya 127.0.0.1
+            // :(\d+) - : ve ardından port numarası
+            let pattern = #"(localhost|127\.0\.0\.1):(\d+)"#
+            let regex = try NSRegularExpression(pattern: pattern)
+            let nsString = content as NSString
+            let results = regex.matches(in: content, range: NSRange(location: 0, length: nsString.length))
+            
+            if let match = results.first, match.numberOfRanges > 2 {
+                let portRange = match.range(at: 2) // Port numarası 2. grupta
+                let portString = nsString.substring(with: portRange)
+                return Int(portString)
+            }
+        } catch {
+            print("⚠️ Port parse hatası: \(configPath), \(error)")
+        }
+        return nil
     }
 
     // Finds the absolute path to the credentials file referenced in a config
@@ -1301,77 +1373,16 @@ class TunnelManager: ObservableObject {
     
     // TunnelManager sınıfının içine, tercihen updateMampVHost fonksiyonunun yakınına ekleyin:
     private func updateMampHttpdConfListen(port: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        guard let portInt = Int(port), (1...65535).contains(portInt) else {
-            completion(.failure(NSError(domain: "HttpdConfError", code: 30, userInfo: [NSLocalizedDescriptionKey: "Geçersiz Port Numarası: \(port)"])))
-            return
-        }
-        let listenDirective = "Listen \(port)" // Örn: "Listen 8080"
-        let httpdPath = mampHttpdConfPath
-
-        guard FileManager.default.fileExists(atPath: httpdPath) else {
-            completion(.failure(NSError(domain: "HttpdConfError", code: 31, userInfo: [NSLocalizedDescriptionKey: "MAMP httpd.conf dosyası bulunamadı: \(httpdPath)"])))
-            return
-        }
-
-        // Yazma iznini kontrol et (en azından üst dizine)
-        guard FileManager.default.isWritableFile(atPath: httpdPath) else {
-             completion(.failure(NSError(domain: "HttpdConfError", code: 32, userInfo: [NSLocalizedDescriptionKey: "Yazma izni hatası: MAMP httpd.conf dosyası güncellenemedi (\(httpdPath)). İzinleri kontrol edin."])))
-             return
-        }
-
-        do {
-            var currentContent = try String(contentsOfFile: httpdPath, encoding: .utf8)
-
-            // Direktifin zaten var olup olmadığını kontrol et (yorum satırları hariç)
-            // Regex: Satır başında boşluk olabilir, sonra "Listen", sonra boşluk, sonra port numarası, sonra boşluk veya satır sonu.
-            let pattern = #"^\s*Listen\s+\#(portInt)\s*(?:#.*)?$"#
-            if currentContent.range(of: pattern, options: .regularExpression) != nil {
-                print("ℹ️ MAMP httpd.conf zaten '\(listenDirective)' içeriyor.")
-                completion(.success(()))
-                return
+        MampManager.shared.updateMampHttpdConfListen(mampHttpdConfPath: mampHttpdConfPath, port: port) { result in
+            if case .success = result {
+                // Kullanıcıyı bilgilendir (MAMP yeniden başlatma hatırlatması)
+                self.postUserNotification(
+                    identifier: "mamp_httpd_listen_added_\(port)",
+                    title: "MAMP httpd.conf Güncellendi",
+                    body: "'Listen \(port)' direktifi eklendi. Ayarların etkili olması için MAMP sunucularını yeniden başlatmanız gerekebilir."
+                )
             }
-
-            // Ekleme noktasını bul: Son "Listen" satırının sonrasını hedefle
-            var insertionPoint = currentContent.endIndex
-            // Desen: Satır başı, boşluk olabilir, "Listen", boşluk, RAKAMLAR.
-            let lastListenPattern = #"^\s*Listen\s+\d+"#
-            // Sondan başlayarak ara
-            if let lastListenMatchRange = currentContent.range(of: lastListenPattern, options: [.regularExpression, .backwards]) {
-                // Bulunan satırın sonunu bul
-                if let lineEndRange = currentContent.range(of: "\n", options: [], range: lastListenMatchRange.upperBound..<currentContent.endIndex) {
-                    insertionPoint = lineEndRange.upperBound // Sonraki satırın başı
-                } else {
-                    // Dosyanın son satırıysa, sona eklemeden önce newline ekle
-                    if !currentContent.hasSuffix("\n") { currentContent += "\n" }
-                    insertionPoint = currentContent.endIndex
-                }
-            } else {
-                // Hiç "Listen" bulunamazsa (çok nadir), dosyanın sonuna ekle
-                print("⚠️ MAMP httpd.conf içinde 'Listen' direktifi bulunamadı. Sona ekleniyor.")
-                if !currentContent.hasSuffix("\n") { currentContent += "\n" }
-                insertionPoint = currentContent.endIndex
-            }
-
-            // Eklenecek içeriği hazırla
-            let contentToInsert = "\n# Added by Cloudflared Manager App for port \(port)\n\(listenDirective)\n"
-            currentContent.insert(contentsOf: contentToInsert, at: insertionPoint)
-
-            // Değiştirilmiş içeriği dosyaya yaz
-            try currentContent.write(toFile: httpdPath, atomically: true, encoding: .utf8)
-            print("✅ MAMP httpd.conf güncellendi: '\(listenDirective)' direktifi eklendi.")
-
-            // Kullanıcıyı bilgilendir (MAMP yeniden başlatma hatırlatması)
-            postUserNotification(
-                identifier: "mamp_httpd_listen_added_\(port)",
-                title: "MAMP httpd.conf Güncellendi",
-                body: "'\(listenDirective)' direktifi eklendi. Ayarların etkili olması için MAMP sunucularını yeniden başlatmanız gerekebilir."
-            )
-            completion(.success(()))
-
-        } catch {
-            print("❌ MAMP httpd.conf güncellenirken HATA: \(error)")
-            // Hata detayını completion'a ilet
-            completion(.failure(NSError(domain: "HttpdConfError", code: 33, userInfo: [NSLocalizedDescriptionKey: "MAMP httpd.conf okuma/yazma hatası: \(error.localizedDescription)"])))
+            completion(result)
         }
     }
 
@@ -1380,9 +1391,13 @@ class TunnelManager: ObservableObject {
         let execURL = resolvedCloudflaredExecutableURL()
         let execPath = execURL.path
         guard FileManager.default.fileExists(atPath: execPath) else {
-            completion(.failure(NSError(domain: "CloudflaredManagerError", code: 1, userInfo: [NSLocalizedDescriptionKey: "cloudflared bulunamadı: \(execPath)"]))); return
+            let error = NSError(domain: "CloudflaredManagerError", code: 1, userInfo: [NSLocalizedDescriptionKey: "cloudflared bulunamadı: \(execPath)"])
+            HistoryManager.shared.addErrorLog(tunnelName: "System", errorMessage: error.localizedDescription, source: .system)
+            completion(.failure(error))
+            return
         }
         print("🔑 Cloudflare girişi başlatılıyor (Tarayıcı açılacak)...")
+        HistoryManager.shared.addNotification(title: "Giriş Başlatıldı", body: "Cloudflare giriş işlemi için tarayıcı açılıyor...", type: .info)
 
         let process = Process()
         process.executableURL = execURL
@@ -1390,21 +1405,18 @@ class TunnelManager: ObservableObject {
         let outputPipe = Pipe(); let errorPipe = Pipe()
         process.standardOutput = outputPipe; process.standardError = errorPipe
 
-        process.terminationHandler = { [weak self] terminatedProcess in
-             guard let self = self else { return }
-             
+        process.terminationHandler = { terminatedProcess in
              let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
              let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
              let outputString = String(data: outputData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
              let errorString = String(data: errorData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
              let status = terminatedProcess.terminationStatus
              print("   'cloudflared login' bitti. Durum: \(status)")
-             if !outputString.isEmpty { print("   Output:\n\(outputString)") }
-             if !errorString.isEmpty { print("   Error:\n\(errorString)") }
-
+             
              if status == 0 {
                  if outputString.contains("You have successfully logged in") || outputString.contains("already logged in") {
                      print("   ✅ Giriş başarılı veya zaten yapılmış.")
+                     HistoryManager.shared.addNotification(title: "Giriş Başarılı", body: "Cloudflare hesabına başarıyla giriş yapıldı.", type: .success)
                      completion(.success(()))
                  } else {
                      print("   Giriş işlemi başlatıldı, tarayıcıda devam edin.")
@@ -1412,6 +1424,7 @@ class TunnelManager: ObservableObject {
                  }
              } else {
                  let errorMsg = errorString.isEmpty ? "Cloudflare girişinde bilinmeyen hata (Kod: \(status))" : errorString
+                 HistoryManager.shared.addErrorLog(tunnelName: "Login", errorMessage: errorMsg, errorCode: Int(status), source: .cloudflared)
                  completion(.failure(NSError(domain: "CloudflaredCLIError", code: Int(status), userInfo: [NSLocalizedDescriptionKey: errorMsg])))
              }
          }
@@ -1420,12 +1433,21 @@ class TunnelManager: ObservableObject {
              print("   Tarayıcıda Cloudflare giriş sayfası açılmalı veya zaten giriş yapılmış.")
          } catch {
              print("❌ Cloudflare giriş işlemi başlatılamadı: \(error)")
+             HistoryManager.shared.addErrorLog(tunnelName: "Login", errorMessage: "Process başlatılamadı: \(error.localizedDescription)", source: .system)
              completion(.failure(error))
          }
     }
 
      // MARK: - Quick Tunnel Management (Revised URL Detection)
     func startQuickTunnel(localURL: String, completion: @escaping (Result<UUID, Error>) -> Void) {
+        // Internet Connection Check
+        if !NetworkMonitor.shared.isConnected {
+            print("❌ İnternet bağlantısı yok. Hızlı tünel başlatılamadı: \(localURL)")
+            postUserNotification(identifier: "no_internet_quick", title: "İnternet Bağlantısı Yok", body: "Hızlı tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin.", type: .error)
+            completion(.failure(NSError(domain: "NetworkError", code: -1, userInfo: [NSLocalizedDescriptionKey: "İnternet bağlantısı yok."])))
+            return
+        }
+
         let execURL = resolvedCloudflaredExecutableURL()
         let execPath = execURL.path
         guard FileManager.default.fileExists(atPath: execPath) else {
@@ -1520,8 +1542,9 @@ class TunnelManager: ObservableObject {
                              }
                              tunnelData.lastError = finalError // Hatayı ayarla
                              print("   Hata mesajı ayarlandı: \(finalError)")
-                             // Hata bildirimi
-                             self.postUserNotification(identifier: "quick_fail_\(tunnelID)", title: "Hızlı Tünel Hatası", body: "\(localURL)\n\(finalError.prefix(100))...")
+                             // Hata kaydı ve bildirimi
+                             self.logError(tunnelName: localURL, errorMessage: finalError, errorCode: Int(status), source: .quick)
+                             self.postUserNotification(identifier: "quick_fail_\(tunnelID)", title: "Hızlı Tünel Hatası", body: "\(localURL)\n\(finalError.prefix(100))...", type: .error, tunnelName: localURL)
                          } else if wasStoppedIntentionally {
                               print("   Hızlı tünel durduruldu veya normal sonlandı (\(tunnelID)).")
                               // Başarılı durdurma bildirimi (URL bulunduysa veya temiz çıkışsa)
@@ -1648,7 +1671,8 @@ class TunnelManager: ObservableObject {
                         self.quickTunnels[index].lastError = nil
                         print("   ☁️ Hızlı Tünel URL'si güncellendi (\(tunnelID)): \(theURL)")
                         print("   📋 Menü güncellemesi tetiklenmeli...")
-                        self.postUserNotification(identifier: "quick_url_\(tunnelID)", title: "Hızlı Tünel Hazır", body: "\(self.quickTunnels[index].localURL)\n⬇️\n\(theURL)")
+                        HistoryManager.shared.log("Hızlı tünel başlatıldı: \(self.quickTunnels[index].localURL) → \(theURL)", level: .info, category: "Quick Tunnel")
+                        self.postUserNotification(identifier: "quick_url_\(tunnelID)", title: "Hızlı Tünel Hazır", body: "\(self.quickTunnels[index].localURL)\n⬇️\n\(theURL)", type: .success, tunnelName: self.quickTunnels[index].localURL)
                     } else {
                         print("   ⚠️ URL zaten var: \(self.quickTunnels[index].publicURL!)")
                     }
@@ -1739,9 +1763,9 @@ class TunnelManager: ObservableObject {
 
     func stopAllTunnels(synchronous: Bool = false) {
         print("--- Tüm Tünelleri Durdur (\(synchronous ? "Senkron" : "Asenkron")) ---")
-        var didStopSomething = false
-
-        DispatchQueue.main.async { // Ensure array/dict access is safe
+        
+        let work = {
+            var didStopSomething = false
             // Stop Managed Tunnels
             let configPathsToStop = Array(self.runningManagedProcesses.keys)
             if !configPathsToStop.isEmpty {
@@ -1793,7 +1817,19 @@ class TunnelManager: ObservableObject {
                       self?.postUserNotification(identifier: "all_stopped", title: title, body: body)
                  }
             }
-        } // End DispatchQueue.main.async
+        }
+        
+        // If synchronous, execute immediately (assuming we are on main thread or it's safe)
+        // If asynchronous, dispatch to main
+        if synchronous {
+            if Thread.isMainThread {
+                work()
+            } else {
+                DispatchQueue.main.sync { work() }
+            }
+        } else {
+            DispatchQueue.main.async { work() }
+        }
     }
 
 
@@ -1840,6 +1876,8 @@ class TunnelManager: ObservableObject {
     }
 
     func checkAllManagedTunnelStatuses(forceCheck: Bool = false) {
+        checkCloudflaredExecutable() // Check executable existence periodically
+        
         DispatchQueue.main.async {
             guard !self.tunnels.isEmpty else { return }
             // if forceCheck { print("--- Tüm Yönetilen Tünel Durumları Kontrol Ediliyor ---") } // Optional logging
@@ -1889,131 +1927,12 @@ class TunnelManager: ObservableObject {
     }
 
      // MARK: - MAMP Integration Helpers
-     func scanMampSitesFolder() -> [String] {
-         guard FileManager.default.fileExists(atPath: mampSitesDirectoryPath) else {
-             print("❌ MAMP site dizini bulunamadı: \(mampSitesDirectoryPath)")
-             return []
-         }
-         var siteFolders: [String] = []
-         do {
-             let items = try FileManager.default.contentsOfDirectory(atPath: mampSitesDirectoryPath)
-             for item in items {
-                 var isDirectory: ObjCBool = false
-                 let fullPath = "\(mampSitesDirectoryPath)/\(item)"
-                 if FileManager.default.fileExists(atPath: fullPath, isDirectory: &isDirectory), isDirectory.boolValue, !item.starts(with: ".") {
-                     siteFolders.append(item)
-                 }
-             }
-         } catch { print("❌ MAMP site dizini taranamadı: \(mampSitesDirectoryPath) - \(error)") }
-         return siteFolders.sorted()
-     }
+    func scanMampSitesFolder() -> [String] {
+        return MampManager.shared.scanMampSitesFolder(mampSitesDirectoryPath: mampSitesDirectoryPath)
+    }
 
-    // updateMampVHost fonksiyonunu tamamen değiştirin
-    // updateMampVHost fonksiyonunu tamamen değiştirin (Hata düzeltmesi dahil)
     func updateMampVHost(serverName: String, documentRoot: String, port: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        guard FileManager.default.fileExists(atPath: documentRoot) else {
-            completion(.failure(NSError(domain: "VHostError", code: 20, userInfo: [NSLocalizedDescriptionKey: "DocumentRoot bulunamadı: \(documentRoot)"]))); return
-        }
-        guard !serverName.isEmpty && serverName.contains(".") else {
-            completion(.failure(NSError(domain: "VHostError", code: 21, userInfo: [NSLocalizedDescriptionKey: "Geçersiz ServerName: \(serverName)"]))); return
-        }
-        // Port numarasının geçerli olup olmadığını kontrol et (ekstra güvenlik)
-        guard let portInt = Int(port), (1...65535).contains(portInt) else {
-            completion(.failure(NSError(domain: "VHostError", code: 25, userInfo: [NSLocalizedDescriptionKey: "Geçersiz Port Numarası: \(port)"]))); return
-        }
-        let listenDirective = "*:\(port)" // Dinleme direktifini oluştur
-
-        let vhostDir = (mampVHostConfPath as NSString).deletingLastPathComponent
-        var isDir : ObjCBool = false
-        if !FileManager.default.fileExists(atPath: vhostDir, isDirectory: &isDir) || !isDir.boolValue {
-            print("⚠️ MAMP vHost dizini bulunamadı, oluşturuluyor: \(vhostDir)")
-            do { try FileManager.default.createDirectory(atPath: vhostDir, withIntermediateDirectories: true, attributes: nil) } catch {
-                 completion(.failure(NSError(domain: "VHostError", code: 22, userInfo: [NSLocalizedDescriptionKey: "MAMP vHost dizini oluşturulamadı: \(vhostDir)\n\(error.localizedDescription)"]))); return
-            }
-        }
-
-        let vhostEntry = """
-
-        # Added by Cloudflared Manager App for \(serverName) on port \(port)
-        <VirtualHost \(listenDirective)>
-            ServerName \(serverName)
-            DocumentRoot "\(documentRoot)"
-            # Optional Logs:
-            # ErrorLog "/Applications/MAMP/logs/apache_\(serverName.replacingOccurrences(of: ".", with: "_"))_error.log"
-            # CustomLog "/Applications/MAMP/logs/apache_\(serverName.replacingOccurrences(of: ".", with: "_"))_access.log" common
-            <Directory "\(documentRoot)">
-                Options Indexes FollowSymLinks MultiViews ExecCGI
-                AllowOverride All
-                Require all granted
-            </Directory>
-        </VirtualHost>
-
-        """
-        do {
-            var currentContent = ""
-            if FileManager.default.fileExists(atPath: mampVHostConfPath) {
-                currentContent = try String(contentsOfFile: mampVHostConfPath, encoding: .utf8)
-            } else {
-                print("⚠️ vHost dosyası bulunamadı, yeni dosya oluşturulacak: \(mampVHostConfPath)")
-                // Yeni dosya oluşturuluyorsa NameVirtualHost direktifini ekle
-                currentContent = "# Virtual Hosts\nNameVirtualHost \(listenDirective)\n\n"
-            }
-
-            // --- BAŞLANGIÇ: Düzeltilmiş vHost Var mı Kontrolü ---
-            let serverNamePattern = #"ServerName\s+\Q\#(serverName)\E"#
-            // Noktanın yeni satırları da eşleştirmesi için (?s) flag'i yerine NSRegularExpression kullanıyoruz.
-            // Desen: <VirtualHost *:PORT> ... ServerName SERVER ... </VirtualHost>
-            let vhostBlockPattern = #"<VirtualHost\s+\*\:\#(port)>.*?\#(serverNamePattern).*?</VirtualHost>"#
-
-            do {
-                // NSRegularExpression oluştur, .dotMatchesLineSeparators seçeneği ile
-                let regex = try NSRegularExpression(
-                    pattern: vhostBlockPattern,
-                    options: [.dotMatchesLineSeparators] // Bu seçenek NSRegularExpression'da mevcut
-                )
-
-                // Tüm içerikte ara
-                let searchRange = NSRange(currentContent.startIndex..<currentContent.endIndex, in: currentContent)
-                if regex.firstMatch(in: currentContent, options: [], range: searchRange) != nil {
-                    // Eşleşme bulunduysa, giriş zaten var demektir.
-                    print("ℹ️ MAMP vHost dosyası zaten '\(serverName)' için \(listenDirective) portunda giriş içeriyor. Güncelleme yapılmadı.")
-                    completion(.success(()))
-                    return // Fonksiyondan çık
-                }
-                // Eşleşme bulunamadı, devam et...
-            } catch {
-                // Regex oluşturma hatası (desen bozuksa olabilir, ama burada pek olası değil)
-                print("❌ Regex Hatası: \(error.localizedDescription) - Desen: \(vhostBlockPattern)")
-                completion(.failure(NSError(domain: "VHostError", code: 26, userInfo: [NSLocalizedDescriptionKey: "vHost kontrolü için regex oluşturulamadı: \(error.localizedDescription)"])))
-                return
-            }
-            // --- BİTİŞ: Düzeltilmiş vHost Var mı Kontrolü ---
-
-
-            // Eğer NameVirtualHost direktifi eksikse ve dosya boş değilse, ekle
-            if !currentContent.contains("NameVirtualHost \(listenDirective)") && !currentContent.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                if !currentContent.contains("NameVirtualHost ") { // Hiç NameVirtualHost yoksa
-                    currentContent = "# Virtual Hosts\nNameVirtualHost \(listenDirective)\n\n" + currentContent
-                } else {
-                    print("⚠️ Uyarı: vHost dosyasında başka NameVirtualHost direktifleri var. '\(listenDirective)' için direktif eklenmiyor. Manuel kontrol gerekebilir.")
-                }
-            }
-
-
-            let newContent = currentContent + vhostEntry
-            try newContent.write(toFile: mampVHostConfPath, atomically: true, encoding: .utf8)
-            print("✅ MAMP vHost dosyası güncellendi: \(mampVHostConfPath) (Port: \(port))")
-            completion(.success(()))
-
-        } catch {
-            print("❌ MAMP vHost dosyası güncellenirken HATA: \(error)")
-            let nsError = error as NSError
-            if nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileWriteNoPermissionError {
-                 completion(.failure(NSError(domain: "VHostError", code: 23, userInfo: [NSLocalizedDescriptionKey: "Yazma izni hatası: MAMP vHost dosyası güncellenemedi (\(mampVHostConfPath)). Lütfen dosya izinlerini kontrol edin veya manuel olarak ekleyin.\n\(error.localizedDescription)"])))
-            } else {
-                 completion(.failure(NSError(domain: "VHostError", code: 24, userInfo: [NSLocalizedDescriptionKey: "MAMP vHost dosyasına yazılamadı:\n\(error.localizedDescription)"])))
-            }
-        }
+        MampManager.shared.updateMampVHost(mampVHostConfPath: mampVHostConfPath, serverName: serverName, documentRoot: documentRoot, port: port, completion: completion)
     }
     // MARK: - Launch At Login (ServiceManagement - Requires macOS 13+)
     // Note: ServiceManagement requires separate configuration (Helper Target or main app registration)

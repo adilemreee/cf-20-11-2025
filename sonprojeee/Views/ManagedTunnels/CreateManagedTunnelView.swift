@@ -179,8 +179,8 @@ struct CreateManagedTunnelView: View {
                             .font(.subheadline)
                             .fontWeight(.medium)
                         
-                TextField("Port numarası", text: $portString)
-                    .textFieldStyle(TunnelTextFieldStyle())
+                        TextField("Port numarası", text: $portString)
+                            .textFieldStyle(TunnelTextFieldStyle())
                             .frame(maxWidth: 120)
                             .onChange(of: portString) { _, newValue in
                                 let filtered = newValue.filter { "0123456789".contains($0) }
@@ -730,3 +730,4 @@ struct ModernAlert: View {
         }
     }
 }
+

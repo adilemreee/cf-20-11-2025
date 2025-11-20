@@ -5,7 +5,7 @@ import AppKit // Required for NSAlert, NSTextField, NSStackView etc.
 import UserNotifications // For notifications
 import ServiceManagement // For Launch At Login (macOS 13+)
 
-class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate, NSWindowDelegate {
     var statusItem: NSStatusItem?
     var tunnelManager: TunnelManager! // Should be initialized in applicationDidFinishLaunching
     private var cancellables = Set<AnyCancellable>()
@@ -16,6 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     weak var createFromMampWindow: NSWindow?
     weak var quickTunnelWindow: NSWindow?
     weak var dashboardWindow: NSWindow?
+    weak var onboardingWindow: NSWindow?
 
     // --- MAMP Control Constants ---
     internal let mampStartScript = "start.sh"
@@ -27,14 +28,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     // --- End MAMP Control Constants ---
     
     // --- Python Betik Sabitleri (GÜNCELLENDİ) ---
-    // DİKKAT: Bu yolları KENDİ sisteminize ve projenize göre DÜZENLEYİN!
     internal var pythonProjectDirectoryPath: String {
-        let stored = UserDefaults.standard.string(forKey: "pythonProjectPath") ?? "/Users/adilemre/Documents/PANEL-main"
+        let stored = UserDefaults.standard.string(forKey: "pythonProjectPath") ?? ""
+        if stored.isEmpty {
+            // Varsayılan olarak Documents klasörünü dene veya boş bırak
+            return (NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first ?? "")
+        }
         return (stored as NSString).expandingTildeInPath
     }
     private let pythonVenvName = "venv" // Sanal ortam klasörünün adı (genellikle venv)
     internal let pythonScriptPath = "app.py" // Proje DİZİNİNE GÖRE betiğin yolu VEYA TAM YOLU
-    // Eski pythonInterpreterPath (/usr/bin/python3 vb.) artık doğrudan kullanılmayacak, venv içindeki kullanılacak.
     // --- BİTİŞ: Python Betik Sabitleri (GÜNCELLENDİ) ---
 
     // --- Çalışan Python İşlemi Takibi ---
@@ -87,6 +90,39 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 self?.startMampServersAction()
             }
         }
+        
+        // --- NEW: Auto-start Tunnels ---
+        if UserDefaults.standard.bool(forKey: "autoStartTunnels") {
+             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                 print("🚀 Otomatik tünel başlatma tetiklendi.")
+                 self?.tunnelManager?.startAllManagedTunnels()
+             }
+        }
+        // --- END NEW ---
+        
+        // Check if this is an existing user (migration)
+        if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
+            let existingPath = UserDefaults.standard.string(forKey: "cloudflaredPath")
+            if let path = existingPath, !path.isEmpty {
+                // Existing user, skip onboarding
+                UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+            }
+        }
+        
+        // 8. Check for Onboarding
+        if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.openOnboardingWindowAction()
+            }
+        }
+        
+        // 9. Listen for Onboarding Completion
+        NotificationCenter.default.addObserver(forName: Notification.Name("OpenDashboardRequested"), object: nil, queue: .main) { [weak self] _ in
+            self?.openDashboardWindowAction()
+        }
+        
+        // 10. Observe Settings Changes
+        UserDefaults.standard.addObserver(self, forKeyPath: "showStatusInMenuBar", options: [.new, .initial], context: nil)
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -142,6 +178,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         tunnelManager.$cloudflaredExecutablePath
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.constructMenu() } // Rebuild menu on path change
+            .store(in: &cancellables)
+
+        // Observe cloudflared installation status
+        tunnelManager.$isCloudflaredInstalled
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.constructMenu() }
             .store(in: &cancellables)
 
         tunnelManager.$mampBasePath
@@ -594,10 +637,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             let hostingController = NSHostingController(rootView: view.environmentObject(manager))
             let newWindow = NSWindow(contentViewController: hostingController)
             newWindow.title = title
-            newWindow.styleMask = [.titled, .closable]
+            newWindow.styleMask = [.titled, .closable, .miniaturizable, .resizable] // Added standard style masks
             newWindow.level = .normal
             newWindow.isReleasedWhenClosed = false
             newWindow.center()
+            newWindow.delegate = self // Set delegate to handle close behavior
             windowPropertySetter(newWindow)
             newWindow.makeKeyAndOrderFront(nil)
         }
@@ -612,15 +656,39 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             view: settingsView
         )
     }
+    
+    @objc func openQuickTunnelWindowAction() {
+        showWindow(
+            { self.quickTunnelWindow = $0 },
+            { self.quickTunnelWindow },
+            title: "Hızlı Tünel",
+            view: QuickTunnelView()
+        )
+    }
+    
+    @objc func openHistoryWindowAction() {
+        let historyView = HistoryView()
+        showWindow(
+            { newWindow in self.settingsWindow = newWindow },
+            { self.settingsWindow },
+            title: "Geçmiş ve Loglar",
+            view: historyView
+        )
+    }
 
-    @objc func openCreateManagedTunnelWindow() {
+    @objc func openCreateManagedTunnelWindowAction() {
         let createView = CreateManagedTunnelView()
         showWindow(
-            { newWindow in self.createManagedTunnelWindow = newWindow },
+            { self.createManagedTunnelWindow = $0 },
             { self.createManagedTunnelWindow },
-            title: "Yeni Yönetilen Tünel Oluştur",
+            title: "Yeni Yönetilen Tünel",
             view: createView
         )
+    }
+    
+    // Alias for backward compatibility if needed, or just remove the old one
+    @objc func openCreateManagedTunnelWindow() {
+        openCreateManagedTunnelWindowAction()
     }
 
     @objc func openCreateFromMampWindow() {
@@ -636,9 +704,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     @objc func openQuickTunnelWindow() {
         let quickTunnelView = QuickTunnelView()
         showWindow(
-            { newWindow in self.quickTunnelWindow = newWindow },
+            { self.quickTunnelWindow = $0 },
             { self.quickTunnelWindow },
-            title: "Hızlı Tünel Başlat",
+            title: "Hızlı Tünel",
             view: quickTunnelView
         )
     }
@@ -654,6 +722,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             { self.dashboardWindow },
             title: "Gösterge Paneli",
             view: dashboardView
+        )
+    }
+    
+    @objc func openOnboardingWindowAction() {
+        showWindow(
+            { self.onboardingWindow = $0 },
+            { self.onboardingWindow },
+            title: "Hoşgeldiniz",
+            view: OnboardingView()
         )
     }
 
@@ -848,6 +925,38 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
     // --- [END NEW] ---
 
-    // End AppDelegate
+    // KVO for UserDefaults
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "showStatusInMenuBar" {
+            updateStatusItemVisibility()
+        } else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
+    }
+    
+    private func updateStatusItemVisibility() {
+        let shouldShow = UserDefaults.standard.bool(forKey: "showStatusInMenuBar")
+        statusItem?.isVisible = shouldShow
+    }
+    
+    // MARK: - NSWindowDelegate
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        // If "Minimize to Tray" is disabled, quit the app when the window is closed.
+        // Note: This logic applies if the user explicitly closes the window.
+        if !UserDefaults.standard.bool(forKey: "minimizeToTray") {
+            // Only quit if this is the last visible window? 
+            // Or strictly follow the setting "Hide app when window closed" vs "Quit".
+            // If minimizeToTray is FALSE, it implies "Don't hide, just quit".
+            
+            // Check if other windows are open to avoid accidental quits?
+            // For simplicity and expected behavior of this toggle:
+            NSApp.terminate(nil)
+            return true
+        }
+        
+        // If enabled (default), just close the window (which hides it due to isReleasedWhenClosed=false)
+        // and keep the app running in the menu bar.
+        return true
+    }
 }
 
