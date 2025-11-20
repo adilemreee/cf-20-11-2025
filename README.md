@@ -44,47 +44,47 @@ Cloudflared Manager, yerel bilgisayarınızdaki servisleri **güvenli bir şekil
 
 ---
 
-### Tünel Yönetimi ve Oluşturma
+### Yolları Seçme ve Görünüm
 
 <table>
   <tr>
     <td width="50%">
       <img src="assets/Screenshot 2025-11-20 at 19.39.40.png" alt="Tunnel Management"/>
-      <p align="center"><b>Yönetilen Tüneller</b></p>
+      <p align="center"><b>Yollar</b></p>
     </td>
     <td width="50%">
       <img src="assets/Screenshot 2025-11-20 at 19.39.44.png" alt="Create Tunnel"/>
-      <p align="center"><b>Yeni Tünel Oluştur</b></p>
+      <p align="center"><b>Görünüm</b></p>
     </td>
   </tr>
 </table>
 
 ---
 
-### Hızlı Tünel ve MAMP Entegrasyonu
+### Bildirim ve Geçmiş
 
 <table>
   <tr>
     <td width="50%">
       <img src="assets/Screenshot 2025-11-20 at 19.39.46.png" alt="Quick Tunnel"/>
-      <p align="center"><b>Hızlı Tünel</b></p>
-      <p align="center"><i>Tek tıkla geçici tünel oluşturun</i></p>
+      <p align="center"><b>Bildirim</b></p>
+      <p align="center"><i>Tek Tıkla Bildirim Ayarları</i></p>
     </td>
     <td width="50%">
       <img src="assets/Screenshot 2025-11-20 at 19.39.53.png" alt="MAMP Integration"/>
-      <p align="center"><b>MAMP Entegrasyonu</b></p>
-      <p align="center"><i>Otomatik proje algılama</i></p>
+      <p align="center"><b>Geçmiş</b></p>
+      <p align="center"><i>Log ve Bildirim Kayıtları</i></p>
     </td>
   </tr>
 </table>
 
 ---
 
-### Dosya Paylaşımı
+### Yedekleme
 
 <img src="assets/Screenshot 2025-11-20 at 19.39.56.png" alt="File Sharing" width="700"/>
 
-*Dosya ve klasörlerinizi hızlıca paylaşın*
+*Tünellerinizi ve Config Ayarlarınızı Yedekleyin*
 
 ---
 
@@ -94,11 +94,11 @@ Cloudflared Manager, yerel bilgisayarınızdaki servisleri **güvenli bir şekil
   <tr>
     <td width="50%">
       <img src="assets/Screenshot 2025-11-20 at 19.39.58.png" alt="Settings"/>
-      <p align="center"><b>Genel Ayarlar</b></p>
+      <p align="center"><b>Gelişmiş Ayarlar</b></p>
     </td>
     <td width="50%">
       <img src="assets/Screenshot 2025-11-20 at 19.40.02.png" alt="Theme Settings"/>
-      <p align="center"><b>Tema Seçenekleri</b></p>
+      <p align="center"><b>Hakkında</b></p>
     </td>
   </tr>
 </table>
