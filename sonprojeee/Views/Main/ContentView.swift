@@ -82,7 +82,7 @@ struct ContentView: View {
                             )
                             .fadeIn(delay: 0.6, duration: 0.8)
                         
-                        Text("Modern Tünel Yönetim Aracı")
+                        Text(NSLocalizedString("Modern Tünel Yönetim Aracı", comment: ""))
                             .font(.title3)
                             .foregroundColor(.secondary)
                             .fadeIn(delay: 0.8, duration: 0.8)
@@ -93,14 +93,14 @@ struct ContentView: View {
                 VStack(spacing: 12) {
                     ModernStatusIndicator(
                         status: cloudflaredReady ? .online : .warning,
-                        title: cloudflaredReady ? "cloudflared hazır" : "cloudflared eksik",
+                        title: cloudflaredReady ? NSLocalizedString("cloudflared hazır", comment: "") : NSLocalizedString("cloudflared eksik", comment: ""),
                         subtitle: tunnelManager.cloudflaredExecutablePath
                     )
                     .fadeIn(delay: 0.8, duration: 0.8)
 
                     ModernStatusIndicator(
                         status: mampExists ? .online : .warning,
-                        title: "MAMP Dizini",
+                        title: NSLocalizedString("MAMP Dizini", comment: ""),
                         subtitle: tunnelManager.mampBasePath
                     )
                     .fadeIn(delay: 0.9, duration: 0.8)
@@ -110,8 +110,8 @@ struct ContentView: View {
                 VStack(spacing: 16) {
                     FeatureCard(
                         icon: "rectangle.grid.2x2.fill",
-                        title: "Gösterge Paneli",
-                        description: "Tünelleri ve durum özetini tek ekranda takip edin",
+                        title: NSLocalizedString("Gösterge Paneli", comment: ""),
+                        description: NSLocalizedString("Tünelleri ve durum özetini tek ekranda takip edin", comment: ""),
                         color: .blue
                     ) {
                         openDashboard()
@@ -120,8 +120,8 @@ struct ContentView: View {
 
                     FeatureCard(
                         icon: "bolt.fill",
-                        title: "Hızlı Tünel Oluştur",
-                        description: "Yerel projelerinizi saniyeler içinde paylaşın",
+                        title: NSLocalizedString("Hızlı Tünel Oluştur", comment: ""),
+                        description: NSLocalizedString("Yerel projelerinizi saniyeler içinde paylaşın", comment: ""),
                         color: .purple
                     ) {
                         openQuickTunnel()
@@ -130,8 +130,8 @@ struct ContentView: View {
 
                     FeatureCard(
                         icon: "gearshape.fill",
-                        title: "Ayarları Yapılandır",
-                        description: "cloudflared, MAMP ve diğer yolları özelleştirin",
+                        title: NSLocalizedString("Ayarları Yapılandır", comment: ""),
+                        description: NSLocalizedString("cloudflared, MAMP ve diğer yolları özelleştirin", comment: ""),
                         color: .green
                     ) {
                         openSettings()
@@ -140,11 +140,11 @@ struct ContentView: View {
                 }
 
                 ModernInfoPanel(
-                    title: "Temel Bilgiler",
+                    title: NSLocalizedString("Temel Bilgiler", comment: ""),
                     items: [
                         .init(label: "cloudflared", value: tunnelManager.cloudflaredExecutablePath, icon: "terminal"),
-                        .init(label: "MAMP Dizini", value: tunnelManager.mampBasePath, icon: "folder"),
-                        .init(label: "Durum Kontrol Aralığı", value: "\(Int(tunnelManager.checkInterval)) sn", icon: "clock")
+                        .init(label: NSLocalizedString("MAMP Dizini", comment: ""), value: tunnelManager.mampBasePath, icon: "folder"),
+                        .init(label: NSLocalizedString("Durum Kontrol Aralığı", comment: ""), value: "\(Int(tunnelManager.checkInterval)) sn", icon: "clock")
                     ],
                     color: .blue
                 )
@@ -161,8 +161,8 @@ struct ContentView: View {
                 }
 
                 ModernActionButton(
-                    title: "Hazırım, Devam Et",
-                    subtitle: "Uygulama menü çubuğunda çalışmaya devam edecek",
+                    title: NSLocalizedString("Hazırım, Devam Et", comment: ""),
+                    subtitle: NSLocalizedString("Uygulama menü çubuğunda çalışmaya devam edecek", comment: ""),
                     icon: "checkmark.circle.fill",
                     color: .blue
                 ) {
@@ -180,26 +180,26 @@ struct ContentView: View {
 
     private var onboardingChecklist: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Başlangıç Kontrol Listesi")
+            Text(NSLocalizedString("Başlangıç Kontrol Listesi", comment: ""))
                 .font(.title3.bold())
             
             onboardingRow(
                 icon: cloudflaredReady ? "checkmark.circle.fill" : "exclamationmark.circle.fill",
                 iconColor: cloudflaredReady ? .green : .orange,
-                title: "cloudflared yolunu doğrulayın",
-                subtitle: cloudflaredReady ? "Hepsi hazır." : "Ayarlar'dan farklı bir yol seçebilirsiniz.",
-                actionTitle: "Kontrol Et"
+                title: NSLocalizedString("cloudflared yolunu doğrulayın", comment: ""),
+                subtitle: cloudflaredReady ? NSLocalizedString("Hepsi hazır.", comment: "") : NSLocalizedString("Ayarlar'dan farklı bir yol seçebilirsiniz.", comment: ""),
+                actionTitle: NSLocalizedString("Kontrol Et", comment: "")
             ) {
                 tunnelManager.checkCloudflaredExecutable()
-                onboardingMessage = "cloudflared yolu kontrol ediliyor..."
+                onboardingMessage = NSLocalizedString("cloudflared yolu kontrol ediliyor...", comment: "")
             }
             
             onboardingRow(
                 icon: isAttemptingCloudflareLogin ? "arrow.triangle.2.circlepath.circle" : "person.crop.circle.badge.checkmark",
                 iconColor: .purple,
-                title: "Cloudflare hesabınıza giriş yapın",
-                subtitle: "Tarayıcıda açılan pencereyi takip edin.",
-                actionTitle: isAttemptingCloudflareLogin ? nil : "Giriş Yap",
+                title: NSLocalizedString("Cloudflare hesabınıza giriş yapın", comment: ""),
+                subtitle: NSLocalizedString("Tarayıcıda açılan pencereyi takip edin.", comment: ""),
+                actionTitle: isAttemptingCloudflareLogin ? nil : NSLocalizedString("Giriş Yap", comment: ""),
                 actionColor: .purple
             ) {
                 startCloudflareLogin()
@@ -208,9 +208,9 @@ struct ContentView: View {
             onboardingRow(
                 icon: mampExists ? "checkmark.circle.fill" : "folder.badge.questionmark",
                 iconColor: mampExists ? .green : .orange,
-                title: "MAMP proje klasörünü kontrol edin",
-                subtitle: mampExists ? "MAMP dizini bulundu." : "MAMP dizini bulunamadı, yolu Ayarlar'dan güncelleyin.",
-                actionTitle: "Klasörü Aç",
+                title: NSLocalizedString("MAMP proje klasörünü kontrol edin", comment: ""),
+                subtitle: mampExists ? NSLocalizedString("MAMP dizini bulundu.", comment: "") : NSLocalizedString("MAMP dizini bulunamadı, yolu Ayarlar'dan güncelleyin.", comment: ""),
+                actionTitle: NSLocalizedString("Klasörü Aç", comment: ""),
                 actionColor: .orange
             ) {
                 openMampFolder()
@@ -275,45 +275,46 @@ struct ContentView: View {
 
     private func openDashboard() {
         appDelegate?.openDashboardWindowAction()
-        onboardingMessage = "Gösterge Paneli açılıyor..."
+        onboardingMessage = NSLocalizedString("Gösterge Paneli açılıyor...", comment: "")
     }
     
     private func openQuickTunnel() {
         appDelegate?.openQuickTunnelWindow()
-        onboardingMessage = "Hızlı tünel penceresi açılıyor..."
+        onboardingMessage = NSLocalizedString("Hızlı tünel penceresi açılıyor...", comment: "")
     }
     
     private func openSettings() {
         appDelegate?.openSettingsWindowAction()
-        onboardingMessage = "Ayarlar penceresi açıldı."
+        onboardingMessage = NSLocalizedString("Ayarlar penceresi açıldı.", comment: "")
     }
     
     private func openMampFolder() {
         let path = (tunnelManager.mampBasePath as NSString).expandingTildeInPath
         NSWorkspace.shared.open(URL(fileURLWithPath: path))
-        onboardingMessage = "MAMP dizini Finder'da açıldı."
+        onboardingMessage = NSLocalizedString("MAMP dizini Finder'da açıldı.", comment: "")
+    }
+    
+
+    private func finishOnboarding() {
+        hasCompletedOnboarding = true
+        onboardingMessage = NSLocalizedString("Cloudflared Manager menü çubuğunda çalışıyor.", comment: "")
     }
     
     private func startCloudflareLogin() {
         guard !isAttemptingCloudflareLogin else { return }
         isAttemptingCloudflareLogin = true
-        onboardingMessage = "Cloudflare giriş kontrolü başlatıldı..."
+        onboardingMessage = NSLocalizedString("Cloudflare giriş kontrolü başlatıldı...", comment: "")
         tunnelManager.cloudflareLogin { result in
             DispatchQueue.main.async {
                 self.isAttemptingCloudflareLogin = false
                 switch result {
                 case .success:
-                    self.onboardingMessage = "Tarayıcıda açılan Cloudflare girişini tamamlayın."
+                    self.onboardingMessage = NSLocalizedString("Tarayıcıda açılan Cloudflare girişini tamamlayın.", comment: "")
                 case .failure(let error):
-                    self.onboardingMessage = "Cloudflare giriş hatası: \(error.localizedDescription)"
+                    self.onboardingMessage = NSLocalizedString("Cloudflare giriş hatası", comment: "") + ": \(error.localizedDescription)"
                 }
             }
         }
-    }
-    
-    private func finishOnboarding() {
-        hasCompletedOnboarding = true
-        onboardingMessage = "Cloudflared Manager menü çubuğunda çalışıyor."
     }
 }
 

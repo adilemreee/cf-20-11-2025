@@ -23,9 +23,9 @@ struct MenuDashboardView: View {
     }
     
     var statusText: String {
-        if !isCloudflaredInstalled { return "Cloudflared Eksik" }
-        if errorCount > 0 { return "Dikkat Gerekiyor" }
-        return "Sistem Normal"
+        if !isCloudflaredInstalled { return NSLocalizedString("Cloudflared Eksik", comment: "") }
+        if errorCount > 0 { return NSLocalizedString("Dikkat Gerekiyor", comment: "") }
+        return NSLocalizedString("Sistem Normal", comment: "")
     }
     
     var statusColor: Color {
@@ -72,11 +72,11 @@ struct MenuDashboardView: View {
             
             // Stats Row
             HStack(spacing: 0) {
-                StatItem(value: "\(activeTunnelsCount)", label: "Aktif", color: .blue)
+                StatItem(value: "\(activeTunnelsCount)", label: NSLocalizedString("Aktif", comment: ""), color: .blue)
                 Divider().frame(height: 24)
-                StatItem(value: "\(manager.tunnels.count)", label: "Toplam", color: .secondary)
+                StatItem(value: "\(manager.tunnels.count)", label: NSLocalizedString("Toplam", comment: ""), color: .secondary)
                 Divider().frame(height: 24)
-                StatItem(value: "\(errorCount)", label: "Hata", color: errorCount > 0 ? .red : .secondary)
+                StatItem(value: "\(errorCount)", label: NSLocalizedString("Hata", comment: ""), color: errorCount > 0 ? .red : .secondary)
             }
             .padding(.vertical, 8)
             .background(Color.primary.opacity(0.05))

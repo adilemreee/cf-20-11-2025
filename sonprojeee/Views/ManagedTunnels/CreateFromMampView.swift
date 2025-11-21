@@ -209,12 +209,12 @@ struct CreateFromMampView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("MAMP Sitesinden Tünel")
-                        .font(.title2)
+                    Text(NSLocalizedString("MAMP Sitesinden Tünel", comment: ""))
+                        .font(.title)
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
                     
-                    Text("Mevcut MAMP projelerinizden tünel oluşturun")
+                    Text(NSLocalizedString("Mevcut MAMP projelerinizden tünel oluşturun", comment: ""))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -241,14 +241,14 @@ struct CreateFromMampView: View {
     }
     
     private var modernEmptyStateCard: some View {
-        MampCard(title: "MAMP Siteleri Bulunamadı", icon: "exclamationmark.triangle.fill") {
+        MampCard(title: NSLocalizedString("MAMP Siteleri Bulunamadı", comment: ""), icon: "exclamationmark.triangle.fill") {
             VStack(spacing: 16) {
                 Image(systemName: "folder.badge.questionmark")
                     .font(.system(size: 48))
                     .foregroundColor(.orange)
                 
                 VStack(spacing: 8) {
-                    Text("MAMP site dizininde proje bulunamadı")
+                    Text(NSLocalizedString("MAMP site dizininde proje bulunamadı", comment: ""))
                         .font(.headline)
                         .multilineTextAlignment(.center)
                     
@@ -263,7 +263,7 @@ struct CreateFromMampView: View {
                 }) {
                     HStack {
                         Image(systemName: "folder")
-                        Text("MAMP Dizinini Aç")
+                        Text(NSLocalizedString("MAMP Dizinini Aç", comment: ""))
                     }
                 }
                 .buttonStyle(MampPrimaryButtonStyle())
@@ -272,7 +272,7 @@ struct CreateFromMampView: View {
     }
     
     private var modernSiteSelectionCard: some View {
-        MampCard(title: "Site Seçimi", icon: "list.bullet") {
+        MampCard(title: NSLocalizedString("Site Seçimi", comment: ""), icon: "list.bullet") {
             VStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("MAMP Sitesi")
@@ -280,7 +280,7 @@ struct CreateFromMampView: View {
                         .fontWeight(.medium)
                     
                     Picker("", selection: $selectedSite) {
-                        Text("Site seçiniz").tag("")
+                        Text(NSLocalizedString("Site seçiniz", comment: "")).tag("")
                         ForEach(mampSites, id: \.self) { site in
                             Text(site).tag(site)
                         }
@@ -291,7 +291,7 @@ struct CreateFromMampView: View {
                 
                 if !selectedSite.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Proje Kök Dizini")
+                        Text(NSLocalizedString("Proje Kök Dizini", comment: ""))
                             .font(.subheadline)
                             .fontWeight(.medium)
                         
@@ -322,24 +322,24 @@ struct CreateFromMampView: View {
     }
     
     private var modernTunnelConfigCard: some View {
-        MampCard(title: "Tünel Yapılandırması", icon: "network") {
+        MampCard(title: NSLocalizedString("Tünel Yapılandırması", comment: ""), icon: "network") {
             VStack(spacing: 16) {
                 MampTextField(
-                    title: "Tünel Adı",
+                    title: NSLocalizedString("Tünel Adı", comment: ""),
                     text: $tunnelName,
                     placeholder: "Cloudflare'deki benzersiz ad",
                     icon: "tag.fill"
                 )
                 
                 MampTextField(
-                    title: "Config Dosya Adı",
+                    title: NSLocalizedString("Config Dosya Adı", comment: ""),
                     text: $configName,
                     placeholder: "Yerel .yml dosya adı",
                     icon: "doc.text.fill"
                 )
                 
                 MampTextField(
-                    title: "Hostname",
+                    title: NSLocalizedString("Hostname", comment: ""),
                     text: $hostname,
                     placeholder: "example.com",
                     icon: "globe"
@@ -380,11 +380,11 @@ struct CreateFromMampView: View {
                 .font(.title3)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("Önemli Not")
+                Text(NSLocalizedString("Önemli Not", comment: ""))
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 
-                Text("Bu işlem MAMP vHost dosyasını otomatik günceller. Değişikliklerin etkili olması için MAMP sunucularını yeniden başlatmanız gerekir.")
+                Text(NSLocalizedString("Bu işlem MAMP vHost dosyasını otomatik günceller. Değişikliklerin etkili olması için MAMP sunucularını yeniden başlatmanız gerekir.", comment: ""))
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -401,7 +401,7 @@ struct CreateFromMampView: View {
     }
     
     private var modernStatusCard: some View {
-        MampCard(title: "Oluşturma Durumu", icon: "gearshape.fill") {
+        MampCard(title: NSLocalizedString("Oluşturma Durumu", comment: ""), icon: "gearshape.fill") {
             HStack(spacing: 12) {
                 ProgressView()
                     .scaleEffect(0.8)

@@ -1,0 +1,14 @@
+/* 
+  InfoPlist.strings
+  CloudflaredManager
+
+  Created by GitHub Copilot.
+*/
+
+"NSAppleEventsUsageDescription" = "Bu uygulama tunnel yönetimi için sistem komutları çalıştırmalıdır.";
+"NSSystemAdministrationUsageDescription" = "Cloudflared ve MAMP gibi servisleri yönetmek için sistem izinleri gereklidir.";
+"NSDesktopFolderUsageDescription" = "Web projelerinize tunnel oluşturmak için proje dosyalarınıza erişim gereklidir.";
+"NSDocumentsFolderUsageDescription" = "Belgeler klasöründeki web projelerinize erişmek için izin gereklidir.";
+"NSDownloadsFolderUsageDescription" = "İndirilenler klasöründeki proje dosyalarına erişim için izin gereklidir.";
+"NSNetworkVolumesUsageDescription" = "Network üzerindeki web projelerinize erişim için izin gereklidir.";
+"NSRemovableVolumesUsageDescription" = "Harici disklerdeki web projelerinize erişim için izin gereklidir.";

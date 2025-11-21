@@ -104,11 +104,11 @@ extension AppDelegate {
     
     private func createErrorMenu() {
         let menu = NSMenu()
-        createModernMenuItem(menu, title: "Yönetici Başlatılamadı", icon: "exclamationmark.triangle.fill", action: nil, color: .systemRed)
+        createModernMenuItem(menu, title: NSLocalizedString("Yönetici Başlatılamadı", comment: ""), icon: "exclamationmark.triangle.fill", action: nil, color: .systemRed)
         menu.addItem(NSMenuItem.separator())
-        let exitItem = NSMenuItem(title: "Çıkış", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        let exitItem = NSMenuItem(title: NSLocalizedString("Çıkış", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         exitItem.target = NSApp // NSApplication'ı target olarak ayarla
-        if let image = NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: "Çıkış") {
+        if let image = NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: NSLocalizedString("Çıkış", comment: "")) {
             let coloredImage = image.copy() as! NSImage
             coloredImage.isTemplate = true
             exitItem.image = coloredImage
@@ -145,17 +145,17 @@ extension AppDelegate {
         // Sade tooltip
         var tooltipParts: [String] = []
         if !isCloudflaredAvailable {
-            tooltipParts.append("cloudflared bulunamadı")
+            tooltipParts.append(NSLocalizedString("cloudflared bulunamadı", comment: ""))
         } else {
             tooltipParts.append("Cloudflared Manager")
             if runningCount > 0 {
-                tooltipParts.append("\(runningCount) tünel aktif")
+                tooltipParts.append("\(runningCount) \(NSLocalizedString("tünel aktif", comment: ""))")
             }
             if hasErrors {
-                tooltipParts.append("Hata var")
+                tooltipParts.append(NSLocalizedString("Hata var", comment: ""))
             }
             if runningCount == 0 && !hasErrors {
-                tooltipParts.append("Hazır")
+                tooltipParts.append(NSLocalizedString("Hazır", comment: ""))
             }
         }
         button.toolTip = tooltipParts.joined(separator: " • ")
@@ -163,17 +163,24 @@ extension AppDelegate {
     
     private func createHeaderSection(_ menu: NSMenu, isCloudflaredAvailable: Bool) {
         if !isCloudflaredAvailable {
-            createModernMenuItem(menu, title: "cloudflared Bulunamadı", icon: "exclamationmark.triangle.fill", action: #selector(openSettingsWindowAction), color: .systemRed, tooltip: "Ayarlar'dan cloudflared yolunu düzeltin")
+            createModernMenuItem(menu, title: NSLocalizedString("cloudflared Bulunamadı", comment: ""), icon: "exclamationmark.triangle.fill", action: #selector(openSettingsWindowAction), color: .systemRed, tooltip: NSLocalizedString("Ayarlar'dan cloudflared yolunu düzeltin", comment: ""))
             menu.addItem(createStyledSeparator())
         } else {
-            createModernMenuItem(menu, title: "Cloudflare Hesabı", icon: "person.crop.circle.badge.checkmark", action: #selector(cloudflareLoginAction), color: .systemBlue, tooltip: "Cloudflare hesabınıza giriş yapın")
+            let isLoggedIn = self.tunnelManager?.isLoggedIn ?? false
+            
+            if isLoggedIn {
+                createModernMenuItem(menu, title: NSLocalizedString("Cloudflared Hesabı", comment: ""), icon: "person.crop.circle.badge.checkmark", action: #selector(openCloudflareDashboardAction), color: .systemBlue, tooltip: NSLocalizedString("Cloudflare Dashboard'u aç", comment: ""))
+                createModernMenuItem(menu, title: NSLocalizedString("Cloudflared Hesabı Kontrol", comment: ""), icon: "checkmark.shield", action: #selector(checkCloudflareLoginStatusAction), color: .systemGreen, tooltip: NSLocalizedString("Giriş durumunu kontrol et", comment: ""))
+            } else {
+                createModernMenuItem(menu, title: NSLocalizedString("Cloudflare Girişi", comment: ""), icon: "person.crop.circle.badge.plus", action: #selector(cloudflareLoginAction), color: .systemOrange, tooltip: NSLocalizedString("Cloudflare hesabınıza giriş yapın", comment: ""))
+            }
             menu.addItem(createStyledSeparator())
         }
     }
     
     private func createQuickTunnelsSection(_ menu: NSMenu, quickTunnels: [QuickTunnelData]) {
         if !quickTunnels.isEmpty {
-            let header = createSectionHeader("Hızlı Tüneller (\(quickTunnels.count))", icon: "bolt.fill", color: .systemPurple)
+            let header = createSectionHeader("\(NSLocalizedString("Hızlı Tüneller", comment: "")) (\(quickTunnels.count))", icon: "bolt.fill", color: .systemPurple)
             menu.addItem(header)
             
             let maxItemsPerPage = 8 // Slightly less for quick tunnels since they have longer URLs
@@ -188,18 +195,18 @@ extension AppDelegate {
                     quickItem.isEnabled = (quickTunnelData.publicURL != nil)
                     
                     let subMenu = NSMenu()
-                    let copyItem = createModernMenuItem(subMenu, title: "URL Kopyala", icon: "doc.on.clipboard", action: #selector(copyQuickTunnelURLAction(_:)), color: .systemBlue)
+                    let copyItem = createModernMenuItem(subMenu, title: NSLocalizedString("URL Kopyala", comment: ""), icon: "doc.on.clipboard", action: #selector(copyQuickTunnelURLAction(_:)), color: .systemBlue)
                     copyItem.representedObject = quickTunnelData
                     copyItem.isEnabled = (quickTunnelData.publicURL != nil)
                     
-                    let stopItem = createModernMenuItem(subMenu, title: "Durdur", icon: "stop.circle.fill", action: #selector(stopQuickTunnelAction(_:)), color: .systemRed)
+                    let stopItem = createModernMenuItem(subMenu, title: NSLocalizedString("Durdur", comment: ""), icon: "stop.circle.fill", action: #selector(stopQuickTunnelAction(_:)), color: .systemRed)
                     stopItem.representedObject = quickTunnelData.id
                     quickItem.submenu = subMenu
                 }
             } else {
                 // Create paginated quick tunnels
                 let totalPages = (quickTunnels.count + maxItemsPerPage - 1) / maxItemsPerPage
-                let quickTunnelsItem = createModernMenuItem(menu, title: "Hızlı Tüneller (\(quickTunnels.count))", icon: "bolt.fill", action: nil, color: .systemPurple)
+                let quickTunnelsItem = createModernMenuItem(menu, title: NSLocalizedString("Hızlı Tüneller", comment: "") + " (\(quickTunnels.count))", icon: "bolt.fill", action: nil, color: .systemPurple)
                 let quickTunnelsSubMenu = NSMenu()
                 
                 for pageIndex in 0..<totalPages {
@@ -207,7 +214,7 @@ extension AppDelegate {
                     let endIndex = min(startIndex + maxItemsPerPage, quickTunnels.count)
                     let pageTunnels = Array(quickTunnels[startIndex..<endIndex])
                     
-                    let pageTitle = totalPages > 1 ? "Sayfa \(pageIndex + 1) (\(startIndex + 1)-\(endIndex))" : "Hızlı Tüneller"
+                    let pageTitle = totalPages > 1 ? "\(NSLocalizedString("Sayfa", comment: "")) \(pageIndex + 1) (\(startIndex + 1)-\(endIndex))" : NSLocalizedString("Hızlı Tüneller", comment: "")
                     let pageItem = createModernMenuItem(quickTunnelsSubMenu, title: pageTitle, icon: "doc.on.doc", action: nil, color: .secondaryLabelColor)
                     let pageSubMenu = NSMenu()
                     
@@ -219,11 +226,11 @@ extension AppDelegate {
                         quickItem.isEnabled = (quickTunnelData.publicURL != nil)
                         
                         let subMenu = NSMenu()
-                        let copyItem = createModernMenuItem(subMenu, title: "URL Kopyala", icon: "doc.on.clipboard", action: #selector(copyQuickTunnelURLAction(_:)), color: .systemBlue)
+                        let copyItem = createModernMenuItem(subMenu, title: NSLocalizedString("URL Kopyala", comment: ""), icon: "doc.on.clipboard", action: #selector(copyQuickTunnelURLAction(_:)), color: .systemBlue)
                         copyItem.representedObject = quickTunnelData
                         copyItem.isEnabled = (quickTunnelData.publicURL != nil)
                         
-                        let stopItem = createModernMenuItem(subMenu, title: "Durdur", icon: "stop.circle.fill", action: #selector(stopQuickTunnelAction(_:)), color: .systemRed)
+                        let stopItem = createModernMenuItem(subMenu, title: NSLocalizedString("Durdur", comment: ""), icon: "stop.circle.fill", action: #selector(stopQuickTunnelAction(_:)), color: .systemRed)
                         stopItem.representedObject = quickTunnelData.id
                         quickItem.submenu = subMenu
                     }
@@ -243,7 +250,7 @@ extension AppDelegate {
     
     private func createManagedTunnelsSection(_ menu: NSMenu, managedTunnels: [TunnelInfo], isCloudflaredAvailable: Bool) {
         if !managedTunnels.isEmpty {
-            let header = createSectionHeader("Yönetilen Tüneller (\(managedTunnels.count))", icon: "network", color: .systemTeal)
+            let header = createSectionHeader("\(NSLocalizedString("Yönetilen Tüneller", comment: "")) (\(managedTunnels.count))", icon: "network", color: .systemTeal)
             menu.addItem(header)
             
             // Group tunnels by status
@@ -252,16 +259,16 @@ extension AppDelegate {
             
             // Use the helper method to create compact groups
             if !runningTunnels.isEmpty {
-                createTunnelGroup(menu, title: "Çalışanlar", tunnels: runningTunnels, icon: "bolt.fill", color: .systemGreen, isCloudflaredAvailable: isCloudflaredAvailable)
+                createTunnelGroup(menu, title: NSLocalizedString("Çalışanlar", comment: ""), tunnels: runningTunnels, icon: "bolt.fill", color: .systemGreen, isCloudflaredAvailable: isCloudflaredAvailable)
             }
             
             if !otherTunnels.isEmpty {
-                createTunnelGroup(menu, title: "Diğerleri", tunnels: otherTunnels, icon: "circle", color: .secondaryLabelColor, isCloudflaredAvailable: isCloudflaredAvailable)
+                createTunnelGroup(menu, title: NSLocalizedString("Diğerleri", comment: ""), tunnels: otherTunnels, icon: "circle", color: .secondaryLabelColor, isCloudflaredAvailable: isCloudflaredAvailable)
             }
             
             menu.addItem(createStyledSeparator())
-        } else if managedTunnels.isEmpty && tunnelManager.quickTunnels.isEmpty && isCloudflaredAvailable {
-            createModernMenuItem(menu, title: "Henüz Tünel Yok", icon: "network.slash", action: nil, color: .secondaryLabelColor, isEnabled: false)
+        } else if managedTunnels.isEmpty && tunnelManager?.quickTunnels.isEmpty == true && isCloudflaredAvailable {
+            createModernMenuItem(menu, title: NSLocalizedString("Henüz Tünel Yok", comment: ""), icon: "network.slash", action: nil, color: .secondaryLabelColor, isEnabled: false)
             menu.addItem(createStyledSeparator())
         }
     }
@@ -271,33 +278,33 @@ extension AppDelegate {
         let managedTunnels = tunnelManager.tunnels
         let quickTunnels = tunnelManager.quickTunnels
         
-        createModernMenuItem(menu, title: "Gösterge Paneli", icon: "rectangle.grid.2x2.fill", action: #selector(openDashboardWindowAction), color: .systemBlue)
+        createModernMenuItem(menu, title: NSLocalizedString("Gösterge Paneli", comment: ""), icon: "rectangle.grid.2x2.fill", action: #selector(openDashboardWindowAction), color: .systemBlue)
         
         let canStartAny = isCloudflaredAvailable && managedTunnels.contains { $0.isManaged && ($0.status == .stopped || $0.status == .error) }
         let canStopAny = isCloudflaredAvailable && (managedTunnels.contains { $0.isManaged && [.running, .stopping, .starting].contains($0.status) } || !quickTunnels.isEmpty)
         
         if canStartAny {
-            createModernMenuItem(menu, title: "Tümünü Başlat", icon: "play.circle.fill", action: #selector(startAllManagedTunnelsAction), color: .systemGreen, isEnabled: canStartAny)
+            createModernMenuItem(menu, title: NSLocalizedString("Tümünü Başlat", comment: ""), icon: "play.circle.fill", action: #selector(startAllManagedTunnelsAction), color: .systemGreen, isEnabled: canStartAny)
         }
         
         if canStopAny {
-            createModernMenuItem(menu, title: "Tümünü Durdur", icon: "stop.circle.fill", action: #selector(stopAllTunnelsAction), color: .systemRed, isEnabled: canStopAny)
+            createModernMenuItem(menu, title: NSLocalizedString("Tümünü Durdur", comment: ""), icon: "stop.circle.fill", action: #selector(stopAllTunnelsAction), color: .systemRed, isEnabled: canStopAny)
         }
         
         if canStartAny || canStopAny {
-            createModernMenuItem(menu, title: "Listeyi Yenile", icon: "arrow.clockwise", action: #selector(refreshManagedTunnelListAction), color: .systemBlue, keyEquivalent: "r")
+            createModernMenuItem(menu, title: NSLocalizedString("Listeyi Yenile", comment: ""), icon: "arrow.clockwise", action: #selector(refreshManagedTunnelListAction), color: .systemBlue, keyEquivalent: "r")
         }
         
         menu.addItem(createStyledSeparator())
     }
     
     private func createCreationToolsSection(_ menu: NSMenu, tunnelManager: TunnelManager, isCloudflaredAvailable: Bool) {
-        createModernMenuItem(menu, title: "Hızlı Tünel Başlat", icon: "bolt.circle.fill", action: #selector(startQuickTunnelAction(_:)), color: .systemPurple, isEnabled: isCloudflaredAvailable, keyEquivalent: "t")
+        createModernMenuItem(menu, title: NSLocalizedString("Hızlı Tünel Başlat", comment: ""), icon: "bolt.circle.fill", action: #selector(startQuickTunnelAction(_:)), color: .systemPurple, isEnabled: isCloudflaredAvailable, keyEquivalent: "t")
         
-        createModernMenuItem(menu, title: "Yeni Yönetilen Tünel", icon: "doc.badge.plus", action: #selector(openCreateManagedTunnelWindow), color: .systemBlue, isEnabled: isCloudflaredAvailable, keyEquivalent: "n")
+        createModernMenuItem(menu, title: NSLocalizedString("Yeni Yönetilen Tünel", comment: ""), icon: "doc.badge.plus", action: #selector(openCreateManagedTunnelWindow), color: .systemBlue, isEnabled: isCloudflaredAvailable, keyEquivalent: "n")
         
         let mampEnabled = isCloudflaredAvailable && FileManager.default.fileExists(atPath: tunnelManager.mampSitesDirectoryPath)
-        createModernMenuItem(menu, title: "MAMP Sitesinden Oluştur", icon: "server.rack", action: #selector(openCreateFromMampWindow), color: .systemOrange, isEnabled: mampEnabled, tooltip: mampEnabled ? nil : "MAMP site dizini bulunamadı")
+        createModernMenuItem(menu, title: NSLocalizedString("MAMP Sitesinden Oluştur", comment: ""), icon: "server.rack", action: #selector(openCreateFromMampWindow), color: .systemOrange, isEnabled: mampEnabled, tooltip: mampEnabled ? nil : NSLocalizedString("MAMP site dizini bulunamadı", comment: ""))
         
         menu.addItem(createStyledSeparator())
     }
@@ -305,16 +312,16 @@ extension AppDelegate {
     private func createManagementToolsSection(_ menu: NSMenu, tunnelManager: TunnelManager) {
         let foldersMenu = NSMenu()
         createModernMenuItem(foldersMenu, title: "~/.cloudflared", icon: "folder", action: #selector(openCloudflaredFolderAction), color: .systemBlue, isEnabled: FileManager.default.fileExists(atPath: tunnelManager.cloudflaredDirectoryPath))
-        createModernMenuItem(foldersMenu, title: "MAMP Apache Conf", icon: "folder.badge.gearshape", action: #selector(openMampConfigFolderAction), color: .systemOrange, isEnabled: FileManager.default.fileExists(atPath: tunnelManager.mampConfigDirectoryPath))
+        createModernMenuItem(foldersMenu, title: NSLocalizedString("MAMP Apache Conf", comment: ""), icon: "folder.badge.gearshape", action: #selector(openMampConfigFolderAction), color: .systemOrange, isEnabled: FileManager.default.fileExists(atPath: tunnelManager.mampConfigDirectoryPath))
         
-        let foldersItem = createModernMenuItem(menu, title: "Klasörler", icon: "folder.fill", action: nil, color: .systemBlue)
+        let foldersItem = createModernMenuItem(menu, title: NSLocalizedString("Klasörler", comment: ""), icon: "folder.fill", action: nil, color: .systemBlue)
         foldersItem.submenu = foldersMenu
         
         let filesMenu = NSMenu()
         createModernMenuItem(filesMenu, title: "httpd-vhosts.conf", icon: "doc.text", action: #selector(openMampVHostFileAction), color: .systemGreen, isEnabled: FileManager.default.fileExists(atPath: tunnelManager.mampVHostConfPath))
         createModernMenuItem(filesMenu, title: "httpd.conf", icon: "doc.text.fill", action: #selector(openMampHttpdConfFileAction), color: .systemTeal, isEnabled: FileManager.default.fileExists(atPath: tunnelManager.mampHttpdConfPath))
         
-        let filesItem = createModernMenuItem(menu, title: "Dosyalar", icon: "doc.on.doc.fill", action: nil, color: .systemGreen)
+        let filesItem = createModernMenuItem(menu, title: NSLocalizedString("Dosyalar", comment: ""), icon: "doc.on.doc.fill", action: nil, color: .systemGreen)
         filesItem.submenu = filesMenu
         
         menu.addItem(createStyledSeparator())
@@ -323,42 +330,42 @@ extension AppDelegate {
     private func createSystemToolsSection(_ menu: NSMenu, tunnelManager: TunnelManager, isCloudflaredAvailable: Bool) {
         let mampMenu = NSMenu()
         let mampScriptsExist = FileManager.default.isExecutableFile(atPath: "\(mampBinPath)/\(mampStartScript)")
-        createModernMenuItem(mampMenu, title: "MAMP Başlat", icon: "play.circle.fill", action: #selector(startMampServersAction), color: .systemGreen, isEnabled: mampScriptsExist)
-        createModernMenuItem(mampMenu, title: "MAMP Durdur", icon: "stop.circle.fill", action: #selector(stopMampServersAction), color: .systemRed, isEnabled: mampScriptsExist)
+        createModernMenuItem(mampMenu, title: NSLocalizedString("MAMP Başlat", comment: ""), icon: "play.circle.fill", action: #selector(startMampServersAction), color: .systemGreen, isEnabled: mampScriptsExist)
+        createModernMenuItem(mampMenu, title: NSLocalizedString("MAMP Durdur", comment: ""), icon: "stop.circle.fill", action: #selector(stopMampServersAction), color: .systemRed, isEnabled: mampScriptsExist)
         
-        let mampItem = createModernMenuItem(menu, title: "MAMP Kontrol", icon: "server.rack", action: nil, color: .systemOrange)
+        let mampItem = createModernMenuItem(menu, title: NSLocalizedString("MAMP Kontrol", comment: ""), icon: "server.rack", action: nil, color: .systemOrange)
         mampItem.submenu = mampMenu
         
         let pythonMenu = NSMenu()
         let pythonScriptFullPath = (pythonProjectDirectoryPath as NSString).appendingPathComponent(pythonScriptPath)
         let pythonExists = FileManager.default.fileExists(atPath: pythonScriptFullPath)
-        let pythonRunning = pythonAppProcess?.isRunning == true
+        let pythonRunning = self.pythonAppProcess?.isRunning == true
         
-        createModernMenuItem(pythonMenu, title: "Python Başlat", icon: "play.circle.fill", action: #selector(startPythonAppAction), color: .systemGreen, isEnabled: pythonExists && !pythonRunning)
-        createModernMenuItem(pythonMenu, title: "Python Durdur", icon: "stop.circle.fill", action: #selector(stopPythonAppAction), color: .systemRed, isEnabled: pythonRunning)
+        createModernMenuItem(pythonMenu, title: NSLocalizedString("Python Başlat", comment: ""), icon: "play.circle.fill", action: #selector(startPythonAppAction), color: .systemGreen, isEnabled: pythonExists && !pythonRunning)
+        createModernMenuItem(pythonMenu, title: NSLocalizedString("Python Durdur", comment: ""), icon: "stop.circle.fill", action: #selector(stopPythonAppAction), color: .systemRed, isEnabled: pythonRunning)
         
-        let pythonItem = createModernMenuItem(menu, title: "Python Panel", icon: "terminal.fill", action: nil, color: .systemYellow)
+        let pythonItem = createModernMenuItem(menu, title: NSLocalizedString("Python Panel", comment: ""), icon: "terminal.fill", action: nil, color: .systemYellow)
         pythonItem.submenu = pythonMenu
         
         menu.addItem(createStyledSeparator())
     }
     
     private func createFooterSection(_ menu: NSMenu, tunnelManager: TunnelManager) {
-        createModernMenuItem(menu, title: "Geçmiş ve Loglar", icon: "clock.arrow.circlepath", action: #selector(openHistoryWindowAction), color: .systemTeal)
-        createModernMenuItem(menu, title: "Kurulum Kılavuzu", icon: "book.fill", action: #selector(openSetupPdfAction), color: .systemPurple)
+        createModernMenuItem(menu, title: NSLocalizedString("Geçmiş ve Loglar", comment: ""), icon: "clock.arrow.circlepath", action: #selector(openHistoryWindowAction), color: .systemTeal)
+        createModernMenuItem(menu, title: NSLocalizedString("Kurulum Kılavuzu", comment: ""), icon: "book.fill", action: #selector(openSetupPdfAction), color: .systemPurple)
         
         if #available(macOS 13.0, *) {
             let launchAtLogin = tunnelManager.isLaunchAtLoginEnabled()
-            let launchItem = createModernMenuItem(menu, title: "Otomatik Başlatma", icon: "power", action: #selector(toggleLaunchAtLoginAction(_:)), color: launchAtLogin ? .systemGreen : .systemGray)
-            launchItem.state = launchAtLogin ? .on : .off
+            let launchItem = createModernMenuItem(menu, title: NSLocalizedString("Otomatik Başlatma", comment: ""), icon: "power", action: #selector(toggleLaunchAtLoginAction(_:)), color: launchAtLogin ? .systemGreen : .systemGray)
+            launchItem.state = launchAtLogin ? NSControl.StateValue.on : NSControl.StateValue.off
         }
         
         menu.addItem(createStyledSeparator())
         
-        createModernMenuItem(menu, title: "Ayarlar...", icon: "gear", action: #selector(openSettingsWindowAction), color: .systemBlue, keyEquivalent: ",")
-        let exitItem = NSMenuItem(title: "Çıkış", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        createModernMenuItem(menu, title: NSLocalizedString("Ayarlar...", comment: ""), icon: "gear", action: #selector(openSettingsWindowAction), color: .systemBlue, keyEquivalent: ",")
+        let exitItem = NSMenuItem(title: NSLocalizedString("Çıkış", comment: ""), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         exitItem.target = NSApp // NSApplication'ı target olarak ayarla
-        if let image = NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: "Çıkış") {
+        if let image = NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: NSLocalizedString("Çıkış", comment: "")) {
             let coloredImage = image.copy() as! NSImage
             coloredImage.isTemplate = true
             exitItem.image = coloredImage
@@ -419,7 +426,7 @@ extension AppDelegate {
             }
             
             let displayTitle = ":\(quickTunnelData.port) → \(displayURL)"
-            tooltip += "\nGenel: \(url)\nTarayıcıda açmak için tıkla"
+            tooltip += "\nGenel: \(url)\n\(NSLocalizedString("Tarayıcıda açmak için tıkla", comment: ""))"
             if let pid = quickTunnelData.processIdentifier { tooltip += "\nPID: \(pid)" }
             return (displayTitle, "link.circle.fill", .systemGreen, tooltip)
         } else if let error = quickTunnelData.lastError {
@@ -427,7 +434,7 @@ extension AppDelegate {
             return (":\(quickTunnelData.port) (Hata)", "exclamationmark.circle.fill", .systemRed, tooltip)
         } else {
             tooltip += "\nURL bekleniyor..."
-            return (":\(quickTunnelData.port) (Başlatılıyor)", "clock.circle.fill", .systemOrange, tooltip)
+            return (":\(quickTunnelData.port) (\(NSLocalizedString("Başlatılıyor", comment: "")))", "clock.circle.fill", .systemOrange, tooltip)
         }
     }
     
@@ -454,9 +461,9 @@ extension AppDelegate {
         case .stopped:
             return (displayName, "stop.circle.fill", .systemGray, tooltip)
         case .starting:
-            return ("\(displayName) (Başlatılıyor)", "arrow.clockwise.circle", .systemOrange, tooltip)
+            return ("\(displayName) (\(NSLocalizedString("Başlatılıyor", comment: "")))", "arrow.clockwise.circle", .systemOrange, tooltip)
         case .stopping:
-            return ("\(displayName) (Durduruluyor)", "stop.circle", .systemOrange, tooltip)
+            return ("\(displayName) (\(NSLocalizedString("Durduruluyor", comment: "")))", "stop.circle", .systemOrange, tooltip)
         case .error:
             return ("\(displayName) (Hata)", "exclamationmark.circle.fill", .systemRed, tooltip)
         }
@@ -518,7 +525,7 @@ extension AppDelegate {
     
     private func createTunnelSubmenu(_ subMenu: NSMenu, tunnel: TunnelInfo, isCloudflaredAvailable: Bool) {
         let canToggle = tunnel.isManaged && tunnel.status != .starting && tunnel.status != .stopping && isCloudflaredAvailable
-        let toggleTitle = (tunnel.status == .running) ? "Durdur" : "Başlat"
+        let toggleTitle = (tunnel.status == .running) ? NSLocalizedString("Durdur", comment: "") : NSLocalizedString("Başlat", comment: "")
         let toggleColor: NSColor = (tunnel.status == .running) ? .systemRed : .systemGreen
         let toggleIcon = tunnel.status == .running ? "stop.circle.fill" : "play.circle.fill"
         
@@ -527,14 +534,14 @@ extension AppDelegate {
         subMenu.addItem(NSMenuItem.separator())
         
         let canOpenConfig = tunnel.configPath != nil && FileManager.default.fileExists(atPath: tunnel.configPath!)
-        createModernMenuItem(subMenu, title: "Config Aç", icon: "doc.text", action: #selector(openConfigFileAction(_:)), color: .systemBlue, isEnabled: canOpenConfig).representedObject = tunnel
+        createModernMenuItem(subMenu, title: NSLocalizedString("Config Aç", comment: ""), icon: "doc.text", action: #selector(openConfigFileAction(_:)), color: .systemBlue, isEnabled: canOpenConfig).representedObject = tunnel
         
-        createModernMenuItem(subMenu, title: "DNS Yönlendir", icon: "arrow.triangle.branch", action: #selector(routeDnsForTunnelAction(_:)), color: .systemPurple, isEnabled: tunnel.isManaged && isCloudflaredAvailable).representedObject = tunnel
+        createModernMenuItem(subMenu, title: NSLocalizedString("DNS Yönlendir", comment: ""), icon: "arrow.triangle.branch", action: #selector(routeDnsForTunnelAction(_:)), color: .systemPurple, isEnabled: tunnel.isManaged && isCloudflaredAvailable).representedObject = tunnel
         
         subMenu.addItem(NSMenuItem.separator())
         
         let canDelete = tunnel.isManaged && tunnel.status != .stopping && tunnel.status != .starting && isCloudflaredAvailable
-        let deleteItem = createModernMenuItem(subMenu, title: "Sil...", icon: "trash.fill", action: #selector(deleteTunnelAction(_:)), color: .systemRed, isEnabled: canDelete, tooltip: "Cloudflare'dan kalıcı olarak siler!")
+        let deleteItem = createModernMenuItem(subMenu, title: NSLocalizedString("Sil...", comment: ""), icon: "trash.fill", action: #selector(deleteTunnelAction(_:)), color: .systemRed, isEnabled: canDelete, tooltip: NSLocalizedString("Cloudflare'dan kalıcı olarak siler!", comment: ""))
         deleteItem.representedObject = tunnel
     }
     

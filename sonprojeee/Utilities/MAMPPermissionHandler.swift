@@ -64,8 +64,8 @@ class MAMPPermissionHandler {
         6. MAMP'ı yeniden başlatın
         """
         alert.alertStyle = .informational
-        alert.addButton(withTitle: "Kopyalandı, Tamam")
-        alert.addButton(withTitle: "Terminal'i Aç")
+        alert.addButton(withTitle: NSLocalizedString("Kopyalandı, Tamam", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Terminal'i Aç", comment: ""))
         
         let response = alert.runModal()
         

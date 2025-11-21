@@ -6,25 +6,25 @@ struct MenuControlGrid: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            MenuGridButton(icon: "rectangle.grid.2x2.fill", title: "Panel", color: .blue) {
+            MenuGridButton(icon: "rectangle.grid.2x2.fill", title: NSLocalizedString("Panel", comment: ""), color: .blue) {
                 NSApp.sendAction(#selector(AppDelegate.openDashboardWindowAction), to: nil, from: nil)
             }
             
             Divider().padding(.vertical, 8)
             
-            MenuGridButton(icon: "play.fill", title: "Tümü Başlat", color: .green) {
+            MenuGridButton(icon: "play.fill", title: NSLocalizedString("Tümü Başlat", comment: ""), color: .green) {
                 NSApp.sendAction(#selector(AppDelegate.startAllManagedTunnelsAction), to: nil, from: nil)
             }
             
             Divider().padding(.vertical, 8)
             
-            MenuGridButton(icon: "stop.fill", title: "Tümü Durdur", color: .red) {
+            MenuGridButton(icon: "stop.fill", title: NSLocalizedString("Tümü Durdur", comment: ""), color: .red) {
                 NSApp.sendAction(#selector(AppDelegate.stopAllTunnelsAction), to: nil, from: nil)
             }
             
             Divider().padding(.vertical, 8)
             
-            MenuGridButton(icon: "arrow.clockwise", title: "Yenile", color: .secondary) {
+            MenuGridButton(icon: "arrow.clockwise", title: NSLocalizedString("Yenile", comment: ""), color: .secondary) {
                 NSApp.sendAction(#selector(AppDelegate.refreshManagedTunnelListAction), to: nil, from: nil)
             }
         }
@@ -36,25 +36,25 @@ struct MenuControlGrid: View {
 struct MenuCreationGrid: View {
     var body: some View {
         HStack(spacing: 0) {
-            MenuGridButton(icon: "bolt.fill", title: "Hızlı", color: .purple) {
+            MenuGridButton(icon: "bolt.fill", title: NSLocalizedString("Hızlı", comment: ""), color: .purple) {
                 NSApp.sendAction(#selector(AppDelegate.openQuickTunnelWindowAction), to: nil, from: nil)
             }
             
             Divider().padding(.vertical, 8)
             
-            MenuGridButton(icon: "plus.circle.fill", title: "Yeni", color: .blue) {
+            MenuGridButton(icon: "plus.circle.fill", title: NSLocalizedString("Yeni", comment: ""), color: .blue) {
                 NSApp.sendAction(#selector(AppDelegate.openCreateManagedTunnelWindowAction), to: nil, from: nil)
             }
             
             Divider().padding(.vertical, 8)
             
-            MenuGridButton(icon: "server.rack", title: "MAMP", color: .orange) {
+            MenuGridButton(icon: "server.rack", title: NSLocalizedString("MAMP", comment: ""), color: .orange) {
                 NSApp.sendAction(#selector(AppDelegate.openCreateFromMampWindow), to: nil, from: nil)
             }
             
             Divider().padding(.vertical, 8)
             
-            MenuGridButton(icon: "shippingbox.fill", title: "Docker", color: .cyan) {
+            MenuGridButton(icon: "shippingbox.fill", title: NSLocalizedString("Docker", comment: ""), color: .cyan) {
                 NSApp.sendAction(#selector(AppDelegate.openCreateFromDockerWindow), to: nil, from: nil)
             }
         }
@@ -66,7 +66,7 @@ struct MenuCreationGrid: View {
 struct MenuFeaturesGrid: View {
     var body: some View {
         HStack(spacing: 0) {
-            MenuGridButton(icon: "folder.fill", title: "Dosya Paylaş", color: .orange) {
+            MenuGridButton(icon: "folder.fill", title: NSLocalizedString("Dosya Paylaş", comment: ""), color: .orange) {
                 NSApp.sendAction(#selector(AppDelegate.openFileShareWindow), to: nil, from: nil)
             }
         }
@@ -78,19 +78,19 @@ struct MenuFeaturesGrid: View {
 struct MenuFooterGrid: View {
     var body: some View {
         HStack(spacing: 0) {
-            MenuGridButton(icon: "gear", title: "Ayarlar", color: .secondary) {
+            MenuGridButton(icon: "gear", title: NSLocalizedString("Ayarlar", comment: ""), color: .secondary) {
                 NSApp.sendAction(#selector(AppDelegate.openSettingsWindowAction), to: nil, from: nil)
             }
             
             Divider().padding(.vertical, 8)
             
-            MenuGridButton(icon: "book.fill", title: "Kılavuz", color: .secondary) {
+            MenuGridButton(icon: "book.fill", title: NSLocalizedString("Kılavuz", comment: ""), color: .secondary) {
                 NSApp.sendAction(#selector(AppDelegate.openSetupPdfAction), to: nil, from: nil)
             }
             
             Divider().padding(.vertical, 8)
             
-            MenuGridButton(icon: "power", title: "Çıkış", color: .red) {
+            MenuGridButton(icon: "power", title: NSLocalizedString("Çıkış", comment: ""), color: .red) {
                 NSApp.terminate(nil)
             }
         }

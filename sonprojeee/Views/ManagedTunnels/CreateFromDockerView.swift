@@ -24,7 +24,7 @@ struct CreateFromDockerView: View {
                 VStack(alignment: .leading) {
                     Text("Docker Konteynerleri")
                         .font(.title2.bold())
-                    Text("Çalışan konteynerlerden tünel oluşturun")
+                    Text(NSLocalizedString("Çalışan konteynerlerden tünel oluşturun", comment: ""))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -50,15 +50,15 @@ struct CreateFromDockerView: View {
                                 Image(systemName: "shippingbox")
                                     .font(.system(size: 40))
                                     .foregroundColor(.secondary.opacity(0.5))
-                                Text("Çalışan konteyner bulunamadı.")
+                                Text(NSLocalizedString("Çalışan konteyner bulunamadı.", comment: ""))
                                     .foregroundColor(.secondary)
                             } else {
                                 Image(systemName: "exclamationmark.triangle")
                                     .font(.system(size: 40))
                                     .foregroundColor(.orange)
-                                Text("Docker çalışmıyor veya bulunamadı.")
+                                Text(NSLocalizedString("Docker çalışmıyor veya bulunamadı.", comment: ""))
                                     .foregroundColor(.primary)
-                                Text("Lütfen Docker Desktop uygulamasını başlatın.")
+                                Text(NSLocalizedString("Lütfen Docker Desktop uygulamasını başlatın.", comment: ""))
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                     .multilineTextAlignment(.center)
@@ -104,7 +104,7 @@ struct CreateFromDockerView: View {
                     if let container = selectedContainer {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 16) {
-                                Text("Yapılandırma: \(container.name)")
+                                Text(NSLocalizedString("Yapılandırma: ", comment: "") + "\(container.name)")
                                     .font(.headline)
                                 
                                 Group {
@@ -143,7 +143,7 @@ struct CreateFromDockerView: View {
                                 }
                                 
                                 if showSuccess {
-                                    Text("✅ Tünel başarıyla oluşturuldu!")
+                                    Text(NSLocalizedString("✅ Tünel başarıyla oluşturuldu!", comment: ""))
                                         .foregroundColor(.green)
                                         .font(.caption)
                                 }
@@ -165,7 +165,7 @@ struct CreateFromDockerView: View {
                         }
                     } else {
                         VStack {
-                            Text("Soldan bir konteyner seçin")
+                            Text(NSLocalizedString("Soldan bir konteyner seçin", comment: ""))
                                 .foregroundColor(.secondary)
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)

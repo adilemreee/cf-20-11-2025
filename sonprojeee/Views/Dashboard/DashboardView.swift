@@ -14,10 +14,10 @@ struct DashboardView: View {
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
-        case 6..<12: return "Günaydın"
-        case 12..<18: return "İyi Günler"
-        case 18..<22: return "İyi Akşamlar"
-        default: return "İyi Geceler"
+        case 6..<12: return NSLocalizedString("Günaydın", comment: "")
+        case 12..<18: return NSLocalizedString("İyi Günler", comment: "")
+        case 18..<22: return NSLocalizedString("İyi Akşamlar", comment: "")
+        default: return NSLocalizedString("İyi Geceler", comment: "")
         }
     }
 
@@ -44,13 +44,13 @@ struct DashboardView: View {
     
     private var systemStatus: (text: String, color: Color, icon: String) {
         if !FileManager.default.isExecutableFile(atPath: manager.cloudflaredExecutablePath) {
-            return ("Cloudflared Eksik", .red, "exclamationmark.triangle.fill")
+            return (NSLocalizedString("Cloudflared Eksik", comment: ""), .red, "exclamationmark.triangle.fill")
         } else if errorCount > 0 {
-            return ("Dikkat Gerekiyor", .orange, "exclamationmark.triangle.fill")
+            return (NSLocalizedString("Dikkat Gerekiyor", comment: ""), .orange, "exclamationmark.triangle.fill")
         } else if runningManagedCount > 0 || runningQuickCount > 0 {
-            return ("Sistem Aktif", .green, "checkmark.circle.fill")
+            return (NSLocalizedString("Sistem Aktif", comment: ""), .green, "checkmark.circle.fill")
         } else {
-            return ("Hazır", .blue, "pause.circle.fill")
+            return (NSLocalizedString("Hazır", comment: ""), .blue, "pause.circle.fill")
         }
     }
 
@@ -150,7 +150,7 @@ struct DashboardView: View {
             GridItem(.flexible())
         ], spacing: 20) {
             statCard(
-                title: "Yönetilen Tüneller",
+                title: NSLocalizedString("Yönetilen Tüneller", comment: ""),
                 value: "\(runningManagedCount)",
                 total: "/ \(totalManagedCount)",
                 icon: "network",
@@ -158,7 +158,7 @@ struct DashboardView: View {
             )
             
             statCard(
-                title: "Hızlı Tüneller",
+                title: NSLocalizedString("Hızlı Tüneller", comment: ""),
                 value: "\(runningQuickCount)",
                 total: "/ \(quickTunnelCount)",
                 icon: "bolt.fill",
@@ -166,7 +166,7 @@ struct DashboardView: View {
             )
             
             statCard(
-                title: "Hatalar",
+                title: NSLocalizedString("Hatalar", comment: ""),
                 value: "\(errorCount)",
                 total: "",
                 icon: "exclamationmark.triangle.fill",
@@ -212,28 +212,28 @@ struct DashboardView: View {
     
     private var quickActionsCard: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Hızlı İşlemler")
+            Text(NSLocalizedString("Hızlı İşlemler", comment: ""))
                 .font(.headline)
                 .foregroundColor(.secondary)
             
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                actionButton(title: "Hızlı Tünel", icon: "bolt.fill", color: .purple) {
+                actionButton(title: NSLocalizedString("Hızlı Tünel", comment: ""), icon: "bolt.fill", color: .purple) {
                     openQuickTunnel()
                 }
                 
-                actionButton(title: "Yeni Tünel", icon: "plus", color: .blue) {
+                actionButton(title: NSLocalizedString("Yeni Tünel", comment: ""), icon: "plus", color: .blue) {
                     openManagedTunnelCreator()
                 }
                 
-                actionButton(title: "Dosya Paylaş", icon: "folder.badge.gearshape", color: .orange) {
+                actionButton(title: NSLocalizedString("Dosya Paylaş", comment: ""), icon: "folder.badge.gearshape", color: .orange) {
                     openFileShare()
                 }
                 
-                actionButton(title: "Ayarlar", icon: "gearshape.fill", color: .gray) {
+                actionButton(title: NSLocalizedString("Ayarlar", comment: ""), icon: "gearshape.fill", color: .gray) {
                     openSettings()
                 }
                 
-                actionButton(title: "Tümünü Başlat", icon: "play.fill", color: .green) {
+                actionButton(title: NSLocalizedString("Tümünü Başlat", comment: ""), icon: "play.fill", color: .green) {
                     manager.startAllManagedTunnels()
                 }
             }
@@ -321,7 +321,7 @@ struct DashboardView: View {
             }
             
             if historyManager.notificationHistory.isEmpty {
-                Text("Henüz aktivite yok")
+                Text(NSLocalizedString("Henüz aktivite yok", comment: ""))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)

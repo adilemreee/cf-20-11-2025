@@ -63,13 +63,13 @@ class MampManager {
     
     func updateMampVHost(mampVHostConfPath: String, serverName: String, documentRoot: String, port: String, completion: @escaping (Result<Void, Error>) -> Void) {
         guard FileManager.default.fileExists(atPath: documentRoot) else {
-            completion(.failure(NSError(domain: "VHostError", code: 20, userInfo: [NSLocalizedDescriptionKey: "DocumentRoot bulunamadı: \(documentRoot)"]))); return
+            completion(.failure(NSError(domain: "VHostError", code: 20, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("DocumentRoot bulunamadı: ", comment: "") + "\(documentRoot)"]))); return
         }
         guard !serverName.isEmpty && serverName.contains(".") else {
-            completion(.failure(NSError(domain: "VHostError", code: 21, userInfo: [NSLocalizedDescriptionKey: "Geçersiz ServerName: \(serverName)"]))); return
+            completion(.failure(NSError(domain: "VHostError", code: 21, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Geçersiz ServerName: ", comment: "") + "\(serverName)"]))); return
         }
         guard let portInt = Int(port), (1...65535).contains(portInt) else {
-            completion(.failure(NSError(domain: "VHostError", code: 25, userInfo: [NSLocalizedDescriptionKey: "Geçersiz Port Numarası: \(port)"]))); return
+            completion(.failure(NSError(domain: "VHostError", code: 25, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Geçersiz Port Numarası: ", comment: "") + "\(port)"]))); return
         }
         let listenDirective = "*:\(port)"
 
@@ -78,7 +78,7 @@ class MampManager {
         if !FileManager.default.fileExists(atPath: vhostDir, isDirectory: &isDir) || !isDir.boolValue {
             print("⚠️ MAMP vHost dizini bulunamadı, oluşturuluyor: \(vhostDir)")
             do { try FileManager.default.createDirectory(atPath: vhostDir, withIntermediateDirectories: true, attributes: nil) } catch {
-                 completion(.failure(NSError(domain: "VHostError", code: 22, userInfo: [NSLocalizedDescriptionKey: "MAMP vHost dizini oluşturulamadı: \(vhostDir)\n\(error.localizedDescription)"]))); return
+                 completion(.failure(NSError(domain: "VHostError", code: 22, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("MAMP vHost dizini oluşturulamadı: ", comment: "") + "\(vhostDir)\n\(error.localizedDescription)"]))); return
             }
         }
 
@@ -125,7 +125,7 @@ class MampManager {
                 }
             } catch {
                 print("❌ Regex Hatası: \(error.localizedDescription) - Desen: \(vhostBlockPattern)")
-                completion(.failure(NSError(domain: "VHostError", code: 26, userInfo: [NSLocalizedDescriptionKey: "vHost kontrolü için regex oluşturulamadı: \(error.localizedDescription)"])))
+                completion(.failure(NSError(domain: "VHostError", code: 26, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("vHost kontrolü için regex oluşturulamadı: ", comment: "") + "\(error.localizedDescription)"])))
                 return
             }
 

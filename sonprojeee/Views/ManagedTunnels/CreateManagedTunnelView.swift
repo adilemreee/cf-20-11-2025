@@ -115,12 +115,12 @@ struct CreateManagedTunnelView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Yeni Yönetilen Tünel")
-                        .font(.title2)
+                    Text(NSLocalizedString("Yeni Yönetilen Tünel", comment: ""))
+                        .font(.title)
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
                     
-                    Text("Cloudflare üzerinde yönetilen tünel oluşturun")
+                    Text(NSLocalizedString("Cloudflare üzerinde yönetilen tünel oluşturun", comment: ""))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -147,25 +147,25 @@ struct CreateManagedTunnelView: View {
     }
 
     private var modernTunnelConfigCard: some View {
-        TunnelCard(title: "Tünel Yapılandırması", icon: "network") {
+        TunnelCard(title: NSLocalizedString("Tünel Yapılandırması", comment: ""), icon: "network") {
             VStack(spacing: 16) {
                 ModernTextField(
-                    title: "Tünel Adı",
+                    title: NSLocalizedString("Tünel Adı", comment: ""),
                     text: $tunnelName,
-                    placeholder: "Cloudflare'deki benzersiz ad",
+                    placeholder: NSLocalizedString("Cloudflare'deki benzersiz ad", comment: ""),
                     icon: "tag.fill"
                 )
                 .onChange(of: tunnelName) { _, _ in syncConfigName() }
                 
                 ModernTextField(
-                    title: "Config Dosya Adı",
+                    title: NSLocalizedString("Config Dosya Adı", comment: ""),
                     text: $configName,
-                    placeholder: "Yerel .yml dosya adı",
+                    placeholder: NSLocalizedString("Yerel .yml dosya adı", comment: ""),
                     icon: "doc.text.fill"
                 )
                 
                 ModernTextField(
-                    title: "Hostname",
+                    title: NSLocalizedString("Hostname", comment: ""),
                     text: $hostname,
                     placeholder: "example.com",
                     icon: "globe"
@@ -223,18 +223,18 @@ struct CreateManagedTunnelView: View {
     private var modernMampIntegrationCard: some View {
         // Only show MAMP integration for HTTP
         if selectedProtocol == "HTTP" {
-            TunnelCard(title: "MAMP Entegrasyonu (Opsiyonel)", icon: "server.rack") {
+            TunnelCard(title: NSLocalizedString("MAMP Entegrasyonu (Opsiyonel)", comment: ""), icon: "server.rack") {
                 VStack(spacing: 16) {
                     ModernToggle(
-                        title: "MAMP vHost Güncelle",
-                        subtitle: "httpd-vhosts.conf ve httpd.conf dosyalarını otomatik yapılandır",
+                        title: NSLocalizedString("MAMP vHost Güncelle", comment: ""),
+                        subtitle: NSLocalizedString("httpd-vhosts.conf ve httpd.conf dosyalarını otomatik yapılandır", comment: ""),
                         isOn: $updateVHost
                     )
                     
                     if updateVHost {
                         HStack(spacing: 12) {
                             ModernTextField(
-                                title: "Document Root",
+                                title: NSLocalizedString("Document Root", comment: ""),
                                 text: $documentRoot,
                                 placeholder: "/Applications/MAMP/htdocs/mysite",
                                 icon: "folder.fill"
@@ -260,7 +260,7 @@ struct CreateManagedTunnelView: View {
     }
 
     private var modernStatusCard: some View {
-        TunnelCard(title: "Oluşturma Durumu", icon: "gearshape.fill") {
+        TunnelCard(title: NSLocalizedString("Oluşturma Durumu", comment: ""), icon: "gearshape.fill") {
             HStack(spacing: 12) {
                 ProgressView()
                     .scaleEffect(0.8)
@@ -270,7 +270,7 @@ struct CreateManagedTunnelView: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                     
-                    Text("Lütfen bekleyiniz...")
+                    Text(NSLocalizedString("Lütfen bekleyiniz...", comment: ""))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -282,7 +282,7 @@ struct CreateManagedTunnelView: View {
 
     private var modernActionBar: some View {
         HStack(spacing: 16) {
-            Button("İptal") {
+            Button(NSLocalizedString("İptal", comment: "")) {
                 if !isCreating {
                     withAnimation(.easeOut(duration: 0.3)) {
                         dismiss()
@@ -302,7 +302,7 @@ struct CreateManagedTunnelView: View {
                     } else {
                         Image(systemName: "plus.circle.fill")
                     }
-                    Text("Tünel Oluştur")
+                    Text(NSLocalizedString("Tünel Oluştur", comment: ""))
                 }
             }
             .buttonStyle(TunnelPrimaryButtonStyle())
@@ -389,7 +389,7 @@ struct CreateManagedTunnelView: View {
     private func startCreationProcess() {
         guard isFormValid else {
             showModernAlert(
-                title: "Form Hatası",
+                title: NSLocalizedString("Form Hatası", comment: ""),
                 message: "Lütfen tüm gerekli alanları doğru şekilde doldurun.",
                 type: .error
             )
@@ -398,7 +398,7 @@ struct CreateManagedTunnelView: View {
         
         guard let portIntValue = Int(portString), (1...65535).contains(portIntValue) else {
             showModernAlert(
-                title: "Port Hatası",
+                title: NSLocalizedString("Port Hatası", comment: ""),
                 message: "Geçersiz port numarası. 1-65535 arasında bir değer girin.",
                 type: .error
             )
@@ -435,7 +435,7 @@ struct CreateManagedTunnelView: View {
                                 }
                                 
                                 self.showModernAlert(
-                                    title: "Tünel Oluşturuldu",
+                                    title: NSLocalizedString("Tünel Oluşturuldu", comment: ""),
                                     message: message,
                                     type: .success
                                 ) {
@@ -444,7 +444,7 @@ struct CreateManagedTunnelView: View {
 
                             case .failure(let configError):
                                 self.showModernAlert(
-                                    title: "Yapılandırma Hatası",
+                                    title: NSLocalizedString("Yapılandırma Hatası", comment: ""),
                                     message: "Tünel oluşturuldu ancak yapılandırma/MAMP hatası:\n\(configError.localizedDescription)",
                                     type: .error
                                 )
@@ -455,7 +455,7 @@ struct CreateManagedTunnelView: View {
                 case .failure(let createError):
                     self.isCreating = false
                     self.showModernAlert(
-                        title: "Oluşturma Hatası",
+                        title: NSLocalizedString("Oluşturma Hatası", comment: ""),
                         message: "Cloudflare'da tünel oluşturma hatası:\n\(createError.localizedDescription)",
                         type: .error
                     )

@@ -55,7 +55,7 @@ struct OnboardingView: View {
                     Button(action: {
                         withAnimation { currentStep += 1 }
                     }) {
-                        Text("İleri")
+                        Text(NSLocalizedString("İleri", comment: ""))
                             .fontWeight(.semibold)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 8)
@@ -103,11 +103,11 @@ struct WelcomeStepView: View {
                 .frame(width: 80, height: 80)
                 .foregroundColor(.blue)
             
-            Text("Cloudflared Manager'a Hoşgeldiniz")
+            Text(NSLocalizedString("Cloudflared Manager'a Hoşgeldiniz", comment: ""))
                 .font(.title)
                 .bold()
             
-            Text("Cloudflare tünellerinizi kolayca yönetin, MAMP projelerinizi internete açın ve loglarınızı takip edin.")
+            Text(NSLocalizedString("Cloudflare tünellerinizi kolayca yönetin, MAMP projelerinizi internete açın ve loglarınızı takip edin.", comment: ""))
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
                 .padding(.horizontal)
@@ -127,16 +127,16 @@ struct CloudflaredStepView: View {
                 .font(.system(size: 50))
                 .foregroundColor(.orange)
             
-            Text("Cloudflared Yapılandırması")
+            Text(NSLocalizedString("Cloudflared Yapılandırması", comment: ""))
                 .font(.title2)
                 .bold()
             
-            Text("Uygulamanın çalışması için 'cloudflared' komut satırı aracı gereklidir.")
+            Text(NSLocalizedString("Uygulamanın çalışması için 'cloudflared' komut satırı aracı gereklidir.", comment: ""))
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
             
             VStack(alignment: .leading) {
-                Text("Cloudflared Yolu:")
+                Text(NSLocalizedString("Cloudflared Yolu:", comment: ""))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
@@ -144,7 +144,7 @@ struct CloudflaredStepView: View {
                     TextField("Yol...", text: $manager.cloudflaredExecutablePath)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     
-                    Button("Seç") {
+                    Button(NSLocalizedString("Seç", comment: "")) {
                         selectFile()
                     }
                 }
@@ -172,7 +172,7 @@ struct CloudflaredStepView: View {
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
         panel.allowsMultipleSelection = false
-        panel.prompt = "Seç"
+        panel.prompt = NSLocalizedString("Seç", comment: "")
         
         if panel.runModal() == .OK, let url = panel.url {
             manager.cloudflaredExecutablePath = url.path
@@ -183,11 +183,11 @@ struct CloudflaredStepView: View {
     private func checkPath(silent: Bool = false) {
         let path = manager.cloudflaredExecutablePath.trimmingCharacters(in: .whitespacesAndNewlines)
         if FileManager.default.isExecutableFile(atPath: path) {
-            statusMessage = "✅ Cloudflared bulundu ve çalıştırılabilir."
+            statusMessage = NSLocalizedString("Cloudflared bulundu ve çalıştırılabilir.", comment: "")
             statusColor = .green
         } else {
             if !silent {
-                statusMessage = "❌ Belirtilen yolda çalıştırılabilir dosya bulunamadı."
+                statusMessage = NSLocalizedString("Belirtilen yolda çalıştırılabilir dosya bulunamadı.", comment: "")
                 statusColor = .red
             }
         }
@@ -204,16 +204,16 @@ struct MampStepView: View {
                 .font(.system(size: 50))
                 .foregroundColor(.purple)
             
-            Text("MAMP Entegrasyonu")
+            Text(NSLocalizedString("MAMP Entegrasyonu", comment: ""))
                 .font(.title2)
                 .bold()
             
-            Text("MAMP kullanıyorsanız, projelerinizi otomatik algılamak için MAMP klasörünü seçin.")
+            Text(NSLocalizedString("MAMP kullanıyorsanız, projelerinizi otomatik algılamak için MAMP klasörünü seçin.", comment: ""))
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
             
             VStack(alignment: .leading) {
-                Text("MAMP Ana Dizini:")
+                Text(NSLocalizedString("MAMP Ana Dizini:", comment: ""))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
@@ -221,7 +221,7 @@ struct MampStepView: View {
                     TextField("/Applications/MAMP", text: $manager.mampBasePath)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     
-                    Button("Seç") {
+                    Button(NSLocalizedString("Seç", comment: "")) {
                         selectFolder()
                     }
                 }
@@ -231,7 +231,7 @@ struct MampStepView: View {
             Button(action: {
                 withAnimation { currentStep += 1 }
             }) {
-                Text("MAMP Kullanmıyorum (Atla)")
+                Text(NSLocalizedString("MAMP Kullanmıyorum (Atla)", comment: ""))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .underline()
@@ -247,7 +247,7 @@ struct MampStepView: View {
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
-        panel.prompt = "Seç"
+        panel.prompt = NSLocalizedString("Seç", comment: "")
         
         if panel.runModal() == .OK, let url = panel.url {
             manager.mampBasePath = url.path
@@ -264,16 +264,16 @@ struct FinishStepView: View {
                 .font(.system(size: 60))
                 .foregroundColor(.green)
             
-            Text("Kurulum Tamamlandı!")
+            Text(NSLocalizedString("Kurulum Tamamlandı!", comment: ""))
                 .font(.title)
                 .bold()
             
-            Text("Artık tünellerinizi oluşturmaya ve yönetmeye başlayabilirsiniz.")
+            Text(NSLocalizedString("Artık tünellerinizi oluşturmaya ve yönetmeye başlayabilirsiniz.", comment: ""))
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
             
             Button(action: onFinish) {
-                Text("Uygulamayı Başlat")
+                Text(NSLocalizedString("Uygulamayı Başlat", comment: ""))
                     .font(.headline)
                     .padding(.horizontal, 30)
                     .padding(.vertical, 10)

@@ -36,28 +36,28 @@ struct BackupRestoreView: View {
             .padding(.vertical, 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .alert("Backup Geri Yükle", isPresented: $showingRestoreAlert) {
-            Button("İptal", role: .cancel) { }
-            Button("Geri Yükle", role: .destructive) {
+        .alert(NSLocalizedString("Backup Geri Yükle", comment: ""), isPresented: $showingRestoreAlert) {
+            Button(NSLocalizedString("İptal", comment: ""), role: .cancel) { }
+            Button(NSLocalizedString("Geri Yükle", comment: ""), role: .destructive) {
                 if let backup = selectedBackup {
                     restoreBackupAction(backup)
                 }
             }
         } message: {
-            Text("Bu backup'ı geri yüklemek istediğinizden emin misiniz? Mevcut ayarlarınız değiştirilecek.")
+            Text(NSLocalizedString("Bu backup'ı geri yüklemek istediğinizden emin misiniz? Mevcut ayarlarınız değiştirilecek.", comment: ""))
         }
-        .alert("Backup Sil", isPresented: $showingDeleteAlert) {
-            Button("İptal", role: .cancel) { }
-            Button("Sil", role: .destructive) {
+        .alert(NSLocalizedString("Backup Sil", comment: ""), isPresented: $showingDeleteAlert) {
+            Button(NSLocalizedString("İptal", comment: ""), role: .cancel) { }
+            Button(NSLocalizedString("Sil", comment: ""), role: .destructive) {
                 if let backup = backupToDelete {
                     deleteBackupAction(backup)
                 }
             }
         } message: {
-            Text("Bu backup'ı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.")
+            Text(NSLocalizedString("Bu backup'ı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.", comment: ""))
         }
-        .alert("Bilgi", isPresented: $showingAlert) {
-            Button("Tamam", role: .cancel) { }
+        .alert(NSLocalizedString("Bilgi", comment: ""), isPresented: $showingAlert) {
+            Button(NSLocalizedString("Tamam", comment: ""), role: .cancel) { }
         } message: {
             Text(alertMessage)
         }
@@ -83,11 +83,11 @@ struct BackupRestoreView: View {
                     .foregroundColor(.blue)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Yedekleme & Geri Yükleme")
+                    Text(NSLocalizedString("Yedekleme & Geri Yükleme", comment: ""))
                         .font(.title3)
                         .fontWeight(.semibold)
                     
-                    Text("Tünel yapılandırmalarınızı ve ayarlarınızı yedekleyin")
+                    Text(NSLocalizedString("Tünel yapılandırmalarınızı ve ayarlarınızı yedekleyin", comment: ""))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -100,7 +100,7 @@ struct BackupRestoreView: View {
                     Image(systemName: "clock")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    Text("Son yedekleme: \(formattedDate(lastBackup))")
+                    Text("\(NSLocalizedString("Son yedekleme: ", comment: ""))\(formattedDate(lastBackup))")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -118,7 +118,7 @@ struct BackupRestoreView: View {
     
     private var quickActionsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Hızlı İşlemler")
+            Text(NSLocalizedString("Hızlı İşlemler", comment: ""))
                 .font(.headline)
                 .padding(.horizontal, 16)
             
@@ -136,10 +136,10 @@ struct BackupRestoreView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Yeni Yedek")
+                            Text(NSLocalizedString("Yeni Yedek", comment: ""))
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
-                            Text("Mevcut durumu kaydet")
+                            Text(NSLocalizedString("Mevcut durumu kaydet", comment: ""))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -162,10 +162,10 @@ struct BackupRestoreView: View {
                             .font(.system(size: 18))
                         
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("İçe Aktar")
+                            Text(NSLocalizedString("İçe Aktar", comment: ""))
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
-                            Text("Backup dosyası yükle")
+                            Text(NSLocalizedString("Backup dosyası yükle", comment: ""))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -194,7 +194,7 @@ struct BackupRestoreView: View {
     
     private var autoBackupSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Otomatik Yedekleme")
+            Text(NSLocalizedString("Otomatik Yedekleme", comment: ""))
                 .font(.headline)
                 .padding(.horizontal, 16)
             
@@ -204,10 +204,10 @@ struct BackupRestoreView: View {
                     set: { backupManager.toggleAutoBackup(enabled: $0) }
                 )) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Otomatik Yedekleme")
+                        Text(NSLocalizedString("Otomatik Yedekleme", comment: ""))
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        Text("Belirtilen aralıklarla otomatik yedek oluştur")
+                        Text(NSLocalizedString("Belirtilen aralıklarla otomatik yedek oluştur", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -219,7 +219,7 @@ struct BackupRestoreView: View {
                         .padding(.vertical, 4)
                     
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Yedekleme Aralığı: \(Int(autoBackupIntervalHours)) saat")
+                        Text(NSLocalizedString("Yedekleme Aralığı: ", comment: "") + "\(Int(autoBackupIntervalHours)) " + NSLocalizedString(" saat", comment: ""))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
@@ -235,11 +235,11 @@ struct BackupRestoreView: View {
                         )
                         
                         HStack {
-                            Text("1 saat")
+                            Text(NSLocalizedString("1 saat", comment: ""))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text("1 hafta")
+                            Text(NSLocalizedString("1 hafta", comment: ""))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -266,12 +266,12 @@ struct BackupRestoreView: View {
     private var backupsListSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Mevcut Yedekler")
+                Text(NSLocalizedString("Yedekler", comment: ""))
                     .font(.headline)
                 
                 Spacer()
                 
-                Text("\(backupManager.availableBackups.count) yedek")
+                Text("\(backupManager.availableBackups.count) \(NSLocalizedString("yedek", comment: ""))")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -302,12 +302,12 @@ struct BackupRestoreView: View {
                 .font(.system(size: 40))
                 .foregroundColor(.secondary)
             
-            Text("Henüz yedek bulunmuyor")
+            Text(NSLocalizedString("Henüz yedek bulunmuyor", comment: ""))
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .foregroundColor(.secondary)
             
-            Text("Yukarıdaki 'Yeni Yedek' butonuna tıklayarak ilk yedeğinizi oluşturun")
+            Text(NSLocalizedString("Yukarıdaki 'Yeni Yedek' butonuna tıklayarak ilk yedeğinizi oluşturun", comment: ""))
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -337,7 +337,7 @@ struct BackupRestoreView: View {
                     .lineLimit(1)
                 
                 HStack(spacing: 8) {
-                    Label("\(backup.tunnelCount) tünel", systemImage: "network")
+                    Label("\(backup.tunnelCount) \(NSLocalizedString("tünel", comment: ""))", systemImage: "network")
                     Label(backup.formattedSize, systemImage: "doc")
                     Label(backup.formattedDate, systemImage: "clock")
                 }

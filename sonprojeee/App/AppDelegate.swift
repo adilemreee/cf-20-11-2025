@@ -47,6 +47,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        // Apply dock hide preference
+        let hideFromDock = UserDefaults.standard.bool(forKey: "hideFromDock")
+        if hideFromDock {
+            NSApp.setActivationPolicy(.accessory)
+        } else {
+            NSApp.setActivationPolicy(.regular)
+        }
+        
+        // Apply dark mode preference
+        let darkModeEnabled = UserDefaults.standard.bool(forKey: "darkModeEnabled")
+        if darkModeEnabled {
+            NSApp.appearance = NSAppearance(named: .darkAqua)
+        } else {
+            NSApp.appearance = NSAppearance(named: .aqua)
+        }
+        
         // 1. Initialize the Tunnel Manager
         tunnelManager = TunnelManager()
 
@@ -338,7 +354,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                      self.pythonAppProcess = process
                      self.constructMenu()
                      self.sendUserNotification(identifier: "python_app_started_\(UUID().uuidString)",
-                                                title: "Python Uygulaması Başlatıldı",
+                                                title: NSLocalizedString("Python Uygulaması Başlatıldı", comment: ""),
                                                 body: "\((finalScriptPath as NSString).lastPathComponent) çalıştırıldı (PID: \(process.processIdentifier)).")
                 }
             } catch {
@@ -389,7 +405,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             if let url = extractTryCloudflareURL(from: body) {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(url, forType: .string)
-                sendUserNotification(identifier: "url_copied_from_notif_\(UUID().uuidString)", title: "URL Kopyalandı", body: url)
+                sendUserNotification(identifier: "url_copied_from_notif_\(UUID().uuidString)", title: NSLocalizedString("URL Kopyalandı", comment: ""), body: url)
             }
         } else if identifier.starts(with: "vhost_success_") {
             askToOpenMampConfigFolder()
@@ -450,7 +466,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         // İsteğe bağlı olarak burada hemen bir bildirim gönderebiliriz:
         DispatchQueue.main.async {
              self.sendUserNotification(identifier: "python_app_stopping_\(UUID().uuidString)",
-                                        title: "Python Uygulaması Durduruluyor",
+                                        title: NSLocalizedString("Python Uygulaması Durduruluyor", comment: ""),
                                         body: "\((self.pythonScriptPath as NSString).lastPathComponent) için durdurma sinyali gönderildi.")
              // İsteğe bağlı: Kullanıcıya daha hızlı geri bildirim için menüyü hemen güncelleyebiliriz,
              // ancak termination handler'ın çalışmasını beklemek durumu daha doğru yansıtır.
@@ -482,8 +498,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         alert.messageText = "'\(tunnel.name)' Tünelini Sil"
         alert.informativeText = "Bu işlem tüneli Cloudflare'dan kalıcı olarak silecektir.\n\n⚠️ BU İŞLEM GERİ ALINAMAZ! ⚠️\n\nEmin misiniz?"
         alert.alertStyle = .critical
-        alert.addButton(withTitle: "Evet, Kalıcı Olarak Sil")
-        alert.addButton(withTitle: "İptal")
+        alert.addButton(withTitle: NSLocalizedString("Evet, Kalıcı Olarak Sil", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("İptal", comment: ""))
         if alert.buttons.count > 0 { alert.buttons[0].hasDestructiveAction = true }
 
         DispatchQueue.main.async {
@@ -496,7 +512,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     DispatchQueue.main.async {
                         switch result {
                         case .success:
-                            self.sendUserNotification(identifier:"deleted_\(tunnel.id)", title: "Tünel Silindi", body: "'\(tunnel.name)' Cloudflare'dan silindi.")
+                            self.sendUserNotification(identifier:"deleted_\(tunnel.id)", title: NSLocalizedString("Tünel Silindi", comment: ""), body: "'\(tunnel.name)' " + NSLocalizedString(" Cloudflare'dan silindi.", comment: ""))
                             self.askToDeleteLocalFiles(for: tunnel)
                             self.tunnelManager?.findManagedTunnels() // Refresh list
                         case .failure(let error):
@@ -517,8 +533,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         let alert = NSAlert()
         alert.messageText = "DNS Kaydı Yönlendir"
         alert.informativeText = "'\(tunnel.name)' (UUID: \(tunnel.uuidFromConfig ?? "N/A")) tüneline yönlendirilecek hostname'i girin:"
-        alert.addButton(withTitle: "Yönlendir")
-        alert.addButton(withTitle: "İptal")
+        alert.addButton(withTitle: NSLocalizedString("Yönlendir", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("İptal", comment: ""))
 
         let inputField = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
         inputField.stringValue = suggestedHostname
@@ -539,8 +555,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let output):
-                        self.showInfoAlert(title: "DNS Yönlendirme Başarılı", message: "'\(hostname)' için DNS kaydı başarıyla oluşturuldu veya güncellendi.\n\n\(output)")
-                        self.sendUserNotification(identifier:"dns_routed_\(tunnel.id)_\(hostname)", title: "DNS Yönlendirildi", body: "\(hostname) -> \(tunnel.name)")
+                        self.showInfoAlert(title: NSLocalizedString("DNS Yönlendirme Başarılı", comment: ""), message: "'\(hostname)' için DNS kaydı başarıyla oluşturuldu veya güncellendi.\n\n\(output)")
+                        self.sendUserNotification(identifier:"dns_routed_\(tunnel.id)_\(hostname)", title: NSLocalizedString("DNS Yönlendirildi", comment: ""), body: "\(hostname) -> \(tunnel.name)")
                     case .failure(let error):
                         self.showErrorAlert(message: "'\(hostname)' için DNS yönlendirme hatası:\n\(error.localizedDescription)")
                     }
@@ -563,21 +579,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
     @objc func copyQuickTunnelURLAction(_ sender: NSMenuItem) {
         guard let tunnelData = sender.representedObject as? QuickTunnelData, let urlString = tunnelData.publicURL else {
-            sendUserNotification(identifier: "copy_fail_\(UUID().uuidString)", title: "Kopyalanamadı", body: "Tünel URL'si henüz mevcut değil.")
+            sendUserNotification(identifier: "copy_fail_\(UUID().uuidString)", title: NSLocalizedString("Kopyalanamadı", comment: ""), body: NSLocalizedString("Tünel URL'si henüz mevcut değil.", comment: ""))
             return
         }
         NSPasteboard.general.clearContents(); NSPasteboard.general.setString(urlString, forType: .string)
-        sendUserNotification(identifier: "url_copied_\(tunnelData.id)", title: "URL Kopyalandı", body: urlString)
+        sendUserNotification(identifier: "url_copied_\(tunnelData.id)", title: NSLocalizedString("URL Kopyalandı", comment: ""), body: urlString)
     }
     
     @objc func openQuickTunnelURLAction(_ sender: NSMenuItem) {
         guard let tunnelData = sender.representedObject as? QuickTunnelData, let urlString = tunnelData.publicURL else {
-            sendUserNotification(identifier: "open_fail_\(UUID().uuidString)", title: "Açılamadı", body: "Tünel URL'si henüz mevcut değil.")
+            sendUserNotification(identifier: "open_fail_\(UUID().uuidString)", title: NSLocalizedString("Açılamadı", comment: ""), body: NSLocalizedString("Tünel URL'si henüz mevcut değil.", comment: ""))
             return
         }
         
         guard let url = URL(string: urlString) else {
-            sendUserNotification(identifier: "invalid_url_\(UUID().uuidString)", title: "Geçersiz URL", body: "URL açılamadı: \(urlString)")
+            sendUserNotification(identifier: "invalid_url_\(UUID().uuidString)", title: NSLocalizedString("Geçersiz URL", comment: ""), body: NSLocalizedString("URL açılamadı: ", comment: "") + "\(urlString)")
             return
         }
         
@@ -596,7 +612,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             DispatchQueue.main.async {
                 switch result {
                 case .success:
-                    self?.sendUserNotification(identifier: "login_check_complete", title: "Cloudflare Giriş Kontrolü", body: "İşlem başlatıldı veya durum kontrol edildi. Gerekirse tarayıcıyı kontrol edin.")
+                    self?.sendUserNotification(identifier: "login_check_complete", title: NSLocalizedString("Cloudflare Giriş Kontrolü", comment: ""), body: NSLocalizedString("İşlem başlatıldı veya durum kontrol edildi. Gerekirse tarayıcıyı kontrol edin.", comment: ""))
                 case .failure(let error):
                     self?.showErrorAlert(message: "Cloudflare giriş işlemi sırasında hata:\n\(error.localizedDescription)")
                 }
@@ -616,12 +632,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 switch result {
                 case .success(let newStateEnabled):
                     sender.state = newStateEnabled ? .on : .off
-                    self.sendUserNotification(identifier: "launch_toggle", title: "Açılışta Başlatma", body: newStateEnabled ? "Etkinleştirildi" : "Devre Dışı Bırakıldı")
+                    self.sendUserNotification(identifier: "launch_toggle", title: NSLocalizedString("Açılışta Başlatma", comment: ""), body: newStateEnabled ? NSLocalizedString("Etkinleştirildi", comment: "") : NSLocalizedString("Devre Dışı Bırakıldı", comment: ""))
                 case .failure(let error):
                     self.showErrorAlert(message: "Oturum açıldığında başlatma ayarı değiştirilirken hata:\n\(error.localizedDescription)")
                     sender.state = tunnelManager.isLaunchAtLoginEnabled() ? .on : .off // Revert UI
                 }
             }
+        }
+    }
+
+    @objc func openCloudflareDashboardAction() {
+        if let url = URL(string: "https://dash.cloudflare.com") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @objc func checkCloudflareLoginStatusAction() {
+        let isLoggedIn = tunnelManager?.isLoggedIn ?? false
+        if isLoggedIn {
+            sendUserNotification(identifier: "login_status_check", title: NSLocalizedString("Cloudflared Hesabı Kontrol", comment: ""), body: NSLocalizedString("✅ Cloudflare hesabına giriş yapılmış durumda.", comment: ""))
+        } else {
+            sendUserNotification(identifier: "login_status_check", title: NSLocalizedString("Cloudflared Hesabı Kontrol", comment: ""), body: NSLocalizedString("⚠️ Cloudflare hesabına giriş yapılmamış.", comment: ""))
         }
     }
 
@@ -645,8 +676,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
              self?.executeMampCommand(
                  scriptName: self?.mampStartScript ?? "start.sh",
-                 successMessage: "MAMP sunucuları (Apache & MySQL) başlatıldı.",
-                 failureMessage: "MAMP sunucuları başlatılırken hata oluştu."
+                 successMessage: NSLocalizedString("MAMP sunucuları (Apache & MySQL) başlatıldı.", comment: ""),
+                 failureMessage: NSLocalizedString("MAMP sunucuları başlatılırken hata oluştu.", comment: "")
              )
          }
      }
@@ -654,8 +685,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
      @objc func stopMampServersAction() {
          executeMampCommand(
              scriptName: mampStopScript,
-             successMessage: "MAMP sunucuları (Apache & MySQL) durduruldu.",
-             failureMessage: "MAMP sunucuları durdurulurken hata oluştu."
+             successMessage: NSLocalizedString("MAMP sunucuları (Apache & MySQL) durduruldu.", comment: ""),
+             failureMessage: NSLocalizedString("MAMP sunucuları durdurulurken hata oluştu.", comment: "")
          )
      }
      // --- [END NEW] ---
@@ -668,6 +699,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         view: Content
     ) {
         DispatchQueue.main.async {
+            // Close the menu bar menu if it's open
+            self.statusItem?.menu?.cancelTracking()
+            
             guard let manager = self.tunnelManager else {
                 print("❌ Hata: showWindow çağrıldı ancak TunnelManager mevcut değil.")
                 self.showErrorAlert(message: "Pencere açılamadı: Tünel Yöneticisi bulunamadı.")
@@ -686,13 +720,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
             let hostingController = NSHostingController(rootView: view.environmentObject(manager))
             let newWindow = NSWindow(contentViewController: hostingController)
             newWindow.title = title
-            newWindow.styleMask = [.titled, .closable, .miniaturizable, .resizable] // Added standard style masks
-            newWindow.level = .normal
+            newWindow.styleMask = [.titled, .closable, .miniaturizable, .resizable]
+            newWindow.level = .normal // Normal window level, not floating
             newWindow.isReleasedWhenClosed = false
-            newWindow.center()
-            newWindow.delegate = self // Set delegate to handle close behavior
+            
+            // Center window on screen
+            if let screen = NSScreen.main {
+                let screenRect = screen.visibleFrame
+                let windowSize = newWindow.frame.size
+                let x = screenRect.origin.x + (screenRect.width - windowSize.width) / 2
+                let y = screenRect.origin.y + (screenRect.height - windowSize.height) / 2
+                newWindow.setFrameOrigin(NSPoint(x: x, y: y))
+            } else {
+                newWindow.center()
+            }
+            
+            newWindow.delegate = self
             windowPropertySetter(newWindow)
             newWindow.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
         }
     }
 
@@ -701,7 +747,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { newWindow in self.settingsWindow = newWindow },
             { self.settingsWindow },
-            title: "Cloudflared Manager Ayarları",
+            title: NSLocalizedString("Cloudflared Manager Ayarları", comment: ""),
             view: settingsView
         )
     }
@@ -710,7 +756,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { self.quickTunnelWindow = $0 },
             { self.quickTunnelWindow },
-            title: "Hızlı Tünel",
+            title: NSLocalizedString("Hızlı Tünel", comment: ""),
             view: QuickTunnelView()
         )
     }
@@ -720,7 +766,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { newWindow in self.settingsWindow = newWindow },
             { self.settingsWindow },
-            title: "Geçmiş ve Loglar",
+            title: NSLocalizedString("Geçmiş ve Loglar", comment: ""),
             view: historyView
         )
     }
@@ -730,7 +776,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { self.createManagedTunnelWindow = $0 },
             { self.createManagedTunnelWindow },
-            title: "Yeni Yönetilen Tünel",
+            title: NSLocalizedString("Yeni Yönetilen Tünel", comment: ""),
             view: createView
         )
     }
@@ -745,7 +791,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { newWindow in self.createFromMampWindow = newWindow },
             { self.createFromMampWindow },
-            title: "MAMP Sitesinden Tünel Oluştur",
+            title: NSLocalizedString("MAMP Sitesinden Tünel Oluştur", comment: ""),
             view: createView
         )
     }
@@ -755,7 +801,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { newWindow in self.createFromDockerWindow = newWindow },
             { self.createFromDockerWindow },
-            title: "Docker Konteynerinden Tünel Oluştur",
+            title: NSLocalizedString("Docker Konteynerinden Tünel Oluştur", comment: ""),
             view: createView
         )
     }
@@ -765,7 +811,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { self.quickTunnelWindow = $0 },
             { self.quickTunnelWindow },
-            title: "Hızlı Tünel",
+            title: NSLocalizedString("Hızlı Tünel", comment: ""),
             view: quickTunnelView
         )
     }
@@ -780,7 +826,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { newWindow in self.dashboardWindow = newWindow },
             { self.dashboardWindow },
-            title: "Gösterge Paneli",
+            title: NSLocalizedString("Gösterge Paneli", comment: ""),
             view: dashboardView
         )
     }
@@ -791,7 +837,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { self.fileShareWindow = $0 },
             { self.fileShareWindow },
-            title: "Dosya Paylaşımı",
+            title: NSLocalizedString("Dosya Paylaşımı", comment: ""),
             view: fileShareView
         )
     }
@@ -800,7 +846,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         showWindow(
             { self.onboardingWindow = $0 },
             { self.onboardingWindow },
-            title: "Hoşgeldiniz",
+            title: NSLocalizedString("Hoşgeldiniz", comment: ""),
             view: OnboardingView()
         )
     }
@@ -809,14 +855,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     private func showInfoAlert(title: String, message: String) {
         DispatchQueue.main.async {
             NSApp.activate(ignoringOtherApps: true)
-            let alert = NSAlert(); alert.messageText = title; alert.informativeText = message; alert.alertStyle = .informational; alert.addButton(withTitle: "Tamam");
+            let alert = NSAlert(); alert.messageText = title; alert.informativeText = message; alert.alertStyle = .informational; alert.addButton(withTitle: NSLocalizedString("Tamam", comment: ""));
             alert.runModal()
         }
     }
     private func showErrorAlert(message: String) {
         DispatchQueue.main.async {
             NSApp.activate(ignoringOtherApps: true)
-            let alert = NSAlert(); alert.messageText = "Hata"; alert.informativeText = message; alert.alertStyle = .critical; alert.addButton(withTitle: "Tamam");
+            let alert = NSAlert(); alert.messageText = NSLocalizedString("Hata", comment: ""); alert.informativeText = message; alert.alertStyle = .critical; alert.addButton(withTitle: NSLocalizedString("Tamam", comment: ""));
             alert.runModal()
         }
     }
@@ -840,7 +886,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
 
         DispatchQueue.main.async {
             NSApp.activate(ignoringOtherApps: true)
-            let alert = NSAlert(); alert.messageText = "Yerel Dosyaları Sil?"; alert.informativeText = "'\(tunnel.name)' tüneli Cloudflare'dan silindi.\nİlişkili yerel dosyaları da silmek ister misiniz?\n\n- \(fileNames.joined(separator: "\n- "))"; alert.alertStyle = .warning; alert.addButton(withTitle: "Evet, Yerel Dosyaları Sil"); alert.addButton(withTitle: "Hayır, Dosyaları Koruyun")
+            let alert = NSAlert(); alert.messageText = NSLocalizedString("Yerel Dosyaları Sil?", comment: ""); alert.informativeText = "'\(tunnel.name)' tüneli Cloudflare'dan silindi.\nİlişkili yerel dosyaları da silmek ister misiniz?\n\n- \(fileNames.joined(separator: "\n- "))"; alert.alertStyle = .warning; alert.addButton(withTitle: NSLocalizedString("Evet, Yerel Dosyaları Sil", comment: "")); alert.addButton(withTitle: NSLocalizedString("Hayır, Dosyaları Koruyun", comment: ""))
             if alert.buttons.count > 0 { alert.buttons[0].hasDestructiveAction = true }
 
             if alert.runModal() == .alertFirstButtonReturn {
@@ -850,7 +896,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                     do { try FileManager.default.removeItem(atPath: path); print("   Silindi: \(path)") }
                     catch { print("❌ Yerel dosya silme hatası: \(path) - \(error)"); errors.append("\((path as NSString).lastPathComponent): \(error.localizedDescription)") }
                 }
-                if errors.isEmpty { self.sendUserNotification(identifier:"local_deleted_\(tunnel.id)", title: "Yerel Dosyalar Silindi", body: "'\(tunnel.name)' ile ilişkili dosyalar silindi.") }
+                if errors.isEmpty { self.sendUserNotification(identifier:"local_deleted_\(tunnel.id)", title: NSLocalizedString("Yerel Dosyalar Silindi", comment: ""), body: "'\(tunnel.name)' ile ilişkili dosyalar silindi.") }
                 else { self.showErrorAlert(message: "Bazı yerel dosyalar silinirken hata oluştu:\n\(errors.joined(separator: "\n"))") }
                 self.tunnelManager?.findManagedTunnels() // Refresh list
             } else { print("Yerel dosyalar korunuyor.") }
@@ -863,10 +909,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         DispatchQueue.main.async {
             NSApp.activate(ignoringOtherApps: true)
             let alert = NSAlert()
-            alert.messageText = "MAMP Yapılandırması Güncellendi"
-            alert.informativeText = "MAMP vHost dosyası güncellendi. Ayarların etkili olması için MAMP sunucularını yeniden başlatmanız gerekir.\n\nMAMP Apache yapılandırma klasörünü açmak ister misiniz?"
-            alert.addButton(withTitle: "Klasörü Aç")
-            alert.addButton(withTitle: "Hayır")
+            alert.messageText = NSLocalizedString("MAMP Yapılandırması Güncellendi", comment: "")
+            alert.informativeText = NSLocalizedString("MAMP vHost dosyası güncellendi. Ayarların etkili olması için MAMP sunucularını yeniden başlatmanız gerekir.\n\nMAMP Apache yapılandırma klasörünü açmak ister misiniz?", comment: "")
+            alert.addButton(withTitle: NSLocalizedString("Klasörü Aç", comment: ""))
+            alert.addButton(withTitle: NSLocalizedString("Hayır", comment: ""))
             alert.alertStyle = .informational
 
             if alert.runModal() == .alertFirstButtonReturn {
@@ -971,7 +1017,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
                 DispatchQueue.main.async {
                     if process.terminationStatus == 0 {
                         print("✅ MAMP komutu başarıyla tamamlandı: \(scriptName)")
-                        self.sendUserNotification(identifier: "mamp_action_\(scriptName)_\(UUID().uuidString)", title: "MAMP İşlemi", body: successMessage)
+                        self.sendUserNotification(identifier: "mamp_action_\(scriptName)_\(UUID().uuidString)", title: NSLocalizedString("MAMP İşlemi", comment: ""), body: successMessage)
                     } else {
                         var errorDetail = "MAMP betiği '\(scriptName)' (Çıkış Kodu: \(process.terminationStatus)) ile başarısız oldu."
                         if !errorString.isEmpty {

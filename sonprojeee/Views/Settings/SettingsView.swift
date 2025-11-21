@@ -27,16 +27,30 @@ struct SettingsView: View {
     @State private var launchAtLoginLoading: Bool = false
     @State private var selectedTab: SettingsTab = .general
     @State private var hoveredButton: String? = nil
+    @State private var hideFromDock: Bool = false
     
     enum SettingsTab: String, CaseIterable {
-        case general = "Genel"
-        case paths = "Yollar"
-        case appearance = "Görünüm"
-        case notifications = "Bildirimler"
-        case history = "Geçmiş"
-        case backup = "Yedekleme"
-        case advanced = "Gelişmiş"
-        case about = "Hakkında"
+        case general = "general"
+        case paths = "paths"
+        case appearance = "appearance"
+        case notifications = "notifications"
+        case history = "history"
+        case backup = "backup"
+        case advanced = "advanced"
+        case about = "about"
+        
+        var title: String {
+            switch self {
+            case .general: return NSLocalizedString("Genel", comment: "")
+            case .paths: return NSLocalizedString("Yollar", comment: "")
+            case .appearance: return NSLocalizedString("Görünüm", comment: "")
+            case .notifications: return NSLocalizedString("Bildirimler", comment: "")
+            case .history: return NSLocalizedString("Geçmiş", comment: "")
+            case .backup: return NSLocalizedString("Yedekleme", comment: "")
+            case .advanced: return NSLocalizedString("Gelişmiş", comment: "")
+            case .about: return NSLocalizedString("Hakkında", comment: "")
+            }
+        }
         
         var icon: String {
             switch self {
@@ -95,10 +109,14 @@ struct SettingsView: View {
                         )
                 )
         }
+        .onChange(of: darkModeEnabled) { _, newValue in
+            applyDarkMode(newValue)
+        }
         .padding(24)
         .frame(width: 1000, height: 700)
         .background(modernBackground)
         .onAppear {
+            applyDarkMode(darkModeEnabled)
             setupInitialValues()
         }
     }
@@ -198,7 +216,7 @@ struct SettingsView: View {
                     .foregroundColor(selectedTab == tab ? .white : .primary)
                     .frame(width: 20)
                 
-                Text(tab.rawValue)
+                Text(tab.title)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(selectedTab == tab ? .white : .primary)
                 
@@ -247,13 +265,13 @@ struct SettingsView: View {
                     .frame(width: 8, height: 8)
                     .shadow(color: FileManager.default.fileExists(atPath: tempCloudflaredPath) ? .green : .red, radius: 4)
                 
-                Text(FileManager.default.fileExists(atPath: tempCloudflaredPath) ? "Hazır" : "Yapılandırma Gerekli")
+                Text(FileManager.default.fileExists(atPath: tempCloudflaredPath) ? NSLocalizedString("Hazır", comment: "") : NSLocalizedString("Yapılandırma Gerekli", comment: ""))
                     .font(.caption.bold())
                     .foregroundColor(FileManager.default.fileExists(atPath: tempCloudflaredPath) ? .green : .red)
             }
             
             Button(action: { manager.checkCloudflaredExecutable() }) {
-                Text("Durumu Kontrol Et")
+                Text(NSLocalizedString("Durumu Kontrol Et", comment: ""))
                     .font(.caption)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -279,7 +297,7 @@ struct SettingsView: View {
             // Header
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(selectedTab.rawValue)
+                    Text(selectedTab.title)
                         .font(.system(size: 32, weight: .bold))
                         .foregroundColor(.primary)
                     
@@ -306,14 +324,14 @@ struct SettingsView: View {
     
     private var headerSubtitle: String {
         switch selectedTab {
-        case .general: return "Temel uygulama ayarları ve yapılandırma"
-        case .paths: return "Dosya yolları ve dizin ayarları"
-        case .appearance: return "Görünüm ve tema tercihleri"
-        case .notifications: return "Bildirim ayarları ve tercihler"
-        case .history: return "Bildirimler, hatalar ve log kayıtları"
-        case .backup: return "Yedekleme ve geri yükleme işlemleri"
-        case .advanced: return "Gelişmiş özellikler ve araçlar"
-        case .about: return "Uygulama hakkında bilgiler"
+        case .general: return NSLocalizedString("Temel uygulama ayarları ve yapılandırma", comment: "")
+        case .paths: return NSLocalizedString("Dosya yolları ve dizin ayarları", comment: "")
+        case .appearance: return NSLocalizedString("Görünüm ve tema tercihleri", comment: "")
+        case .notifications: return NSLocalizedString("Bildirim ayarları ve tercihler", comment: "")
+        case .history: return NSLocalizedString("Bildirimler, hatalar ve log kayıtları", comment: "")
+        case .backup: return NSLocalizedString("Yedekleme ve geri yükleme işlemleri", comment: "")
+        case .advanced: return NSLocalizedString("Gelişmiş özellikler ve araçlar", comment: "")
+        case .about: return NSLocalizedString("Uygulama hakkında bilgiler", comment: "")
         }
     }
     
@@ -335,27 +353,27 @@ struct SettingsView: View {
     private var generalTabContent: some View {
         LazyVStack(spacing: 24) {
             // Cloudflared Configuration
-            modernCard("Cloudflared Yapılandırması", icon: "terminal") {
+            modernCard(NSLocalizedString("Cloudflared Yapılandırması", comment: ""), icon: "terminal") {
                 VStack(spacing: 16) {
-                    modernFormField("Yürütülebilir Dosya Yolu", value: $tempCloudflaredPath) {
+                    modernFormField(NSLocalizedString("Yürütülebilir Dosya Yolu", comment: ""), value: $tempCloudflaredPath) {
                         HStack(spacing: 8) {
-                            Button("Gözat") { chooseCloudflared() }
+                            Button(NSLocalizedString("Gözat", comment: "")) { chooseCloudflared() }
                                 .buttonStyle(ModernButtonStyle(color: .blue, size: .small))
                             
-                            Button("Kaydet") { saveCloudflaredPath() }
+                            Button(NSLocalizedString("Kaydet", comment: "")) { saveCloudflaredPath() }
                                 .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
                                 .disabled(tempCloudflaredPath.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         }
                     }
                     
-                    modernFormField("Durum Kontrol Aralığı", value: .constant("\(Int(manager.checkInterval)) saniye")) {
+                    modernFormField(NSLocalizedString("Durum Kontrol Aralığı", comment: ""), value: .constant("\(Int(manager.checkInterval)) \(NSLocalizedString("saniye", comment: ""))")) {
                         VStack(spacing: 8) {
                             HStack {
                                 Slider(value: Binding(
                                     get: { Double(Int(intervalString) ?? Int(manager.checkInterval)) },
                                     set: { newVal in intervalString = String(Int(newVal)) }
                                 ), in: 5...300, step: 1) {
-                                    Text("Aralık")
+                                    Text(NSLocalizedString("Aralık", comment: ""))
                                 }
                                 .accentColor(currentAccentColor)
                                 
@@ -365,7 +383,7 @@ struct SettingsView: View {
                                     .frame(width: 40, alignment: .trailing)
                             }
                             
-                            Button("Uygula") { applyInterval() }
+                            Button(NSLocalizedString("Uygula", comment: "")) { applyInterval() }
                                 .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
                         }
                     }
@@ -373,20 +391,20 @@ struct SettingsView: View {
             }
             
             // System Behavior
-            modernCard("Sistem Davranışı", icon: "gearshape") {
+            modernCard(NSLocalizedString("Sistem Davranışı", comment: ""), icon: "gearshape") {
                 VStack(spacing: 16) {
-                    modernToggle("Otomatik Tünel Başlatma", isOn: $autoStartTunnels, description: "Uygulama açıldığında tünelleri otomatik başlat")
+                    modernToggle(NSLocalizedString("Otomatik Tünel Başlatma", comment: ""), isOn: $autoStartTunnels, description: NSLocalizedString("Uygulama açıldığında tünelleri otomatik başlat", comment: ""))
                     
-                    modernToggle("Otomatik MAMP Başlatma", isOn: $autoStartMamp, description: "Uygulama açıldığında MAMP'ı otomatik başlat ve kapanırken durdur")
+                    modernToggle(NSLocalizedString("Otomatik MAMP Başlatma", comment: ""), isOn: $autoStartMamp, description: NSLocalizedString("Uygulama açıldığında MAMP'ı otomatik başlat ve kapanırken durdur", comment: ""))
                     
-                    modernToggle("Sistem Tepsisine Küçült", isOn: $minimizeToTray, description: "Pencere kapatıldığında uygulamayı gizle")
+                    modernToggle(NSLocalizedString("Sistem Tepsisine Küçült", comment: ""), isOn: $minimizeToTray, description: NSLocalizedString("Pencere kapatıldığında uygulamayı gizle", comment: ""))
                     
-                    modernToggle("Durum Çubuğunda Göster", isOn: $showStatusInMenuBar, description: "Menü çubuğunda tünel durumunu göster")
+                    modernToggle(NSLocalizedString("Durum Çubuğunda Göster", comment: ""), isOn: $showStatusInMenuBar, description: NSLocalizedString("Menü çubuğunda tünel durumunu göster", comment: ""))
                     
                     if #available(macOS 13.0, *) {
-                        modernToggle("Oturum Açıldığında Başlat", 
+                        modernToggle(NSLocalizedString("Oturum Açıldığında Başlat", comment: ""), 
                                    isOn: Binding(get: { launchAtLogin }, set: { setLaunchAtLogin($0) }),
-                                   description: "Sisteme giriş yapıldığında otomatik başlat")
+                                   description: NSLocalizedString("Sisteme giriş yapıldığında otomatik başlat", comment: ""))
                             .disabled(launchAtLoginLoading)
                     }
                 }
@@ -397,18 +415,18 @@ struct SettingsView: View {
     private var pathsTabContent: some View {
         LazyVStack(spacing: 24) {
             // Cloudflared Paths
-            modernCard("Cloudflared Dizinleri", icon: "network") {
+            modernCard(NSLocalizedString("Cloudflared Dizinleri", comment: ""), icon: "network") {
                 VStack(spacing: 16) {
-                    modernFormField("Tünel Yapılandırma Dizini (.cloudflared)", value: $tempCloudflaredDirPath) {
+                    modernFormField(NSLocalizedString("Tünel Yapılandırma Dizini (.cloudflared)", comment: ""), value: $tempCloudflaredDirPath) {
                         HStack(spacing: 8) {
-                            Button("Gözat") { chooseCloudflaredDirectory() }
+                            Button(NSLocalizedString("Gözat", comment: "")) { chooseCloudflaredDirectory() }
                                 .buttonStyle(ModernButtonStyle(color: .cyan, size: .small))
                             
-                            Button("Kaydet") { saveCloudflaredDirectory() }
+                            Button(NSLocalizedString("Kaydet", comment: "")) { saveCloudflaredDirectory() }
                                 .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
                                 .disabled(tempCloudflaredDirPath.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                             
-                            Button("Varsayılan") { resetCloudflaredDirectory() }
+                            Button(NSLocalizedString("Varsayılan", comment: "")) { resetCloudflaredDirectory() }
                                 .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
                         }
                     }
@@ -416,7 +434,7 @@ struct SettingsView: View {
                     HStack {
                         Image(systemName: "info.circle")
                             .foregroundColor(.blue)
-                        Text("Tünel config dosyalarınızın (*.yml) saklandığı dizin")
+                        Text(NSLocalizedString("Tünel config dosyalarınızın (*.yml) saklandığı dizin", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
@@ -425,7 +443,7 @@ struct SettingsView: View {
                         Button(action: { openInFinder(manager.cloudflaredDirectoryPath) }) {
                             HStack(spacing: 4) {
                                 Image(systemName: "folder")
-                                Text("Finder'da Aç")
+                                Text(NSLocalizedString("Finder'da Aç", comment: ""))
                             }
                             .font(.caption)
                         }
@@ -436,14 +454,14 @@ struct SettingsView: View {
             }
             
             // MAMP Paths
-            modernCard("MAMP Yapılandırması", icon: "server.rack") {
+            modernCard(NSLocalizedString("MAMP Yapılandırması", comment: ""), icon: "server.rack") {
                 VStack(spacing: 16) {
-                    modernFormField("MAMP Ana Dizini", value: $tempMampPath) {
+                    modernFormField(NSLocalizedString("MAMP Ana Dizini", comment: ""), value: $tempMampPath) {
                         HStack(spacing: 8) {
-                            Button("Gözat") { chooseMampPath() }
+                            Button(NSLocalizedString("Gözat", comment: "")) { chooseMampPath() }
                                 .buttonStyle(ModernButtonStyle(color: .blue, size: .small))
                             
-                            Button("Kaydet") { saveMampPath() }
+                            Button(NSLocalizedString("Kaydet", comment: "")) { saveMampPath() }
                                 .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
                                 .disabled(tempMampPath.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         }
@@ -451,15 +469,15 @@ struct SettingsView: View {
                     
                     Divider()
                     
-                    modernFormField("Sites Dizini (Özel)", value: $tempMampSitesPath) {
+                    modernFormField(NSLocalizedString("Sites Dizini (Özel)", comment: ""), value: $tempMampSitesPath) {
                         HStack(spacing: 8) {
-                            Button("Gözat") { chooseMampSitesPath() }
+                            Button(NSLocalizedString("Gözat", comment: "")) { chooseMampSitesPath() }
                                 .buttonStyle(ModernButtonStyle(color: .green, size: .small))
                             
-                            Button("Kaydet") { saveMampSitesPath() }
+                            Button(NSLocalizedString("Kaydet", comment: "")) { saveMampSitesPath() }
                                 .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
                             
-                            Button("Varsayılan") { resetMampSitesPath() }
+                            Button(NSLocalizedString("Varsayılan", comment: "")) { resetMampSitesPath() }
                                 .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
                         }
                     }
@@ -476,7 +494,7 @@ struct SettingsView: View {
                         Button(action: { openInFinder(manager.mampSitesDirectoryPath) }) {
                             HStack(spacing: 4) {
                                 Image(systemName: "folder")
-                                Text("Finder'da Aç")
+                                Text(NSLocalizedString("Finder'da Aç", comment: ""))
                             }
                             .font(.caption)
                         }
@@ -486,45 +504,45 @@ struct SettingsView: View {
                     
                     Divider()
                     
-                    modernFormField("Apache Config Dizini (Özel)", value: $tempMampApacheConfigPath) {
+                    modernFormField(NSLocalizedString("Apache Config Dizini (Özel)", comment: ""), value: $tempMampApacheConfigPath) {
                         HStack(spacing: 8) {
-                            Button("Gözat") { chooseMampApacheConfigPath() }
+                            Button(NSLocalizedString("Gözat", comment: "")) { chooseMampApacheConfigPath() }
                                 .buttonStyle(ModernButtonStyle(color: .orange, size: .small))
                             
-                            Button("Kaydet") { saveMampApacheConfigPath() }
+                            Button(NSLocalizedString("Kaydet", comment: "")) { saveMampApacheConfigPath() }
                                 .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
                             
-                            Button("Varsayılan") { resetMampApacheConfigPath() }
+                            Button(NSLocalizedString("Varsayılan", comment: "")) { resetMampApacheConfigPath() }
                                 .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
                         }
                     }
                     
                     Divider()
                     
-                    modernFormField("vHost Config Dosyası (Özel)", value: $tempMampVHostConfPath) {
+                    modernFormField(NSLocalizedString("vHost Config Dosyası (Özel)", comment: ""), value: $tempMampVHostConfPath) {
                         HStack(spacing: 8) {
-                            Button("Gözat") { chooseMampVHostConfPath() }
+                            Button(NSLocalizedString("Gözat", comment: "")) { chooseMampVHostConfPath() }
                                 .buttonStyle(ModernButtonStyle(color: .purple, size: .small))
                             
-                            Button("Kaydet") { saveMampVHostConfPath() }
+                            Button(NSLocalizedString("Kaydet", comment: "")) { saveMampVHostConfPath() }
                                 .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
                             
-                            Button("Varsayılan") { resetMampVHostConfPath() }
+                            Button(NSLocalizedString("Varsayılan", comment: "")) { resetMampVHostConfPath() }
                                 .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
                         }
                     }
                     
                     Divider()
                     
-                    modernFormField("httpd.conf Dosyası (Özel)", value: $tempMampHttpdConfPath) {
+                    modernFormField(NSLocalizedString("httpd.conf Dosyası (Özel)", comment: ""), value: $tempMampHttpdConfPath) {
                         HStack(spacing: 8) {
-                            Button("Gözat") { chooseMampHttpdConfPath() }
+                            Button(NSLocalizedString("Gözat", comment: "")) { chooseMampHttpdConfPath() }
                                 .buttonStyle(ModernButtonStyle(color: .red, size: .small))
                             
-                            Button("Kaydet") { saveMampHttpdConfPath() }
+                            Button(NSLocalizedString("Kaydet", comment: "")) { saveMampHttpdConfPath() }
                                 .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
                             
-                            Button("Varsayılan") { resetMampHttpdConfPath() }
+                            Button(NSLocalizedString("Varsayılan", comment: "")) { resetMampHttpdConfPath() }
                                 .buttonStyle(ModernButtonStyle(color: .gray, size: .small))
                         }
                     }
@@ -533,29 +551,29 @@ struct SettingsView: View {
                     
                     VStack(spacing: 8) {
                         HStack {
-                            Text("Aktif Yollar:")
+                            Text(NSLocalizedString("Aktif Yollar:", comment: ""))
                                 .font(.headline)
                                 .foregroundColor(.secondary)
                             Spacer()
                         }
                         
-                        pathDisplayCard("Apache Config", path: manager.mampConfigDirectoryPath, icon: "folder.badge.gearshape")
-                        pathDisplayCard("Sites Directory", path: manager.mampSitesDirectoryPath, icon: "folder")
-                        pathDisplayCard("vHost Config", path: manager.mampVHostConfPath, icon: "doc.text")
+                        pathDisplayCard(NSLocalizedString("Apache Config", comment: ""), path: manager.mampConfigDirectoryPath, icon: "folder.badge.gearshape")
+                        pathDisplayCard(NSLocalizedString("Sites Directory", comment: ""), path: manager.mampSitesDirectoryPath, icon: "folder")
+                        pathDisplayCard(NSLocalizedString("vHost Config", comment: ""), path: manager.mampVHostConfPath, icon: "doc.text")
                         pathDisplayCard("httpd.conf", path: manager.mampHttpdConfPath, icon: "doc.text.fill")
                     }
                 }
             }
             
             // Python Project Paths
-            modernCard("Python Proje Ayarları", icon: "terminal") {
+            modernCard(NSLocalizedString("Python Proje Ayarları", comment: ""), icon: "terminal") {
                 VStack(spacing: 16) {
-                    modernFormField("Python Proje Dizini", value: $tempPythonProjectPath) {
+                    modernFormField(NSLocalizedString("Python Proje Dizini", comment: ""), value: $tempPythonProjectPath) {
                         HStack(spacing: 8) {
-                            Button("Gözat") { choosePythonProjectPath() }
+                            Button(NSLocalizedString("Gözat", comment: "")) { choosePythonProjectPath() }
                                 .buttonStyle(ModernButtonStyle(color: .green, size: .small))
                             
-                            Button("Kaydet") { savePythonProjectPath() }
+                            Button(NSLocalizedString("Kaydet", comment: "")) { savePythonProjectPath() }
                                 .buttonStyle(ModernButtonStyle(color: currentAccentColor, size: .small))
                                 .disabled(tempPythonProjectPath.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         }
@@ -568,11 +586,11 @@ struct SettingsView: View {
             }
             
             // Quick Access
-            modernCard("Hızlı Erişim", icon: "bolt.fill") {
+            modernCard(NSLocalizedString("Hızlı Erişim", comment: ""), icon: "bolt.fill") {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                     quickAccessButton("~/.cloudflared", icon: "folder", path: manager.cloudflaredDirectoryPath)
-                    quickAccessButton("MAMP Config", icon: "folder.badge.gearshape", path: manager.mampConfigDirectoryPath)
-                    quickAccessButton("vHost File", icon: "doc.text", path: manager.mampVHostConfPath)
+                    quickAccessButton(NSLocalizedString("MAMP Config", comment: ""), icon: "folder.badge.gearshape", path: manager.mampConfigDirectoryPath)
+                    quickAccessButton(NSLocalizedString("vHost File", comment: ""), icon: "doc.text", path: manager.mampVHostConfPath)
                     quickAccessButton("httpd.conf", icon: "doc.text.fill", path: manager.mampHttpdConfPath)
                 }
             }
@@ -582,12 +600,12 @@ struct SettingsView: View {
     private var appearanceTabContent: some View {
         LazyVStack(spacing: 24) {
             // Theme Settings
-            modernCard("Tema Ayarları", icon: "paintbrush") {
+            modernCard(NSLocalizedString("Tema Ayarları", comment: ""), icon: "paintbrush") {
                 VStack(spacing: 20) {
-                    modernToggle("Koyu Mod", isOn: $darkModeEnabled, description: "Karanlık tema kullan")
+                    modernToggle(NSLocalizedString("Koyu Mod", comment: ""), isOn: $darkModeEnabled, description: NSLocalizedString("Karanlık tema kullan", comment: ""))
                     
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Vurgu Rengi")
+                        Text(NSLocalizedString("Vurgu Rengi", comment: ""))
                             .font(.headline)
                         
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 12) {
@@ -600,13 +618,16 @@ struct SettingsView: View {
             }
             
             // Interface Options
-            modernCard("Arayüz Seçenekleri", icon: "rectangle.3.group") {
+            modernCard(NSLocalizedString("Arayüz Seçenekleri", comment: ""), icon: "rectangle.3.group") {
                 VStack(spacing: 16) {
-                    Text("Gelecek güncellemelerde daha fazla özelleştirme seçeneği eklenecek...")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.vertical, 20)
+                    modernToggle(
+                        NSLocalizedString("Dock'tan Gizle", comment: ""),
+                        isOn: $hideFromDock,
+                        description: NSLocalizedString("Uygulamayı Dock'tan gizle, sadece menü çubuğunda göster", comment: "")
+                    )
+                    .onChange(of: hideFromDock) { _, newValue in
+                        applyDockVisibility(newValue)
+                    }
                 }
             }
         }
@@ -614,15 +635,15 @@ struct SettingsView: View {
     
     private var notificationsTabContent: some View {
         LazyVStack(spacing: 24) {
-            modernCard("Bildirim Ayarları", icon: "bell") {
+            modernCard(NSLocalizedString("Bildirim Ayarları", comment: ""), icon: "bell") {
                 VStack(spacing: 16) {
-                    modernToggle("Bildirimleri Etkinleştir", isOn: $notificationsEnabled, description: "Sistem bildirimlerini göster")
+                    modernToggle(NSLocalizedString("Bildirimleri Etkinleştir", comment: ""), isOn: $notificationsEnabled, description: NSLocalizedString("Sistem bildirimlerini göster", comment: ""))
                     
                     if notificationsEnabled {
                         VStack(spacing: 12) {
-                            modernToggle("Tünel Durumu Bildirimleri", isOn: .constant(true), description: "Tünel başlatma/durdurma bildirimleri")
-                            modernToggle("Hata Bildirimleri", isOn: .constant(true), description: "Hata ve uyarı bildirimleri")
-                            modernToggle("Başarı Bildirimleri", isOn: .constant(true), description: "İşlem tamamlama bildirimleri")
+                            modernToggle(NSLocalizedString("Tünel Durumu Bildirimleri", comment: ""), isOn: .constant(true), description: NSLocalizedString("Tünel başlatma/durdurma bildirimleri", comment: ""))
+                            modernToggle(NSLocalizedString("Hata Bildirimleri", comment: ""), isOn: .constant(true), description: NSLocalizedString("Hata ve uyarı bildirimleri", comment: ""))
+                            modernToggle(NSLocalizedString("Başarı Bildirimleri", comment: ""), isOn: .constant(true), description: NSLocalizedString("İşlem tamamlama bildirimleri", comment: ""))
                         }
                         .padding(.leading, 20)
                     }
@@ -634,26 +655,26 @@ struct SettingsView: View {
     private var advancedTabContent: some View {
         LazyVStack(spacing: 24) {
             // MAMP Operations
-            modernCard("MAMP İşlemleri", icon: "server.rack") {
+            modernCard(NSLocalizedString("MAMP İşlemleri", comment: ""), icon: "server.rack") {
                 VStack(spacing: 12) {
-                    actionButton("MySQL Socket Düzelt", icon: "wrench.and.screwdriver", color: .orange) {
+                    actionButton(NSLocalizedString("MySQL Socket Düzelt", comment: ""), icon: "wrench.and.screwdriver", color: .orange) {
                         MampManager.shared.fixMySQLSocket { result in
                             DispatchQueue.main.async {
                                 switch result {
                                 case .success:
                                     let alert = NSAlert()
-                                    alert.messageText = "Başarılı"
+                                    alert.messageText = NSLocalizedString("Başarılı", comment: "")
                                     alert.informativeText = "MySQL socket bağlantısı düzeltildi (/tmp/mysql.sock -> MAMP)."
                                     alert.runModal()
                                 case .failure(let error):
                                     // Hata durumunda manuel çözüm öner
                                     let command = "sudo mkdir -p /var/mysql && sudo ln -sf /Applications/MAMP/tmp/mysql/mysql.sock /tmp/mysql.sock && sudo ln -sf /Applications/MAMP/tmp/mysql/mysql.sock /var/mysql/mysql.sock"
                                     let alert = NSAlert()
-                                    alert.messageText = "İşlem Başarısız"
-                                    alert.informativeText = "Hata: \(error.localizedDescription)\n\nEğer MAMP açıksa ve hala bu hatayı alıyorsanız, lütfen veritabanı bağlantı ayarlarınızda 'localhost' yerine '127.0.0.1' kullanın. Bu en kesin çözümdür."
+                                    alert.messageText = NSLocalizedString("İşlem Başarısız", comment: "")
+                                    alert.informativeText = "\(NSLocalizedString("Hata", comment: "")): \(error.localizedDescription)\n\nEğer MAMP açıksa ve hala bu hatayı alıyorsanız, lütfen veritabanı bağlantı ayarlarınızda 'localhost' yerine '127.0.0.1' kullanın. Bu en kesin çözümdür."
                                     alert.alertStyle = .warning
-                                    alert.addButton(withTitle: "Tamam")
-                                    alert.addButton(withTitle: "Komutu Kopyala")
+                                    alert.addButton(withTitle: NSLocalizedString("Tamam", comment: ""))
+                                    alert.addButton(withTitle: NSLocalizedString("Komutu Kopyala", comment: ""))
                                     
                                     let response = alert.runModal()
                                     if response == .alertSecondButtonReturn {
@@ -668,18 +689,18 @@ struct SettingsView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
-                    actionButton("phpMyAdmin Config Düzelt", icon: "gear.badge.checkmark", color: .purple) {
+                    actionButton(NSLocalizedString("phpMyAdmin Config Düzelt", comment: ""), icon: "gear.badge.checkmark", color: .purple) {
                         MampManager.shared.fixPhpMyAdminConfig { result in
                             DispatchQueue.main.async {
                                 switch result {
                                 case .success(let path):
                                     let alert = NSAlert()
-                                    alert.messageText = "Başarılı"
+                                    alert.messageText = NSLocalizedString("Başarılı", comment: "")
                                     alert.informativeText = "phpMyAdmin yapılandırması güncellendi (localhost -> 127.0.0.1).\n\nDosya: \(path)"
                                     alert.runModal()
                                 case .failure(let error):
                                     let alert = NSAlert()
-                                    alert.messageText = "Hata"
+                                    alert.messageText = NSLocalizedString("Hata", comment: "")
                                     alert.informativeText = "Düzeltme başarısız: \(error.localizedDescription)"
                                     alert.runModal()
                                 }
@@ -693,34 +714,34 @@ struct SettingsView: View {
             }
 
             // Cloudflare Operations
-            modernCard("Cloudflare İşlemleri", icon: "cloud") {
+            modernCard(NSLocalizedString("Cloudflare İşlemleri", comment: ""), icon: "cloud") {
                 VStack(spacing: 12) {
-                    actionButton("Cloudflare Hesabı Girişi", icon: "person.crop.circle.badge.checkmark", color: .blue) {
+                    actionButton(NSLocalizedString("Cloudflare Hesabı Girişi", comment: ""), icon: "person.crop.circle.badge.checkmark", color: .blue) {
                         manager.cloudflareLogin { _ in }
                     }
                     
-                    actionButton("Tünel Durumlarını Kontrol Et", icon: "clock.arrow.circlepath", color: .orange) {
+                    actionButton(NSLocalizedString("Tünel Durumlarını Kontrol Et", comment: ""), icon: "clock.arrow.circlepath", color: .orange) {
                         manager.checkAllManagedTunnelStatuses(forceCheck: true)
                     }
                 }
             }
             
             // Bulk Operations
-            modernCard("Toplu İşlemler", icon: "square.3.layers.3d") {
+            modernCard(NSLocalizedString("Toplu İşlemler", comment: ""), icon: "square.3.layers.3d") {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    actionButton("Tümünü Tara", icon: "arrow.clockwise", color: .blue) {
+                    actionButton(NSLocalizedString("Tümünü Tara", comment: ""), icon: "arrow.clockwise", color: .blue) {
                         manager.findManagedTunnels()
                     }
                     
-                    actionButton("Tümünü Başlat", icon: "play.circle.fill", color: .green) {
+                    actionButton(NSLocalizedString("Tümünü Başlat", comment: ""), icon: "play.circle.fill", color: .green) {
                         manager.startAllManagedTunnels()
                     }
                     
-                    actionButton("Tümünü Durdur", icon: "stop.circle.fill", color: .red) {
+                    actionButton(NSLocalizedString("Tümünü Durdur", comment: ""), icon: "stop.circle.fill", color: .red) {
                         manager.stopAllTunnels()
                     }
                     
-                    actionButton("Ayarları Sıfırla", icon: "arrow.counterclockwise", color: .purple) {
+                    actionButton(NSLocalizedString("Ayarları Sıfırla", comment: ""), icon: "arrow.counterclockwise", color: .purple) {
                         resetSettings()
                     }
                 }
@@ -730,7 +751,7 @@ struct SettingsView: View {
     
     private var aboutTabContent: some View {
         LazyVStack(spacing: 24) {
-            modernCard("Uygulama Bilgileri", icon: "info.circle") {
+            modernCard(NSLocalizedString("Uygulama Bilgileri", comment: ""), icon: "info.circle") {
                 VStack(spacing: 20) {
                     // App Icon
                     RoundedRectangle(cornerRadius: 20)
@@ -753,11 +774,11 @@ struct SettingsView: View {
                         Text("Cloudflared Manager")
                             .font(.title.bold())
                         
-                        Text("Version 1.1.0")
+                        Text("\(NSLocalizedString("Version", comment: "")) 1.1.0")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
-                        Text("Modern cloudflared tünel yönetim aracı")
+                        Text(NSLocalizedString("Modern cloudflared tünel yönetim aracı", comment: ""))
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -766,10 +787,10 @@ struct SettingsView: View {
                     Divider()
                     
                     VStack(spacing: 12) {
-                        infoRow("Geliştirici", value: "Adil Emre Karayürek")
-                        infoRow("Platform", value: "macOS 13.0+")
-                        infoRow("Framework", value: "SwiftUI")
-                        infoRow("Son Güncelleme", value: "20 Kasım 2025")
+                        infoRow(NSLocalizedString("Geliştirici", comment: ""), value: "Adil Emre Karayürek")
+                        infoRow(NSLocalizedString("Platform", comment: ""), value: "macOS 13.0+")
+                        infoRow(NSLocalizedString("Framework", comment: ""), value: "SwiftUI")
+                        infoRow(NSLocalizedString("Son Güncelleme", comment: ""), value: "20 Kasım 2025")
                     }
                 }
             }
@@ -876,7 +897,7 @@ struct SettingsView: View {
                     HStack(spacing: 4) {
                         Image(systemName: isReadable ? "eye" : "eye.slash")
                         Image(systemName: isWritable ? "pencil" : "pencil.slash")
-                        Text(isWritable ? "Düzenlenebilir" : "Salt Okunur")
+                        Text(isWritable ? NSLocalizedString("Düzenlenebilir", comment: "") : NSLocalizedString("Salt Okunur", comment: ""))
                     }
                     .font(.system(size: 9))
                     .foregroundColor(isWritable ? .green : .orange)
@@ -889,7 +910,7 @@ struct SettingsView: View {
                 Button(action: { openInFinder(path) }) {
                     HStack(spacing: 4) {
                         Image(systemName: "folder")
-                        Text("Aç")
+                        Text(NSLocalizedString("Aç", comment: ""))
                     }
                     .font(.caption)
                 }
@@ -899,7 +920,7 @@ struct SettingsView: View {
                 Button(action: { openFileInEditor(path) }) {
                     HStack(spacing: 4) {
                         Image(systemName: "pencil.circle")
-                        Text("Düzenle")
+                        Text(NSLocalizedString("Düzenle", comment: ""))
                     }
                     .font(.caption)
                 }
@@ -1003,6 +1024,10 @@ struct SettingsView: View {
             storedPythonProjectPath = fallback
             tempPythonProjectPath = fallback
         }
+        
+        // Load hideFromDock preference
+        hideFromDock = UserDefaults.standard.bool(forKey: "hideFromDock")
+        
         if #available(macOS 13.0, *) {
             launchAtLogin = manager.isLaunchAtLoginEnabled()
         }
@@ -1013,7 +1038,7 @@ struct SettingsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
         panel.canChooseFiles = true
-        panel.title = "cloudflared Yürütülebilir Dosyasını Seçin"
+        panel.title = NSLocalizedString("cloudflared Yürütülebilir Dosyasını Seçin", comment: "")
         
         if panel.runModal() == .OK, let url = panel.url {
             tempCloudflaredPath = url.path
@@ -1025,7 +1050,7 @@ struct SettingsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.title = "MAMP Ana Dizinini Seçin"
+        panel.title = NSLocalizedString("MAMP Ana Dizinini Seçin", comment: "")
         
         if panel.runModal() == .OK, let url = panel.url {
             tempMampPath = url.path
@@ -1037,7 +1062,7 @@ struct SettingsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.title = "Python Proje Dizinini Seçin"
+        panel.title = NSLocalizedString("Python Proje Dizinini Seçin", comment: "")
         
         if panel.runModal() == .OK, let url = panel.url {
             tempPythonProjectPath = url.path
@@ -1049,7 +1074,7 @@ struct SettingsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.title = "Cloudflared Tünel Dizinini Seçin"
+        panel.title = NSLocalizedString("Cloudflared Tünel Dizinini Seçin", comment: "")
         panel.message = "Tünel yapılandırma dosyalarınızın (.yml) bulunduğu dizini seçin"
         panel.prompt = "Seç"
         panel.canCreateDirectories = true
@@ -1084,7 +1109,7 @@ struct SettingsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.title = "MAMP Sites Dizinini Seçin"
+        panel.title = NSLocalizedString("MAMP Sites Dizinini Seçin", comment: "")
         panel.message = "Web sitelerinizin bulunduğu dizini seçin (htdocs, sites vb.)"
         panel.prompt = "Seç"
         panel.canCreateDirectories = true
@@ -1122,7 +1147,7 @@ struct SettingsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.title = "Apache Config Dizinini Seçin"
+        panel.title = NSLocalizedString("Apache Config Dizinini Seçin", comment: "")
         panel.message = "Apache yapılandırma dosyalarının bulunduğu dizini seçin"
         panel.prompt = "Seç"
         panel.canCreateDirectories = true
@@ -1159,7 +1184,7 @@ struct SettingsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
         panel.canChooseFiles = true
-        panel.title = "vHost Config Dosyasını Seçin"
+        panel.title = NSLocalizedString("vHost Config Dosyasını Seçin", comment: "")
         panel.message = "httpd-vhosts.conf dosyasını seçin"
         panel.prompt = "Seç"
         panel.allowedContentTypes = [.init(filenameExtension: "conf")].compactMap { $0 }
@@ -1197,7 +1222,7 @@ struct SettingsView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
         panel.canChooseFiles = true
-        panel.title = "httpd.conf Dosyasını Seçin"
+        panel.title = NSLocalizedString("httpd.conf Dosyasını Seçin", comment: "")
         panel.message = "Ana Apache yapılandırma dosyasını seçin"
         panel.prompt = "Seç"
         panel.allowedContentTypes = [.init(filenameExtension: "conf")].compactMap { $0 }
@@ -1271,8 +1296,8 @@ struct SettingsView: View {
                     launchAtLogin = enabled
                     manager.postUserNotification(
                         identifier: "launch_at_login_toggle",
-                        title: "Oturum Açıldığında Başlatma",
-                        body: enabled ? "Etkinleştirildi" : "Devre Dışı Bırakıldı",
+                        title: NSLocalizedString("Oturum Açıldığında Başlatma", comment: ""),
+                        body: enabled ? NSLocalizedString("Etkinleştirildi", comment: "") : NSLocalizedString("Devre Dışı Bırakıldı", comment: ""),
                         type: enabled ? .success : .info
                     )
                 case .failure(let error):
@@ -1289,6 +1314,27 @@ struct SettingsView: View {
         }
     }
     
+    private func applyDarkMode(_ enabled: Bool) {
+        DispatchQueue.main.async {
+            if enabled {
+                NSApp.appearance = NSAppearance(named: .darkAqua)
+            } else {
+                NSApp.appearance = NSAppearance(named: .aqua)
+            }
+        }
+    }
+    
+    private func applyDockVisibility(_ hide: Bool) {
+        DispatchQueue.main.async {
+            if hide {
+                NSApp.setActivationPolicy(.accessory)
+            } else {
+                NSApp.setActivationPolicy(.regular)
+            }
+            UserDefaults.standard.set(hide, forKey: "hideFromDock")
+        }
+    }
+    
     private func resetSettings() {
         // Reset to defaults (all behavior settings enabled)
         darkModeEnabled = false
@@ -1300,6 +1346,9 @@ struct SettingsView: View {
         
         // Ensure menu bar icon is visible immediately
         UserDefaults.standard.set(true, forKey: "showStatusInMenuBar")
+        
+        // Apply light mode
+        applyDarkMode(false)
     }
     
     private func openInFinder(_ path: String) {
@@ -1353,7 +1402,7 @@ struct SettingsView: View {
     
     private func showPermissionAlert(for filePath: String) {
         let alert = NSAlert()
-        alert.messageText = "İzin Gerekli"
+        alert.messageText = NSLocalizedString("İzin Gerekli", comment: "")
         alert.informativeText = """
         Bu dosyayı düzenlemek için yönetici izinleri gerekebilir:
         \(filePath)
@@ -1367,9 +1416,9 @@ struct SettingsView: View {
         sudo chmod 644 \(filePath)
         """
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "Kapat")
-        alert.addButton(withTitle: "Terminal'de Aç")
-        alert.addButton(withTitle: "Kopyala")
+        alert.addButton(withTitle: NSLocalizedString("Kapat", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Terminal'de Aç", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Kopyala", comment: ""))
         
         let response = alert.runModal()
         

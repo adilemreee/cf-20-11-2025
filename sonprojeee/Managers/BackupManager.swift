@@ -185,7 +185,7 @@ class BackupManager: ObservableObject {
         }
         
         print("✅ Backup oluşturuldu: \(filename)")
-        sendNotification(title: "Backup Oluşturuldu", message: "\(backupTunnels.count) tünel yedeklendi")
+        sendNotification(title: NSLocalizedString("Backup Oluşturuldu", comment: ""), message: "\(backupTunnels.count) " + NSLocalizedString(" tünel yedeklendi", comment: ""))
         
         return backupFile
     }
@@ -263,7 +263,7 @@ class BackupManager: ObservableObject {
         }
         
         print("✅ Backup geri yüklendi: \(backupFile.filename)")
-        sendNotification(title: "Backup Geri Yüklendi", message: "Ayarlarınız başarıyla geri yüklendi")
+        sendNotification(title: NSLocalizedString("Backup Geri Yüklendi", comment: ""), message: NSLocalizedString("Ayarlarınız başarıyla geri yüklendi", comment: ""))
     }
     
     private func restoreSettingsFromBackup(_ settings: BackupSettings, manager: TunnelManager) async throws {
@@ -421,7 +421,7 @@ class BackupManager: ObservableObject {
         autoBackupTimer = Timer.scheduledTimer(withTimeInterval: autoBackupInterval, repeats: true) { [weak self] _ in
             Task {
                 // Auto backup will be triggered from the app
-                self?.sendNotification(title: "Otomatik Backup", message: "Otomatik yedekleme zamanı geldi")
+                self?.sendNotification(title: NSLocalizedString("Otomatik Backup", comment: ""), message: NSLocalizedString("Otomatik yedekleme zamanı geldi", comment: ""))
             }
         }
     }

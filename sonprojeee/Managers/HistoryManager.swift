@@ -160,13 +160,13 @@ class HistoryManager: ObservableObject {
     }
     
     func exportErrorLogs() -> String {
-        var output = "=== Hata Geçmişi ===\n"
+        var output = "=== " + NSLocalizedString("Hata Geçmişi", comment: "") + " ===\n"
         output += "Oluşturulma: \(Date())\n\n"
         
         for entry in errorLogs {
             output += "[\(formatDate(entry.timestamp))] [\(entry.source.rawValue)]\n"
             output += "Tünel: \(entry.tunnelName)\n"
-            output += "Hata: \(entry.errorMessage)\n"
+            output += NSLocalizedString("Hata: ", comment: "") + "\(entry.errorMessage)\n"
             if let code = entry.errorCode {
                 output += "Kod: \(code)\n"
             }

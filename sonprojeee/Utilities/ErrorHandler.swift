@@ -56,7 +56,7 @@ class ErrorHandler {
         alert.messageText = "Hata Oluştu"
         alert.informativeText = message
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "Tamam")
+        alert.addButton(withTitle: NSLocalizedString("Tamam", comment: ""))
         
         // Check if there's a key window
         if let window = NSApp.keyWindow {
@@ -71,7 +71,7 @@ class ErrorHandler {
         alert.messageText = title
         alert.informativeText = message
         alert.alertStyle = .informational
-        alert.addButton(withTitle: "Tamam")
+        alert.addButton(withTitle: NSLocalizedString("Tamam", comment: ""))
         
         if let window = NSApp.keyWindow {
             alert.beginSheetModal(for: window)

@@ -1,0 +1,737 @@
+/* 
+  Localizable.strings
+  CloudflaredManager
+
+  Created by GitHub Copilot.
+*/
+
+// Onboarding
+"Geri" = "Back";
+"İleri" = "Next";
+"Cloudflared Manager'a Hoşgeldiniz" = "Welcome to Cloudflared Manager";
+"Cloudflare tünellerinizi kolayca yönetin, MAMP projelerinizi internete açın ve loglarınızı takip edin." = "Easily manage your Cloudflare tunnels, expose MAMP projects to the internet, and track your logs.";
+"Cloudflared Yapılandırması" = "Cloudflared Configuration";
+"Uygulamanın çalışması için 'cloudflared' komut satırı aracı gereklidir." = "The 'cloudflared' command line tool is required for the application to work.";
+"Cloudflared Yolu:" = "Cloudflared Path:";
+"Yol..." = "Path...";
+"Seç" = "Select";
+"Yolu Kontrol Et" = "Check Path";
+"Cloudflared bulundu ve çalıştırılabilir." = "Cloudflared found and executable.";
+"Belirtilen yolda çalıştırılabilir dosya bulunamadı." = "Executable file not found at the specified path.";
+
+// Dashboard
+"Günaydın" = "Good Morning";
+"İyi Günler" = "Good Afternoon";
+"İyi Akşamlar" = "Good Evening";
+"İyi Geceler" = "Good Night";
+"Cloudflared Eksik" = "Cloudflared Missing";
+"Dikkat Gerekiyor" = "Attention Needed";
+"Sistem Aktif" = "System Active";
+"Hazır" = "Ready";
+"Hızlı İşlemler" = "Quick Actions";
+"Ortam Durumu" = "Environment Status";
+"Son Aktiviteler" = "Recent Activity";
+"Tünel Oluştur" = "Create Tunnel";
+"Hızlı Tünel" = "Quick Tunnel";
+"Ayarlar" = "Settings";
+"Çıkış" = "Quit";
+
+// Window Titles
+"Cloudflared Manager Ayarları" = "Cloudflared Manager Settings";
+"Geçmiş ve Loglar" = "History and Logs";
+"Yeni Yönetilen Tünel" = "New Managed Tunnel";
+"MAMP Sitesinden Tünel Oluştur" = "Create Tunnel from MAMP Site";
+"Docker Konteynerinden Tünel Oluştur" = "Create Tunnel from Docker Container";
+"Gösterge Paneli" = "Dashboard";
+"Dosya Paylaşımı" = "File Sharing";
+"Hoşgeldiniz" = "Welcome";
+
+// Menu Dashboard
+"Sistem Normal" = "System Normal";
+"Aktif" = "Active";
+"Toplam" = "Total";
+"Hata" = "Error";
+
+// MAMP Step
+"MAMP Entegrasyonu" = "MAMP Integration";
+"MAMP kullanıyorsanız, projelerinizi otomatik algılamak için MAMP klasörünü seçin." = "If you use MAMP, select the MAMP folder to automatically detect your projects.";
+"MAMP Ana Dizini:" = "MAMP Root Directory:";
+"MAMP Kullanmıyorum (Atla)" = "I don't use MAMP (Skip)";
+
+// Finish Step
+"Kurulum Tamamlandı!" = "Setup Complete!";
+"Artık tünellerinizi oluşturmaya ve yönetmeye başlayabilirsiniz." = "You can now start creating and managing your tunnels.";
+"Uygulamayı Başlat" = "Start Application";
+
+// Settings Tabs
+"Genel" = "General";
+"Yollar" = "Paths";
+"Görünüm" = "Appearance";
+"Bildirimler" = "Notifications";
+"Geçmiş" = "History";
+"Yedekleme" = "Backup";
+"Gelişmiş" = "Advanced";
+"Hakkında" = "About";
+
+// Settings Status
+"Yapılandırma Gerekli" = "Configuration Required";
+"Durumu Kontrol Et" = "Check Status";
+
+// Settings Subtitles
+"Temel uygulama ayarları ve yapılandırma" = "Basic application settings and configuration";
+"Dosya yolları ve dizin ayarları" = "File paths and directory settings";
+"Görünüm ve tema tercihleri" = "Appearance and theme preferences";
+"Bildirim ayarları ve tercihler" = "Notification settings and preferences";
+"Bildirimler, hatalar ve log kayıtları" = "Notifications, errors, and logs";
+"Yedekleme ve geri yükleme işlemleri" = "Backup and restore operations";
+"Gelişmiş özellikler ve araçlar" = "Advanced features and tools";
+"Uygulama hakkında bilgiler" = "Information about the application";
+
+// Create Managed Tunnel
+"Yeni Yönetilen Tünel" = "New Managed Tunnel";
+"Cloudflare üzerinde yönetilen tünel oluşturun" = "Create a managed tunnel on Cloudflare";
+"Tünel Yapılandırması" = "Tunnel Configuration";
+"Tünel Adı" = "Tunnel Name";
+"Cloudflare'deki benzersiz ad" = "Unique name on Cloudflare";
+"Config Dosya Adı" = "Config File Name";
+"Yerel .yml dosya adı" = "Local .yml file name";
+"Hostname" = "Hostname";
+"Protokol" = "Protocol";
+"Yerel Port" = "Local Port";
+"Port numarası" = "Port number";
+"MAMP Entegrasyonu (Opsiyonel)" = "MAMP Integration (Optional)";
+"MAMP vHost Güncelle" = "Update MAMP vHost";
+"httpd-vhosts.conf ve httpd.conf dosyalarını otomatik yapılandır" = "Automatically configure httpd-vhosts.conf and httpd.conf";
+"Document Root" = "Document Root";
+"Oluşturma Durumu" = "Creation Status";
+"Lütfen bekleyiniz..." = "Please wait...";
+"İptal" = "Cancel";
+"Oluştur" = "Create";
+
+// File Share
+"Hızlı Dosya Paylaşımı" = "Quick File Sharing";
+"Klasör seçin ve anında internete açın" = "Select a folder and expose it to the internet instantly";
+"Paylaşılacak Klasör" = "Folder to Share";
+"Klasör Yolu" = "Folder Path";
+"Yayında" = "Live";
+"Public URL" = "Public URL";
+"Tünel oluşturuluyor..." = "Creating tunnel...";
+"Paylaşımı Durdur" = "Stop Sharing";
+"Paylaşımı Başlat" = "Start Sharing";
+"Paylaşılacak Klasörü Seçin" = "Select Folder to Share";
+"Hızlı tünel başlatılamadı" = "Quick tunnel could not be started";
+
+// Quick Tunnel
+"Özel" = "Custom";
+"Özel URL girin" = "Enter custom URL";
+"Hızlı Tünel Başlat" = "Start Quick Tunnel";
+"Yerel sunucunuzu hızlıca internete açın" = "Expose your local server to the internet quickly";
+"Tamam" = "OK";
+"Hızlı Seçim" = "Quick Selection";
+"Yaygın Sunucu Türleri" = "Common Server Types";
+"Preset'i sil" = "Delete Preset";
+"Özel Preset Ekle" = "Add Custom Preset";
+"Ad" = "Name";
+"örn. Laravel" = "e.g. Laravel";
+"URL" = "URL";
+"Açıklama" = "Description";
+"Yerel geliştirme sunucusu" = "Local development server";
+"Preset Ekle" = "Add Preset";
+"URL Yapılandırması" = "URL Configuration";
+"Yerel URL" = "Local URL";
+"Geçerli URL formatı" = "Valid URL format";
+"Geçersiz URL formatı" = "Invalid URL format";
+"Nasıl Çalışır?" = "How it Works?";
+"Hızlı tüneller geçici URL'ler oluşturur ve sunucunuz kapandığında otomatik olarak sona erer. Kalıcı tüneller için 'Yönetilen Tünel' oluşturun." = "Quick tunnels create temporary URLs and expire automatically when your server stops. For persistent tunnels, create a 'Managed Tunnel'.";
+"Başlatma Durumu" = "Startup Status";
+"İşlem devam ediyor..." = "Processing...";
+"cloudflared komutu hazırlanıyor..." = "Preparing cloudflared command...";
+"URL hazır olduğunda bu sayfada göreceksiniz." = "You will see the URL here when ready.";
+"Tüneli Durdur" = "Stop Tunnel";
+"Tüneli Başlat" = "Start Tunnel";
+"Lütfen geçerli bir yerel URL girin.\n\nÖrnek: http://localhost:3000" = "Please enter a valid local URL.\n\nExample: http://localhost:3000";
+"Hızlı tünel başlatılıyor..." = "Starting quick tunnel...";
+"URL hazırlanıyor..." = "Preparing URL...";
+"Hata oluştu." = "An error occurred.";
+"Tünel hazır." = "Tunnel ready.";
+"Tünel beklenmedik şekilde sonlandı." = "Tunnel terminated unexpectedly.";
+"preset'i eklendi." = "preset added.";
+"preset'i silindi." = "preset deleted.";
+"Tünel durduruluyor..." = "Stopping tunnel...";
+"Genel URL" = "Public URL";
+"Tünel çalışıyor" = "Tunnel is running";
+"Kopyala" = "Copy";
+"Tarayıcıda Aç" = "Open in Browser";
+"Tünel Hatası" = "Tunnel Error";
+"Hızlı tünel başlatılamadı veya sonlandırıldı" = "Quick tunnel could not be started or was terminated";
+"Tekrar Dene" = "Try Again";
+
+// Content View
+"Modern Tünel Yönetim Aracı" = "Modern Tunnel Management Tool";
+"cloudflared hazır" = "cloudflared ready";
+"cloudflared eksik" = "cloudflared missing";
+"MAMP Dizini" = "MAMP Directory";
+"Gösterge Paneli" = "Dashboard";
+"Tünelleri ve durum özetini tek ekranda takip edin" = "Monitor tunnels and status summary on a single screen";
+"Hızlı Tünel Oluştur" = "Create Quick Tunnel";
+"Yerel projelerinizi saniyeler içinde paylaşın" = "Share your local projects in seconds";
+"Ayarları Yapılandır" = "Configure Settings";
+"cloudflared, MAMP ve diğer yolları özelleştirin" = "Customize cloudflared, MAMP and other paths";
+"Temel Bilgiler" = "Basic Information";
+"Durum Kontrol Aralığı" = "Status Check Interval";
+"Başlangıç Kontrol Listesi" = "Startup Checklist";
+"cloudflared yolunu doğrulayın" = "Verify cloudflared path";
+"Hepsi hazır." = "All set.";
+"Ayarlar'dan farklı bir yol seçebilirsiniz." = "You can choose a different path in Settings.";
+"Kontrol Et" = "Check";
+"cloudflared yolu kontrol ediliyor..." = "Checking cloudflared path...";
+"Cloudflare hesabınıza giriş yapın" = "Log in to your Cloudflare account";
+"Tarayıcıda açılan pencereyi takip edin." = "Follow the window opened in your browser.";
+"Giriş Yap" = "Log In";
+"MAMP proje klasörünü kontrol edin" = "Check MAMP project folder";
+"MAMP dizini bulundu." = "MAMP directory found.";
+"MAMP dizini bulunamadı, yolu Ayarlar'dan güncelleyin." = "MAMP directory not found, update path in Settings.";
+"Klasörü Aç" = "Open Folder";
+"Hazırım, Devam Et" = "I'm Ready, Continue";
+"Uygulama menü çubuğunda çalışmaya devam edecek" = "The application will continue running in the menu bar";
+"Gösterge Paneli açılıyor..." = "Opening Dashboard...";
+"Hızlı tünel penceresi açılıyor..." = "Opening Quick Tunnel window...";
+"Ayarlar penceresi açıldı." = "Settings window opened.";
+"MAMP dizini Finder'da açıldı." = "MAMP directory opened in Finder.";
+"Cloudflare giriş kontrolü başlatıldı..." = "Cloudflare login check started...";
+
+// Tunnel Manager
+"cloudflared bulunamadı: %@" = "cloudflared not found: %@";
+"Giriş Başlatıldı" = "Login Started";
+"Cloudflare giriş işlemi için tarayıcı açılıyor..." = "Opening browser for Cloudflare login...";
+"Giriş Başarılı" = "Login Successful";
+"Cloudflare hesabına başarıyla giriş yapıldı." = "Successfully logged in to Cloudflare account.";
+"Cloudflare girişinde bilinmeyen hata (Kod: %d)" = "Unknown error during Cloudflare login (Code: %d)";
+"Process başlatılamadı: %@" = "Process could not be started: %@";
+"İnternet Bağlantısı Yok" = "No Internet Connection";
+"Hızlı tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin." = "Quick tunnel could not be started. Please check your internet connection.";
+"İnternet bağlantısı yok." = "No internet connection.";
+"Geçersiz yerel URL formatı. (örn: http://localhost:8000)" = "Invalid local URL format. (e.g. http://localhost:8000)";
+
+// Additional localizations
+"Yeni cloudflared yolu ayarlandı" = "New cloudflared path set";
+"Yeni kontrol aralığı ayarlandı" = "New check interval set";
+"saniye" = "seconds";
+"MAMP ana dizini güncellendi" = "MAMP root directory updated";
+"Cloudflared dizini güncellendi" = "Cloudflared directory updated";
+"Özel MAMP sites dizini ayarlandı" = "Custom MAMP sites directory set";
+"Özel Apache config dizini ayarlandı" = "Custom Apache config directory set";
+"Özel vHost config dosyası ayarlandı" = "Custom vHost config file set";
+"Özel httpd.conf dosyası ayarlandı" = "Custom httpd.conf file set";
+"Cloudflared Manager başlatıldı" = "Cloudflared Manager started";
+"Cloudflared yolu" = "Cloudflared path";
+"Bildirim" = "Notification";
+"Giriş başarılı!" = "Login successful!";
+"Giriş penceresi açıldı, lütfen tarayıcıyı kontrol edin." = "Login window opened, please check your browser.";
+"Cloudflared Manager menü çubuğunda çalışıyor." = "Cloudflared Manager is running in the menu bar.";
+"Tarayıcıda açılan Cloudflare girişini tamamlayın." = "Complete Cloudflare login in the browser.";
+"Cloudflare giriş hatası" = "Cloudflare login error";
+"Tünel Aktif" = "Tunnel Active";
+"Bağlantı kuruluyor..." = "Connecting...";
+"Başlat" = "Start";
+
+// Error Messages & Notifications
+"Cloudflared Dizini Hatası" = "Cloudflared Directory Error";
+"' oluşturulamadı veya erişilemedi." = "' could not be created or accessed.";
+"Cloudflared Yolu Hatalı" = "Cloudflared Path Error";
+" bir dizin değil." = " is not a directory.";
+"Dizin Okuma Hatası" = "Directory Read Error";
+" okunurken hata oluştu." = " error occurred while reading.";
+"Tünel Hatası: " = "Tunnel Error: ";
+"Bilinmeyen hata." = "Unknown error.";
+"Başlatma Hatası: " = "Startup Error: ";
+"İşlem başlatılamadı: " = "Process could not be started: ";
+"cloudflared yürütülebilir dosyası şurada bulunamadı: " = "cloudflared executable not found at: ";
+"Tünel adı boşluk içeremez ve boş olamaz." = "Tunnel name cannot contain spaces and cannot be empty.";
+"Tünel beklenmedik şekilde sonlandı." = "Tunnel terminated unexpectedly.";
+"Hata Geçmişi" = "Error History";
+"Hata: " = "Error: ";
+
+// Backup & Restore
+"Backup Oluşturuldu" = "Backup Created";
+" tünel yedeklendi" = " tunnels backed up";
+"Backup Geri Yüklendi" = "Backup Restored";
+"Ayarlarınız başarıyla geri yüklendi" = "Your settings have been successfully restored";
+"Otomatik Backup" = "Automatic Backup";
+"Otomatik yedekleme zamanı geldi" = "Automatic backup time has come";
+
+// MAMP Integration
+"DocumentRoot bulunamadı: " = "DocumentRoot not found: ";
+"Geçersiz ServerName: " = "Invalid ServerName: ";
+"Geçersiz Port Numarası: " = "Invalid Port Number: ";
+"MAMP vHost dizini oluşturulamadı: " = "Could not create MAMP vHost directory: ";
+"vHost kontrolü için regex oluşturulamadı: " = "Could not create regex for vHost validation: ";
+"Tünel Silindi" = "Tunnel Deleted";
+" Cloudflare'dan silindi." = " deleted from Cloudflare.";
+"Kopyalanamadı" = "Could Not Copy";
+"Tünel URL'si henüz mevcut değil." = "Tunnel URL is not yet available.";
+"Açılamadı" = "Could Not Open";
+"MAMP sunucuları (Apache & MySQL) başlatıldı." = "MAMP servers (Apache & MySQL) started.";
+"MAMP sunucuları başlatılırken hata oluştu." = "Error occurred while starting MAMP servers.";
+"MAMP sunucuları (Apache & MySQL) durduruldu." = "MAMP servers (Apache & MySQL) stopped.";
+"MAMP sunucuları durdurulurken hata oluştu." = "Error occurred while stopping MAMP servers.";
+"MAMP Sitesinden Tünel Oluştur" = "Create Tunnel from MAMP Site";
+"MAMP Yapılandırması Güncellendi" = "MAMP Configuration Updated";
+"MAMP vHost dosyası güncellendi. Ayarların etkili olması için MAMP sunucularını yeniden başlatmanız gerekir.\n\nMAMP Apache yapılandırma klasörünü açmak ister misiniz?" = "MAMP vHost file updated. You need to restart MAMP servers for settings to take effect.\n\nWould you like to open the MAMP Apache configuration folder?";
+"MAMP İşlemi" = "MAMP Operation";
+"MAMP site dizini bulunamadı" = "MAMP site directory not found";
+"MAMP Sitesinden Oluştur" = "Create from MAMP Site";
+"MAMP Apache Conf" = "MAMP Apache Conf";
+"MAMP Başlat" = "Start MAMP";
+"MAMP Durdur" = "Stop MAMP";
+"MAMP Kontrol" = "MAMP Control";
+
+// Menu Items
+"Yönetici Başlatılamadı" = "Manager Could Not Start";
+"Çıkış" = "Quit";
+"cloudflared Bulunamadı" = "cloudflared Not Found";
+"Ayarlar'dan cloudflared yolunu düzeltin" = "Fix cloudflared path from Settings";
+"Cloudflared Hesabı" = "Cloudflare Account";
+"Cloudflare Dashboard'u aç" = "Open Cloudflare Dashboard";
+"Cloudflared Hesabı Kontrol" = "Check Cloudflare Account";
+"Giriş durumunu kontrol et" = "Check login status";
+"Cloudflare Girişi" = "Cloudflare Login";
+"Cloudflare hesabınıza giriş yapın" = "Log in to your Cloudflare account";
+"URL Kopyala" = "Copy URL";
+"Durdur" = "Stop";
+"Hızlı Tüneller" = "Quick Tunnels";
+"Çalışanlar" = "Running";
+"Diğerleri" = "Others";
+"Henüz Tünel Yok" = "No Tunnels Yet";
+"Gösterge Paneli" = "Dashboard";
+"Tümünü Başlat" = "Start All";
+"Tümünü Durdur" = "Stop All";
+"Listeyi Yenile" = "Refresh List";
+"Hızlı Tünel Başlat" = "Start Quick Tunnel";
+"Yeni Yönetilen Tünel" = "New Managed Tunnel";
+"Klasörler" = "Folders";
+"Dosyalar" = "Files";
+"Klasörü Aç" = "Open Folder";
+"Hayır" = "No";
+
+// Onboarding
+"Cloudflared Manager'a Hoşgeldiniz" = "Welcome to Cloudflared Manager";
+"Cloudflare tünellerinizi kolayca yönetin, MAMP projelerinizi internete açın ve loglarınızı takip edin." = "Easily manage your Cloudflare tunnels, expose your MAMP projects to the internet, and track your logs.";
+"Uygulamanın çalışması için 'cloudflared' komut satırı aracı gereklidir." = "The 'cloudflared' command-line tool is required for the app to work.";
+"Seç" = "Select";
+"MAMP kullanıyorsanız, projelerinizi otomatik algılamak için MAMP klasörünü seçin." = "If you use MAMP, select the MAMP folder to automatically detect your projects.";
+"MAMP Kullanmıyorum (Atla)" = "I Don't Use MAMP (Skip)";
+"Kurulum Tamamlandı!" = "Setup Complete!";
+"Artık tünellerinizi oluşturmaya ve yönetmeye başlayabilirsiniz." = "You can now start creating and managing your tunnels.";
+"İleri" = "Next";
+
+// Create Managed Tunnel
+"Yeni Yönetilen Tünel" = "New Managed Tunnel";
+"Cloudflare üzerinde yönetilen tünel oluşturun" = "Create a managed tunnel on Cloudflare";
+"Lütfen bekleyiniz..." = "Please wait...";
+"İptal" = "Cancel";
+"Form Hatası" = "Form Error";
+"Port Hatası" = "Port Error";
+"Tünel Oluşturuldu" = "Tunnel Created";
+"Yapılandırma Hatası" = "Configuration Error";
+"Oluşturma Hatası" = "Creation Error";
+
+// Dashboard
+"Yönetilen Tüneller" = "Managed Tunnels";
+"Hızlı Tüneller" = "Quick Tunnels";
+"Yeni Tünel" = "New Tunnel";
+"Dosya Paylaş" = "Share File";
+"Tümünü Başlat" = "Start All";
+"Kontrol Aralığı" = "Check Interval";
+"Tümü" = "All";
+"Henüz aktivite yok" = "No activity yet";
+
+// MAMP Create View
+"MAMP Sitesinden Tünel" = "Tunnel from MAMP Site";
+"Mevcut MAMP projelerinizden tünel oluşturun" = "Create tunnel from your existing MAMP projects";
+"MAMP Siteleri Bulunamadı" = "MAMP Sites Not Found";
+"MAMP site dizininde proje bulunamadı" = "No projects found in MAMP sites directory";
+"MAMP Dizinini Aç" = "Open MAMP Directory";
+"Site Seçimi" = "Site Selection";
+"MAMP Sitesi" = "MAMP Site";
+"Site seçiniz" = "Select site";
+"Proje Kök Dizini" = "Project Root Directory";
+"Config Dosya Adı" = "Config File Name";
+"Önemli Not" = "Important Note";
+"Bu işlem MAMP vHost dosyasını otomatik günceller. Değişikliklerin etkili olması için MAMP sunucularını yeniden başlatmanız gerekir." = "This operation automatically updates the MAMP vHost file. You need to restart MAMP servers for changes to take effect.";
+
+// Menu Components
+"Tümü Başlat" = "Start All";
+"Tümü Durdur" = "Stop All";
+"Hızlı" = "Quick";
+"Kılavuz" = "Guide";
+
+// Content View
+"Cloudflared Manager" = "Cloudflared Manager";
+"Cloudflared Yolu:" = "Cloudflared Path:";
+"MAMP Ana Dizini:" = "MAMP Directory:";
+"Yol..." = "Path...";
+
+// Additional Texts
+"İptal" = "Cancel";
+"Dışa Aktar" = "Export";
+"Bu backup'ı geri yüklemek istediğinizden emin misiniz? Mevcut ayarlarınız değiştirilecek." = "Are you sure you want to restore this backup? Your current settings will be changed.";
+"Bu backup'ı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz." = "Are you sure you want to delete this backup? This action cannot be undone.";
+"Yedekleme & Geri Yükleme" = "Backup & Restore";
+"Tünel yapılandırmalarınızı ve ayarlarınızı yedekleyin" = "Back up your tunnel configurations and settings";
+"İçe Aktar" = "Import";
+"Backup dosyası yükle" = "Load backup file";
+"Belirtilen aralıklarla otomatik yedek oluştur" = "Automatically create backups at specified intervals";
+"Yedekleme Aralığı: " = "Backup Interval: ";
+" saat" = " hours";
+"Henüz yedek bulunmuyor" = "No backups yet";
+"Yukarıdaki 'Yeni Yedek' butonuna tıklayarak ilk yedeğinizi oluşturun" = "Click the 'New Backup' button above to create your first backup";
+"Çalışan konteynerlerden tünel oluşturun" = "Create tunnel from running containers";
+"Çalışan konteyner bulunamadı." = "No running containers found.";
+
+// Settings View
+"Aralık" = "Interval";
+"Tünel config dosyalarınızın (*.yml) saklandığı dizin" = "Directory where your tunnel config files (*.yml) are stored";
+"Finder'da Aç" = "Open in Finder";
+"Boş bırakılırsa: MAMP_ANA_DİZİN/sites kullanılır" = "If left empty: MAMP_BASE_DIR/sites will be used";
+"Python uygulamanızın bulunduğu ana dizin" = "Main directory where your Python application is located";
+"Gelecek güncellemelerde daha fazla özelleştirme seçeneği eklenecek..." = "More customization options will be added in future updates...";
+"MySQL 'No such file or directory' hatası alıyorsanız bunu kullanın." = "Use this if you get MySQL 'No such file or directory' error.";
+"phpMyAdmin bağlantı hatası alıyorsanız bunu kullanın." = "Use this if you get phpMyAdmin connection error.";
+"Modern cloudflared tünel yönetim aracı" = "Modern cloudflared tunnel management tool";
+"Aç" = "Open";
+"Düzenle" = "Edit";
+
+// Notifications & Alerts
+"Tünel Başlatıldı" = "Tunnel Started";
+"' başarıyla başlatıldı." = "' started successfully.";
+"Tünel Durduruldu" = "Tunnel Stopped";
+"' başarıyla durduruldu." = "' stopped successfully.";
+"İnternet Bağlantısı Yok" = "No Internet Connection";
+"Tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin." = "Tunnel could not be started. Please check your internet connection.";
+"Hızlı tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin." = "Quick tunnel could not be started. Please check your internet connection.";
+"Port Uyarısı" = "Port Warning";
+"İzinleri Düzelt" = "Fix Permissions";
+"Manuel Yapılandırma" = "Manual Configuration";
+"MAMP İzinleri" = "MAMP Permissions";
+"İzinler başarıyla düzeltildi" = "Permissions fixed successfully";
+"İzinler düzeltilemedi. Manuel yapılandırma gerekebilir." = "Permissions could not be fixed. Manual configuration may be required.";
+"MAMP httpd.conf Hatası" = "MAMP httpd.conf Error";
+"'Listen " = "'Listen ";
+"' eklenemedi. İzinleri kontrol edin veya manuel ekleyin.\n" = "' could not be added. Check permissions or add manually.\n";
+"Config Oluşturuldu" = "Config Created";
+"'.yml' dosyası oluşturuldu." = "'.yml' file created.";
+" MAMP yapılandırması güncellendi." = " MAMP configuration updated.";
+"Config Oluşturuldu (MAMP Uyarısı)" = "Config Created (MAMP Warning)";
+"'.yml' oluşturuldu, ancak MAMP yapılandırması güncellenirken hata(lar) oluştu:\n" = "'.yml' created, but error(s) occurred while updating MAMP configuration:\n";
+"\nLütfen MAMP ayarlarını manuel kontrol edin." = "\nPlease check MAMP settings manually.";
+"MAMP httpd.conf Güncellendi" = "MAMP httpd.conf Updated";
+"' direktifi eklendi. Ayarların etkili olması için MAMP sunucularını yeniden başlatmanız gerekebilir." = "' directive added. You may need to restart MAMP servers for settings to take effect.";
+"Cloudflare giriş işlemi için tarayıcı açılıyor..." = "Opening browser for Cloudflare login...";
+"Cloudflare hesabına başarıyla giriş yapıldı." = "Successfully logged in to Cloudflare account.";
+"Hızlı Tünel Başarısız" = "Quick Tunnel Failed";
+"Tünel beklenmedik şekilde kapandı: " = "Tunnel closed unexpectedly: ";
+"Hızlı Tünel Başlatma Hatası" = "Quick Tunnel Startup Error";
+"Hızlı Tünel Hazır" = "Quick Tunnel Ready";
+"Python Uygulaması Başlatıldı" = "Python Application Started";
+" çalıştırıldı (PID: " = " started (PID: ";
+")." = ").";
+"URL Kopyalandı" = "URL Copied";
+"Python Uygulaması Durduruluyor" = "Python Application Stopping";
+" için durdurma sinyali gönderildi." = " stop signal sent.";
+"Evet, Kalıcı Olarak Sil" = "Yes, Delete Permanently";
+"Yönlendir" = "Route";
+"DNS Yönlendirme Başarılı" = "DNS Routing Successful";
+"' için DNS kaydı başarıyla oluşturuldu veya güncellendi.\n\n" = "' DNS record created or updated successfully.\n\n";
+"DNS Yönlendirildi" = "DNS Routed";
+" -> " = " -> ";
+"Geçersiz URL" = "Invalid URL";
+"URL açılamadı: " = "URL could not be opened: ";
+"Cloudflare Giriş Kontrolü" = "Cloudflare Login Check";
+"İşlem başlatıldı veya durum kontrol edildi. Gerekirse tarayıcıyı kontrol edin." = "Process started or status checked. Check browser if necessary.";
+"Açılışta Başlatma" = "Launch at Startup";
+"Etkinleştirildi" = "Enabled";
+"Devre Dışı Bırakıldı" = "Disabled";
+"Cloudflared Hesabı Kontrol" = "Cloudflare Account Check";
+"✅ Cloudflare hesabına giriş yapılmış durumda." = "✅ Logged in to Cloudflare account.";
+"⚠️ Cloudflare hesabına giriş yapılmamış." = "⚠️ Not logged in to Cloudflare account.";
+"Cloudflared Manager Ayarları" = "Cloudflared Manager Settings";
+"Geçmiş ve Loglar" = "History and Logs";
+"Docker Konteynerinden Tünel Oluştur" = "Create Tunnel from Docker Container";
+"Dosya Paylaşımı" = "File Sharing";
+"Hoşgeldiniz" = "Welcome";
+"Yerel Dosyaları Sil?" = "Delete Local Files?";
+"' tüneli Cloudflare'dan silindi.\nİlişkili yerel dosyaları da silmek ister misiniz?\n\n- " = "' tunnel deleted from Cloudflare.\nDo you want to delete associated local files?\n\n- ";
+"Evet, Yerel Dosyaları Sil" = "Yes, Delete Local Files";
+"Hayır, Dosyaları Koruyun" = "No, Keep Files";
+"Yerel Dosyalar Silindi" = "Local Files Deleted";
+"' ile ilişkili dosyalar silindi." = "' associated files deleted.";
+
+// Docker View
+"Docker çalışmıyor veya bulunamadı." = "Docker is not running or not found.";
+"Lütfen Docker Desktop uygulamasını başlatın." = "Please start Docker Desktop application.";
+"Yapılandırma: " = "Configuration: ";
+"✅ Tünel başarıyla oluşturuldu!" = "✅ Tunnel created successfully!";
+"Soldan bir konteyner seçin" = "Select a container from the left";
+
+// Quick Tunnel View
+"Hızlı tünel başlatılamadı veya sonlandırıldı" = "Quick tunnel could not be started or was terminated";
+
+// Additional Buttons
+"Geri Yükle" = "Restore";
+"Kapat" = "Close";
+"Gözat" = "Browse";
+"Kopyalandı, Tamam" = "Copied, OK";
+"Terminal'i Aç" = "Open Terminal";
+
+// MAMP Card Titles
+"MAMP site dizininde proje klasörü bulunamadı" = "No project folder found in MAMP sites directory";
+
+// Settings View Additional
+"Cloudflared Yapılandırması" = "Cloudflared Configuration";
+"Yürütülebilir Dosya Yolu" = "Executable File Path";
+"Gözat" = "Browse";
+"Durum Kontrol Aralığı" = "Status Check Interval";
+"saniye" = "seconds";
+"Sistem Davranışı" = "System Behavior";
+"Otomatik Tünel Başlatma" = "Auto-start Tunnels";
+"Uygulama açıldığında tünelleri otomatik başlat" = "Automatically start tunnels when app opens";
+"Otomatik MAMP Başlatma" = "Auto-start MAMP";
+"Uygulama açıldığında MAMP'ı otomatik başlat ve kapanırken durdur" = "Automatically start MAMP when app opens and stop when closing";
+"Sistem Tepsisine Küçült" = "Minimize to Tray";
+"Pencere kapatıldığında uygulamayı gizle" = "Hide app when window is closed";
+"Durum Çubuğunda Göster" = "Show in Status Bar";
+"Menü çubuğunda tünel durumunu göster" = "Show tunnel status in menu bar";
+"Oturum Açıldığında Başlat" = "Launch at Login";
+"Sisteme giriş yapıldığında otomatik başlat" = "Automatically start when logging into system";
+"Tünel Yapılandırma Dizini (.cloudflared)" = "Tunnel Configuration Directory (.cloudflared)";
+"Varsayılan" = "Default";
+
+// Menu Bar Additional
+"cloudflared bulunamadı" = "cloudflared not found";
+"tünel aktif" = "tunnel active";
+"Hata var" = "Error exists";
+"Hazır" = "Ready";
+"Hızlı Tüneller" = "Quick Tunnels";
+"Sayfa" = "Page";
+"Yönetilen Tüneller" = "Managed Tunnels";
+"Çalışanlar" = "Running";
+"Diğerleri" = "Others";
+"Python Başlat" = "Start Python";
+"Python Durdur" = "Stop Python";
+"Geçmiş ve Loglar" = "History and Logs";
+"Kurulum Kılavuzu" = "Setup Guide";
+"Otomatik Başlatma" = "Auto Launch";
+"Ayarlar..." = "Settings...";
+"Çıkış" = "Quit";
+"Tarayıcıda açmak için tıkla" = "Click to open in browser";
+"Başlatılıyor" = "Starting";
+"Durduruluyor" = "Stopping";
+"Başlat" = "Start";
+"Durdur" = "Stop";
+"Config Aç" = "Open Config";
+"DNS Yönlendir" = "Route DNS";
+"Sil..." = "Delete...";
+"Cloudflare'dan kalıcı olarak siler!" = "Permanently deletes from Cloudflare!";
+
+// Menu Grid Buttons
+"Tümü Başlat" = "Start All";
+"Tümü Durdur" = "Stop All";
+"Hızlı" = "Quick";
+"Dosya Paylaş" = "Share Files";
+"Kılavuz" = "Guide";
+"Panel" = "Dashboard";
+"Yenile" = "Refresh";
+"Yeni" = "New";
+"Ayarlar" = "Settings";
+
+// Settings - Advanced Tab
+"MAMP İşlemleri" = "MAMP Operations";
+"MySQL Socket Düzelt" = "Fix MySQL Socket";
+"Başarılı" = "Success";
+"İşlem Başarısız" = "Operation Failed";
+"Tamam" = "OK";
+"Komutu Kopyala" = "Copy Command";
+"phpMyAdmin Config Düzelt" = "Fix phpMyAdmin Config";
+"Hata" = "Error";
+"Cloudflare İşlemleri" = "Cloudflare Operations";
+"Cloudflare Hesabı Girişi" = "Cloudflare Account Login";
+"Tünel Durumlarını Kontrol Et" = "Check Tunnel Status";
+"Toplu İşlemler" = "Bulk Operations";
+"Tümünü Tara" = "Scan All";
+"Ayarları Sıfırla" = "Reset Settings";
+
+// Settings - Backup Tab
+"Yedekleme ve Geri Yükleme" = "Backup and Restore";
+"Yedek Oluştur" = "Create Backup";
+"Otomatik Yedekleme" = "Auto Backup";
+"Yedekleri Yönet" = "Manage Backups";
+"Backup Geri Yükle" = "Restore Backup";
+"İptal" = "Cancel";
+"Geri Yükle" = "Restore";
+"Backup Sil" = "Delete Backup";
+"Sil" = "Delete";
+"Bilgi" = "Info";
+"Yedekleme & Geri Yükleme" = "Backup & Restore";
+"Tünel yapılandırmalarınızı ve ayarlarınızı yedekleyin" = "Backup your tunnel configurations and settings";
+"Son yedekleme: " = "Last backup: ";
+"Hızlı İşlemler" = "Quick Actions";
+"Yeni Yedek" = "New Backup";
+"Mevcut durumu kaydet" = "Save current state";
+"Kaydet" = "Save";
+"Backup dosyası yükle" = "Load backup file";
+"Belirtilen aralıklarla otomatik yedek oluştur" = "Create automatic backups at specified intervals";
+"Yedekleme Aralığı: " = "Backup Interval: ";
+" saat" = " hour(s)";
+"1 saat" = "1 hour";
+"1 hafta" = "1 week";
+"Yedekler" = "Backups";
+"Henüz yedek yok" = "No backups yet";
+"İlk yedeklerinizi oluşturmaya başlayın" = "Start creating your first backups";
+"Boyut" = "Size";
+"yedek" = "backup(s)";
+"tünel" = "tunnel(s)";
+"Mevcut Yedekler" = "Available Backups";
+"Henüz yedek bulunmuyor" = "No backups found yet";
+"Yukarıdaki 'Yeni Yedek' butonuna tıklayarak ilk yedeğinizi oluşturun" = "Click the 'New Backup' button above to create your first backup";
+
+// Settings - History Tab
+"Geçmiş ve Kayıtlar" = "History and Logs";
+"Tüm Geçmişi Temizle" = "Clear All History";
+"Kayıtları Dışa Aktar" = "Export Logs";
+"Bildirimler" = "Notifications";
+"Hatalar" = "Errors";
+"Loglar" = "Logs";
+"Dışa Aktar" = "Export";
+"Temizle" = "Clear";
+"Ara..." = "Search...";
+"Henüz bildirim yok" = "No notifications yet";
+"Eşleşen bildirim bulunamadı" = "No matching notifications found";
+"Bildirimler burada görünecek" = "Notifications will appear here";
+"Henüz hata kaydı yok" = "No error records yet";
+"Eşleşen hata bulunamadı" = "No matching errors found";
+"Harika! Hiç hata yok" = "Great! No errors";
+"Henüz log kaydı yok" = "No log records yet";
+"Eşleşen log bulunamadı" = "No matching logs found";
+"Log kayıtları burada görünecek" = "Log records will appear here";
+
+// Settings - Notifications Tab
+"Bildirim Ayarları" = "Notification Settings";
+"Bildirimleri Etkinleştir" = "Enable Notifications";
+"Sistem bildirimlerini göster" = "Show system notifications";
+"Tünel Durumu Bildirimleri" = "Tunnel Status Notifications";
+"Tünel başlatma/durdurma bildirimleri" = "Tunnel start/stop notifications";
+"Hata Bildirimleri" = "Error Notifications";
+"Hata ve uyarı bildirimleri" = "Error and warning notifications";
+"Başarı Bildirimleri" = "Success Notifications";
+"İşlem tamamlama bildirimleri" = "Operation completion notifications";
+
+// Settings - Appearance Tab
+"Tema Ayarları" = "Theme Settings";
+"Koyu Mod" = "Dark Mode";
+"Karanlık tema kullan" = "Use dark theme";
+"Vurgu Rengi" = "Accent Color";
+"Arayüz Seçenekleri" = "Interface Options";
+
+// Settings - Paths Tab
+"Cloudflared Dizinleri" = "Cloudflared Directories";
+"MAMP Yapılandırması" = "MAMP Configuration";
+"MAMP Ana Dizini" = "MAMP Main Directory";
+"Sites Dizini (Özel)" = "Sites Directory (Custom)";
+"Apache Config Dizini (Özel)" = "Apache Config Directory (Custom)";
+"vHost Config Dosyası (Özel)" = "vHost Config File (Custom)";
+"httpd.conf Dosyası (Özel)" = "httpd.conf File (Custom)";
+"Aktif Yollar:" = "Active Paths:";
+"Apache Config" = "Apache Config";
+"Sites Directory" = "Sites Directory";
+"vHost Config" = "vHost Config";
+"Python Proje Ayarları" = "Python Project Settings";
+"Python Proje Dizini" = "Python Project Directory";
+"Hızlı Erişim" = "Quick Access";
+"MAMP Config" = "MAMP Config";
+"vHost File" = "vHost File";
+"Düzenlenebilir" = "Editable";
+"Salt Okunur" = "Read Only";
+"Düzenle" = "Edit";
+"Durumu Kontrol Et" = "Check Status";
+"Uygula" = "Apply";
+"Uygulama Bilgileri" = "Application Info";
+"Version" = "Version";
+"Geliştirici" = "Developer";
+"Platform" = "Platform";
+"Framework" = "Framework";
+"Son Güncelleme" = "Last Update";
+
+// Alert Titles and Buttons
+"Port Uyası" = "Port Warning";
+"Atla" = "Skip";
+"Manuel Yapılandırma" = "Manual Configuration";
+"Config Oluşturuldu" = "Config Created";
+"Config Oluşturuldu (MAMP Uyarısı)" = "Config Created (MAMP Warning)";
+"MAMP httpd.conf Güncellendi" = "MAMP httpd.conf Updated";
+"Hızlı Tünel Hazır" = "Quick Tunnel Ready";
+"Python Uygulaması Başlatıldı" = "Python Application Started";
+"Python Uygulaması Durduruluyor" = "Python Application Stopping";
+"Evet, Kalıcı Olarak Sil" = "Yes, Delete Permanently";
+"Yönlendir" = "Route";
+"DNS Yönlendirme Başarılı" = "DNS Routing Successful";
+"DNS Yönlendirildi" = "DNS Routed";
+"URL Kopyalandı" = "URL Copied";
+"Yerel Dosyaları Sil?" = "Delete Local Files?";
+"Evet, Yerel Dosyaları Sil" = "Yes, Delete Local Files";
+"Hayır, Dosyaları Koruyun" = "No, Keep Files";
+"Yerel Dosyalar Silindi" = "Local Files Deleted";
+"Klasörü Aç" = "Open Folder";
+"Hayır" = "No";
+"Kopyalandı, Tamam" = "Copied, OK";
+"Terminal'i Aç" = "Open Terminal";
+"Form Hatası" = "Form Error";
+"Port Hatası" = "Port Error";
+"Tünel Oluşturuldu" = "Tunnel Created";
+"Yapılandırma Hatası" = "Configuration Error";
+"Oluşturma Hatası" = "Creation Error";
+"Tünel Adı" = "Tunnel Name";
+"Config Dosya Adı" = "Config File Name";
+"Genel URL" = "Public URL";
+"Tünel Hatası" = "Tunnel Error";
+"Yönetilen Tüneller" = "Managed Tunnels";
+"Hızlı Tüneller" = "Quick Tunnels";
+"Hatalar" = "Errors";
+"Yeni Tünel" = "New Tunnel";
+"Dosya Paylaş" = "Share File";
+"Tümünü Başlat" = "Start All";
+"Oturum Açıldığında Başlatma" = "Launch at Login";
+"Etkinleştirildi" = "Enabled";
+"Devre Dışı Bırakıldı" = "Disabled";
+"İzin Gerekli" = "Permission Required";
+"Kapat" = "Close";
+"Terminal'de Aç" = "Open in Terminal";
+"Kopyala" = "Copy";
+
+// File Panel Titles
+"cloudflared Yürütülebilir Dosyasını Seçin" = "Select cloudflared Executable";
+"MAMP Ana Dizinini Seçin" = "Select MAMP Root Directory";
+"Python Proje Dizinini Seçin" = "Select Python Project Directory";
+"Cloudflared Tünel Dizinini Seçin" = "Select Cloudflared Tunnel Directory";
+"MAMP Sites Dizinini Seçin" = "Select MAMP Sites Directory";
+"Apache Config Dizinini Seçin" = "Select Apache Config Directory";
+"vHost Config Dosyasını Seçin" = "Select vHost Config File";
+"httpd.conf Dosyasını Seçin" = "Select httpd.conf File";
+
+// Component Titles
+"Cloudflare Bağlantısı" = "Cloudflare Connection";
+"Tüm sistemler çalışıyor" = "All systems operational";
+"Tünel Kurulumu" = "Tunnel Setup";
+"Yeni Tünel Oluştur" = "Create New Tunnel";
+"Hızlı ve kolay kurulum" = "Quick and easy setup";
+"Otomatik Başlatma" = "Auto Start";
+"Sistem açılışında otomatik başlat" = "Auto start on system startup";
+
+// Menu Items
+"MAMP" = "MAMP";
+"Docker" = "Docker";
+"Python Panel" = "Python Panel";
+
+// Interface Options
+"Dock'tan Gizle" = "Hide from Dock";
+"Uygulamayı Dock'tan gizle, sadece menü çubuğunda göster" = "Hide app from Dock, show only in menu bar";

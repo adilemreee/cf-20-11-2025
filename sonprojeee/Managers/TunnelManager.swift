@@ -40,7 +40,7 @@ class TunnelManager: ObservableObject {
             }
             if cloudflaredExecutablePath != oldValue {
                 UserDefaults.standard.set(cloudflaredExecutablePath, forKey: "cloudflaredPath")
-                print("Yeni cloudflared yolu ayarlandı: \(cloudflaredExecutablePath)")
+                print(NSLocalizedString("Yeni cloudflared yolu ayarlandı", comment: "") + ": \(cloudflaredExecutablePath)")
                 invalidateCloudflaredBookmarkIfNeeded()
                 checkCloudflaredExecutable() // Validate the new path
             }
@@ -51,7 +51,7 @@ class TunnelManager: ObservableObject {
              if checkInterval < 5 { checkInterval = 5 } // Minimum interval 5s
              UserDefaults.standard.set(checkInterval, forKey: "checkInterval")
              setupStatusCheckTimer() // Restart timer with new interval
-             print("Yeni kontrol aralığı ayarlandı: \(checkInterval) saniye")
+             print(NSLocalizedString("Yeni kontrol aralığı ayarlandı", comment: "") + ": \(checkInterval) " + NSLocalizedString("saniye", comment: ""))
          }
      }
     @Published var mampBasePath: String {
@@ -68,7 +68,7 @@ class TunnelManager: ObservableObject {
             }
             if standardized != oldValue {
                 UserDefaults.standard.set(standardized, forKey: "mampBasePath")
-                print("MAMP ana dizini güncellendi: \(standardized)")
+                print(NSLocalizedString("MAMP ana dizini güncellendi", comment: "") + ": \(standardized)")
             }
         }
     }
@@ -87,10 +87,15 @@ class TunnelManager: ObservableObject {
             }
             if cloudflaredDirectoryPath != oldValue {
                 UserDefaults.standard.set(cloudflaredDirectoryPath, forKey: "cloudflaredDirectoryPath")
-                print("Cloudflared dizini güncellendi: \(cloudflaredDirectoryPath)")
+                print(NSLocalizedString("Cloudflared dizini güncellendi", comment: "") + ": \(cloudflaredDirectoryPath)")
                 findManagedTunnels() // Yeni dizinde tünelleri tara
             }
         }
+    }
+    
+    var isLoggedIn: Bool {
+        let certPath = (cloudflaredDirectoryPath as NSString).appendingPathComponent("cert.pem")
+        return FileManager.default.fileExists(atPath: certPath)
     }
     
     @Published var customMampSitesPath: String? {
@@ -103,7 +108,7 @@ class TunnelManager: ObservableObject {
                 } else {
                     let standardized = (trimmed as NSString).standardizingPath
                     UserDefaults.standard.set(standardized, forKey: "customMampSitesPath")
-                    print("Özel MAMP sites dizini ayarlandı: \(standardized)")
+                    print(NSLocalizedString("Özel MAMP sites dizini ayarlandı", comment: "") + ": \(standardized)")
                 }
             } else {
                 UserDefaults.standard.removeObject(forKey: "customMampSitesPath")
@@ -121,7 +126,7 @@ class TunnelManager: ObservableObject {
                 } else {
                     let standardized = (trimmed as NSString).standardizingPath
                     UserDefaults.standard.set(standardized, forKey: "customMampApacheConfigPath")
-                    print("Özel Apache config dizini ayarlandı: \(standardized)")
+                    print(NSLocalizedString("Özel Apache config dizini ayarlandı", comment: "") + ": \(standardized)")
                 }
             } else {
                 UserDefaults.standard.removeObject(forKey: "customMampApacheConfigPath")
@@ -139,7 +144,7 @@ class TunnelManager: ObservableObject {
                 } else {
                     let standardized = (trimmed as NSString).standardizingPath
                     UserDefaults.standard.set(standardized, forKey: "customMampVHostConfPath")
-                    print("Özel vHost config dosyası ayarlandı: \(standardized)")
+                    print(NSLocalizedString("Özel vHost config dosyası ayarlandı", comment: "") + ": \(standardized)")
                 }
             } else {
                 UserDefaults.standard.removeObject(forKey: "customMampVHostConfPath")
@@ -157,7 +162,7 @@ class TunnelManager: ObservableObject {
                 } else {
                     let standardized = (trimmed as NSString).standardizingPath
                     UserDefaults.standard.set(standardized, forKey: "customMampHttpdConfPath")
-                    print("Özel httpd.conf dosyası ayarlandı: \(standardized)")
+                    print(NSLocalizedString("Özel httpd.conf dosyası ayarlandı", comment: "") + ": \(standardized)")
                 }
             } else {
                 UserDefaults.standard.removeObject(forKey: "customMampHttpdConfPath")
@@ -357,8 +362,8 @@ class TunnelManager: ObservableObject {
         print("Mamp httpd.conf path: \(mampHttpdConfPath)")
         
         // Log initialization
-        HistoryManager.shared.log("Cloudflared Manager başlatıldı", level: .info, category: "System")
-        HistoryManager.shared.log("Cloudflared yolu: \(cloudflaredExecutablePath)", level: .debug, category: "System")
+        HistoryManager.shared.log(NSLocalizedString("Cloudflared Manager başlatıldı", comment: ""), level: .info, category: "System")
+        HistoryManager.shared.log(NSLocalizedString("Cloudflared yolu", comment: "") + ": \(cloudflaredExecutablePath)", level: .debug, category: "System")
         
         // Initial check for cloudflared executable
         checkCloudflaredExecutable()
@@ -475,13 +480,13 @@ class TunnelManager: ObservableObject {
         HistoryManager.shared.addNotification(title: title, body: body, type: type, tunnelName: tunnelName)
         
         // Log the notification
-        HistoryManager.shared.log("Bildirim: \(title)", level: .info, category: "Notification")
+        HistoryManager.shared.log(NSLocalizedString("Bildirim", comment: "") + ": \(title)", level: .info, category: "Notification")
     }
     
     // Helper to log errors
     internal func logError(tunnelName: String, errorMessage: String, errorCode: Int? = nil, source: ErrorLogEntry.ErrorSource) {
         HistoryManager.shared.addErrorLog(tunnelName: tunnelName, errorMessage: errorMessage, errorCode: errorCode, source: source)
-        HistoryManager.shared.log("Hata [\(source.rawValue)]: \(tunnelName) - \(errorMessage)", level: .error, category: "Error")
+        HistoryManager.shared.log(NSLocalizedString("Hata", comment: "") + " [\(source.rawValue)]: \(tunnelName) - \(errorMessage)", level: .error, category: "Error")
     }
 
     func checkCloudflaredExecutable() {
@@ -534,13 +539,13 @@ class TunnelManager: ObservableObject {
             } catch {
                 print("❌ Hata: \(cloudflaredDirectoryPath) dizini oluşturulamadı: \(error)")
                 DispatchQueue.main.async { self.tunnels.removeAll { $0.isManaged } }
-                postUserNotification(identifier:"cf_dir_create_error", title: "Cloudflared Dizini Hatası", body: "'\(cloudflaredDirectoryPath)' oluşturulamadı veya erişilemedi.")
+                postUserNotification(identifier:"cf_dir_create_error", title: NSLocalizedString("Cloudflared Dizini Hatası", comment: ""), body: "'\(cloudflaredDirectoryPath)' " + NSLocalizedString("' oluşturulamadı veya erişilemedi.", comment: ""))
                 return
             }
         } else if !isDirectory.boolValue {
              print("❌ Hata: \(cloudflaredDirectoryPath) bir dizin değil.")
              DispatchQueue.main.async { self.tunnels.removeAll { $0.isManaged } }
-             postUserNotification(identifier:"cf_dir_not_dir", title: "Cloudflared Yolu Hatalı", body: "'\(cloudflaredDirectoryPath)' bir dizin değil.")
+             postUserNotification(identifier:"cf_dir_not_dir", title: NSLocalizedString("Cloudflared Yolu Hatalı", comment: ""), body: "'\(cloudflaredDirectoryPath)' " + NSLocalizedString(" bir dizin değil.", comment: ""))
              return
         }
 
@@ -563,7 +568,7 @@ class TunnelManager: ObservableObject {
             }
         } catch {
             print("❌ Hata: \(cloudflaredDirectoryPath) dizini okunurken hata oluştu: \(error)")
-            postUserNotification(identifier:"cf_dir_read_error", title: "Dizin Okuma Hatası", body: "'\(cloudflaredDirectoryPath)' okunurken hata oluştu.")
+            postUserNotification(identifier:"cf_dir_read_error", title: NSLocalizedString("Dizin Okuma Hatası", comment: ""), body: "'\(cloudflaredDirectoryPath)' " + NSLocalizedString(" okunurken hata oluştu.", comment: ""))
             // Don't clear tunnels here, could be temporary.
         }
 
@@ -634,7 +639,7 @@ class TunnelManager: ObservableObject {
         // Internet Connection Check
         if !NetworkMonitor.shared.isConnected {
             print("❌ İnternet bağlantısı yok. Tünel başlatılamadı: \(tunnel.name)")
-            postUserNotification(identifier: "no_internet_\(tunnel.id)", title: "İnternet Bağlantısı Yok", body: "Tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin.", type: .error)
+            postUserNotification(identifier: "no_internet_\(tunnel.id)", title: NSLocalizedString("İnternet Bağlantısı Yok", comment: ""), body: NSLocalizedString("Tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin.", comment: ""), type: .error)
             // UI'da hata durumunu göstermek için (opsiyonel)
             if let index = tunnels.firstIndex(where: { $0.id == tunnel.id }) {
                 DispatchQueue.main.async {
@@ -742,7 +747,7 @@ class TunnelManager: ObservableObject {
                          if !wasStopping { // Notify only if stop wasn't already in progress UI-wise
                              print("   Tünel durduruldu (termination handler).")
                              HistoryManager.shared.log("Tünel durduruldu: \(self.tunnels[idx].name)", level: .info, category: "Managed Tunnel")
-                             self.postUserNotification(identifier:"stopped_\(self.tunnels[idx].id)", title: "Tünel Durduruldu", body: "'\(self.tunnels[idx].name)' başarıyla durduruldu.", type: .info, tunnelName: self.tunnels[idx].name)
+                             self.postUserNotification(identifier:"stopped_\(self.tunnels[idx].id)", title: NSLocalizedString("Tünel Durduruldu", comment: ""), body: "'\(self.tunnels[idx].name)' " + NSLocalizedString("' başarıyla durduruldu.", comment: ""), type: .info, tunnelName: self.tunnels[idx].name)
                          }
                      } else { // Unintentional termination
                          self.tunnels[idx].status = .error
@@ -751,7 +756,7 @@ class TunnelManager: ObservableObject {
 
                          print("   Hata: Tünel beklenmedik şekilde sonlandı.")
                          self.logError(tunnelName: self.tunnels[idx].name, errorMessage: errorMessage, errorCode: Int(status), source: .managed)
-                         self.postUserNotification(identifier:"error_\(self.tunnels[idx].id)", title: "Tünel Hatası: \(self.tunnels[idx].name)", body: self.tunnels[idx].lastError ?? "Bilinmeyen hata.", type: .error, tunnelName: self.tunnels[idx].name)
+                         self.postUserNotification(identifier:"error_\(self.tunnels[idx].id)", title: NSLocalizedString("Tünel Hatası: ", comment: "") + "\(self.tunnels[idx].name)", body: self.tunnels[idx].lastError ?? NSLocalizedString("Bilinmeyen hata.", comment: ""), type: .error, tunnelName: self.tunnels[idx].name)
                      }
                  }
             } // End DispatchQueue.main.async
@@ -774,7 +779,7 @@ class TunnelManager: ObservableObject {
                          self.tunnels[index].status = .running
                          print("   Durum güncellendi -> Çalışıyor (\(self.tunnels[index].name))")
                          HistoryManager.shared.log("Tünel başlatıldı: \(tunnel.name)", level: .info, category: "Managed Tunnel")
-                         self.postUserNotification(identifier:"started_\(tunnel.id)", title: "Tünel Başlatıldı", body: "'\(tunnel.name)' başarıyla başlatıldı.", type: .success, tunnelName: tunnel.name)
+                         self.postUserNotification(identifier:"started_\(tunnel.id)", title: NSLocalizedString("Tünel Başlatıldı", comment: ""), body: "'\(tunnel.name)' " + NSLocalizedString("' başarıyla başlatıldı.", comment: ""), type: .success, tunnelName: tunnel.name)
                      } else {
                          print("   Başlatma sırasında tünel sonlandı (\(self.tunnels[index].name)). Durum -> Hata.")
                          self.tunnels[index].status = .error
@@ -792,13 +797,13 @@ class TunnelManager: ObservableObject {
                     self.tunnels[index].status = .error;
                     self.logError(tunnelName: tunnel.name, errorMessage: error.localizedDescription, source: .managed);
                     self.tunnels[index].processIdentifier = nil
-                    self.tunnels[index].lastError = "İşlem başlatılamadı: \(error.localizedDescription)"
+                    self.tunnels[index].lastError = NSLocalizedString("İşlem başlatılamadı: ", comment: "") + "\(error.localizedDescription)"
                  }
                  outputPipe.fileHandleForReading.readabilityHandler = nil // Cleanup handlers on failure
                  errorPipe.fileHandleForReading.readabilityHandler = nil
              }
             runningManagedProcesses.removeValue(forKey: configPath) // Remove if run fails
-            postUserNotification(identifier:"start_fail_run_\(tunnel.id)", title: "Başlatma Hatası: \(tunnel.name)", body: "İşlem başlatılamadı: \(error.localizedDescription)")
+            postUserNotification(identifier:"start_fail_run_\(tunnel.id)", title: NSLocalizedString("Başlatma Hatası: ", comment: "") + "\(tunnel.name)", body: NSLocalizedString("İşlem başlatılamadı: ", comment: "") + "\(error.localizedDescription)")
         }
     }
 
@@ -876,11 +881,11 @@ class TunnelManager: ObservableObject {
     func createTunnel(name: String, completion: @escaping (Result<(uuid: String, jsonPath: String), Error>) -> Void) {
         let execPath = resolvedCloudflaredExecutablePath()
         guard FileManager.default.fileExists(atPath: execPath) else {
-            completion(.failure(NSError(domain: "CloudflaredManagerError", code: 1, userInfo: [NSLocalizedDescriptionKey: "cloudflared yürütülebilir dosyası şurada bulunamadı: \(execPath)"])))
+            completion(.failure(NSError(domain: "CloudflaredManagerError", code: 1, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("cloudflared yürütülebilir dosyası şurada bulunamadı: ", comment: "") + "\(execPath)"])))
             return
         }
         if name.rangeOfCharacter(from: .whitespacesAndNewlines) != nil || name.isEmpty {
-             completion(.failure(NSError(domain: "InputError", code: 11, userInfo: [NSLocalizedDescriptionKey: "Tünel adı boşluk içeremez ve boş olamaz."])))
+             completion(.failure(NSError(domain: "InputError", code: 11, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Tünel adı boşluk içeremez ve boş olamaz.", comment: "")])))
              return
          }
 
@@ -959,7 +964,7 @@ class TunnelManager: ObservableObject {
                         ErrorHandler.shared.handle(error, context: "Port Kontrolü", showAlert: false)
                         postUserNotification(
                             identifier: "port_conflict_\(port)",
-                            title: "Port Uyası",
+                            title: NSLocalizedString("Port Uyası", comment: ""),
                             body: error.localizedDescription + "\n\nDevam ediliyor, ancak tünel bağlanmayabilir."
                         )
                     }
@@ -1044,9 +1049,9 @@ class TunnelManager: ObservableObject {
                         alert.messageText = "MAMP Dosya İzinleri"
                         alert.informativeText = "MAMP yapılandırma dosyalarına yazma izni gerekiyor. Admin şifrenizle düzeltmek ister misiniz?"
                         alert.alertStyle = .warning
-                        alert.addButton(withTitle: "İzinleri Düzelt")
-                        alert.addButton(withTitle: "Atla")
-                        alert.addButton(withTitle: "Manuel Yapılandırma")
+                        alert.addButton(withTitle: NSLocalizedString("İzinleri Düzelt", comment: ""))
+                        alert.addButton(withTitle: NSLocalizedString("Atla", comment: ""))
+                        alert.addButton(withTitle: NSLocalizedString("Manuel Yapılandırma", comment: ""))
                         
                         let response = alert.runModal()
                         
@@ -1057,14 +1062,14 @@ class TunnelManager: ObservableObject {
                                 print("✅ MAMP dosya izinleri düzeltildi")
                                 self.postUserNotification(
                                     identifier: "mamp_permissions_fixed",
-                                    title: "MAMP İzinleri",
+                                    title: NSLocalizedString("MAMP İzinleri", comment: ""),
                                     body: "İzinler başarıyla düzeltildi"
                                 )
                             } else {
                                 print("❌ MAMP dosya izinleri düzeltilemedi")
                                 self.postUserNotification(
                                     identifier: "mamp_permissions_failed",
-                                    title: "MAMP İzinleri",
+                                    title: NSLocalizedString("MAMP İzinleri", comment: ""),
                                     body: "İzinler düzeltilemedi. Manuel yapılandırma gerekebilir."
                                 )
                             }
@@ -1098,7 +1103,7 @@ class TunnelManager: ObservableObject {
                         listenUpdateError = error // Hatayı sakla
                         print("⚠️ MAMP httpd.conf Listen güncelleme hatası: \(error.localizedDescription)")
                         // (Bildirim updateMampHttpdConfListen içinde gönderiliyor, ama burada tekrar gönderebiliriz)
-                         self.postUserNotification(identifier: "mamp_httpd_update_fail_\(port)", title: "MAMP httpd.conf Hatası", body: "'Listen \(port)' eklenemedi. İzinleri kontrol edin veya manuel ekleyin.\n\(error.localizedDescription)")
+                         self.postUserNotification(identifier: "mamp_httpd_update_fail_\(port)", title: NSLocalizedString("MAMP httpd.conf Hatası", comment: ""), body: "'Listen \(port)' eklenemedi. İzinleri kontrol edin veya manuel ekleyin.\n\(error.localizedDescription)")
                     } else {
                         print("✅ MAMP httpd.conf Listen direktifi başarıyla güncellendi (veya zaten vardı).")
                     }
@@ -1116,7 +1121,7 @@ class TunnelManager: ObservableObject {
                  // Genel sonucu bildir
                  if vhostUpdateError == nil && listenUpdateError == nil {
                       // Her iki MAMP güncellemesi de başarılı (veya gerekmiyordu)
-                      self.postUserNotification(identifier: "config_created_\(cleanConfigName)", title: "Config Oluşturuldu", body: "'\(cleanConfigName).yml' dosyası oluşturuldu." + (documentRoot != nil ? " MAMP yapılandırması güncellendi." : ""))
+                      self.postUserNotification(identifier: "config_created_\(cleanConfigName)", title: NSLocalizedString("Config Oluşturuldu", comment: ""), body: "'\(cleanConfigName).yml' dosyası oluşturuldu." + (documentRoot != nil ? " MAMP yapılandırması güncellendi." : ""))
                       completion(.success(targetPath))
                  } else {
                       // Config başarılı ama MAMP güncellemelerinde hata var
@@ -1127,7 +1132,7 @@ class TunnelManager: ObservableObject {
 
                       print("❌ Config oluşturuldu, ancak MAMP güncellemelerinde hata(lar) var.")
                       // Kullanıcıya config'in başarılı olduğunu ama MAMP için uyarıyı bildir
-                      self.postUserNotification(identifier: "config_created_mamp_warn_\(cleanConfigName)", title: "Config Oluşturuldu (MAMP Uyarısı)", body: "'\(cleanConfigName).yml' oluşturuldu, ancak MAMP yapılandırması güncellenirken hata(lar) oluştu:\n\(combinedErrorDesc)\nLütfen MAMP ayarlarını manuel kontrol edin.")
+                      self.postUserNotification(identifier: "config_created_mamp_warn_\(cleanConfigName)", title: NSLocalizedString("Config Oluşturuldu (MAMP Uyarısı)", comment: ""), body: "'\(cleanConfigName).yml' oluşturuldu, ancak MAMP yapılandırması güncellenirken hata(lar) oluştu:\n\(combinedErrorDesc)\nLütfen MAMP ayarlarını manuel kontrol edin.")
                       // Yine de başarı olarak dönebiliriz, çünkü tünel ve config tamamlandı.
                       completion(.success(targetPath))
                       // VEYA Hata olarak dönmek isterseniz:
@@ -1391,7 +1396,7 @@ class TunnelManager: ObservableObject {
                 // Kullanıcıyı bilgilendir (MAMP yeniden başlatma hatırlatması)
                 self.postUserNotification(
                     identifier: "mamp_httpd_listen_added_\(port)",
-                    title: "MAMP httpd.conf Güncellendi",
+                    title: NSLocalizedString("MAMP httpd.conf Güncellendi", comment: ""),
                     body: "'Listen \(port)' direktifi eklendi. Ayarların etkili olması için MAMP sunucularını yeniden başlatmanız gerekebilir."
                 )
             }
@@ -1410,7 +1415,7 @@ class TunnelManager: ObservableObject {
             return
         }
         print("🔑 Cloudflare girişi başlatılıyor (Tarayıcı açılacak)...")
-        HistoryManager.shared.addNotification(title: "Giriş Başlatıldı", body: "Cloudflare giriş işlemi için tarayıcı açılıyor...", type: .info)
+        HistoryManager.shared.addNotification(title: NSLocalizedString("Giriş Başlatıldı", comment: ""), body: NSLocalizedString("Cloudflare giriş işlemi için tarayıcı açılıyor...", comment: ""), type: .info)
 
         let process = Process()
         process.executableURL = execURL
@@ -1429,7 +1434,7 @@ class TunnelManager: ObservableObject {
              if status == 0 {
                  if outputString.contains("You have successfully logged in") || outputString.contains("already logged in") {
                      print("   ✅ Giriş başarılı veya zaten yapılmış.")
-                     HistoryManager.shared.addNotification(title: "Giriş Başarılı", body: "Cloudflare hesabına başarıyla giriş yapıldı.", type: .success)
+                     HistoryManager.shared.addNotification(title: NSLocalizedString("Giriş Başarılı", comment: ""), body: NSLocalizedString("Cloudflare hesabına başarıyla giriş yapıldı.", comment: ""), type: .success)
                      completion(.success(()))
                  } else {
                      print("   Giriş işlemi başlatıldı, tarayıcıda devam edin.")
@@ -1456,7 +1461,7 @@ class TunnelManager: ObservableObject {
         // Internet Connection Check
         if !NetworkMonitor.shared.isConnected {
             print("❌ İnternet bağlantısı yok. Hızlı tünel başlatılamadı: \(localURL)")
-            postUserNotification(identifier: "no_internet_quick", title: "İnternet Bağlantısı Yok", body: "Hızlı tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin.", type: .error)
+            postUserNotification(identifier: "no_internet_quick", title: NSLocalizedString("İnternet Bağlantısı Yok", comment: ""), body: NSLocalizedString("Hızlı tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin.", comment: ""), type: .error)
             completion(.failure(NSError(domain: "NetworkError", code: -1, userInfo: [NSLocalizedDescriptionKey: "İnternet bağlantısı yok."])))
             return
         }
@@ -1556,7 +1561,7 @@ class TunnelManager: ObservableObject {
                     tunnelData.lastError = errorMessage
                     self.quickTunnels[index] = tunnelData
                     
-                    self.postUserNotification(identifier: "quick_tunnel_failed_\(tunnelID)", title: "Hızlı Tünel Başarısız", body: "Tünel beklenmedik şekilde kapandı: \(errorMessage)", type: .error)
+                    self.postUserNotification(identifier: "quick_tunnel_failed_\(tunnelID)", title: NSLocalizedString("Hızlı Tünel Başarısız", comment: ""), body: NSLocalizedString("Tünel beklenmedik şekilde kapandı: ", comment: "") + "\(errorMessage)", type: .error)
                 } else if !wasStoppedIntentionally {
                     // URL bulundu ama tünel çöktü
                     print("   ‼️ Hızlı Tünel: Çalışırken çöktü [\(tunnelID)].")
@@ -1594,7 +1599,7 @@ class TunnelManager: ObservableObject {
             DispatchQueue.main.async {
                 self.quickTunnels.removeAll { $0.id == tunnelID }
                 self.runningQuickProcesses.removeValue(forKey: tunnelID)
-                self.postUserNotification(identifier: "quick_start_run_fail_\(tunnelID)", title: "Hızlı Tünel Başlatma Hatası", body: "İşlem başlatılamadı: \(error.localizedDescription)")
+                self.postUserNotification(identifier: "quick_start_run_fail_\(tunnelID)", title: NSLocalizedString("Hızlı Tünel Başlatma Hatası", comment: ""), body: NSLocalizedString("İşlem başlatılamadı: ", comment: "") + "\(error.localizedDescription)")
                 completion(.failure(error))
             }
             outputPipe.fileHandleForReading.readabilityHandler = nil
@@ -1679,7 +1684,7 @@ class TunnelManager: ObservableObject {
                         print("   ☁️ Hızlı Tünel URL'si güncellendi (\(tunnelID)): \(theURL)")
                         print("   📋 Menü güncellemesi tetiklenmeli...")
                         HistoryManager.shared.log("Hızlı tünel başlatıldı: \(self.quickTunnels[index].localURL) → \(theURL)", level: .info, category: "Quick Tunnel")
-                        self.postUserNotification(identifier: "quick_url_\(tunnelID)", title: "Hızlı Tünel Hazır", body: "\(self.quickTunnels[index].localURL)\n⬇️\n\(theURL)", type: .success, tunnelName: self.quickTunnels[index].localURL)
+                        self.postUserNotification(identifier: "quick_url_\(tunnelID)", title: NSLocalizedString("Hızlı Tünel Hazır", comment: ""), body: "\(self.quickTunnels[index].localURL)\n⬇️\n\(theURL)", type: .success, tunnelName: self.quickTunnels[index].localURL)
                     } else {
                         print("   ⚠️ URL zaten var: \(self.quickTunnels[index].publicURL!)")
                     }

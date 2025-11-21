@@ -19,10 +19,10 @@ struct FileShareView: View {
                     .font(.system(size: 32))
                     .foregroundColor(.orange)
                 VStack(alignment: .leading) {
-                    Text("Hızlı Dosya Paylaşımı")
+                    Text(NSLocalizedString("Hızlı Dosya Paylaşımı", comment: ""))
                         .font(.title2)
                         .bold()
-                    Text("Klasör seçin ve anında internete açın")
+                    Text(NSLocalizedString("Klasör seçin ve anında internete açın", comment: ""))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -34,11 +34,11 @@ struct FileShareView: View {
             
             // Folder Selection
             VStack(alignment: .leading, spacing: 8) {
-                Text("Paylaşılacak Klasör")
+                Text(NSLocalizedString("Paylaşılacak Klasör", comment: ""))
                     .font(.headline)
                 
                 HStack {
-                    TextField("Klasör Yolu", text: $selectedFolder)
+                    TextField(NSLocalizedString("Klasör Yolu", comment: ""), text: $selectedFolder)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .disabled(true)
                     
@@ -60,14 +60,14 @@ struct FileShareView: View {
                             .fill(Color.green)
                             .frame(width: 10, height: 10)
                             .animatePulse()
-                        Text("Yayında")
+                        Text(NSLocalizedString("Yayında", comment: ""))
                             .font(.headline)
                             .foregroundColor(.green)
                     }
                     
                     if let url = publicUrl {
                         VStack(spacing: 8) {
-                            Text("Public URL")
+                            Text(NSLocalizedString("Public URL", comment: ""))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             
@@ -90,11 +90,11 @@ struct FileShareView: View {
                             .cornerRadius(8)
                         }
                     } else {
-                        ProgressView("Tünel oluşturuluyor...")
+                        ProgressView(NSLocalizedString("Tünel oluşturuluyor...", comment: ""))
                     }
                     
                     Button(action: stopSharing) {
-                        Text("Paylaşımı Durdur")
+                        Text(NSLocalizedString("Paylaşımı Durdur", comment: ""))
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.red.opacity(0.1))
@@ -111,7 +111,7 @@ struct FileShareView: View {
                 Button(action: startSharing) {
                     HStack {
                         Image(systemName: "network")
-                        Text("Paylaşımı Başlat")
+                        Text(NSLocalizedString("Paylaşımı Başlat", comment: ""))
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -127,7 +127,7 @@ struct FileShareView: View {
         }
         .padding()
         .frame(width: 450, height: 500)
-        .onChange(of: tunnelManager.quickTunnels) { tunnels in
+        .onChange(of: tunnelManager.quickTunnels) { _, tunnels in
             if let id = quickTunnelId, let tunnel = tunnels.first(where: { $0.id == id }), let url = tunnel.publicURL {
                 self.publicUrl = url
             }
@@ -139,7 +139,7 @@ struct FileShareView: View {
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
-        panel.message = "Paylaşılacak Klasörü Seçin"
+        panel.message = NSLocalizedString("Paylaşılacak Klasörü Seçin", comment: "")
         
         panel.begin { response in
             if response == .OK, let url = panel.url {
@@ -167,7 +167,7 @@ struct FileShareView: View {
                     case .success(let id):
                         self.quickTunnelId = id
                     case .failure(let error):
-                        print("Hızlı tünel başlatılamadı: \(error.localizedDescription)")
+                        print(NSLocalizedString("Hızlı tünel başlatılamadı", comment: "") + ": \(error.localizedDescription)")
                         // Hata durumunda sunucuyu da durdur
                         self.stopSharing()
                     }

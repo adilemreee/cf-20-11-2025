@@ -71,7 +71,7 @@ struct QuickTunnelAlertView: View {
             }
             
             Button(action: action) {
-                Text("Tamam")
+                Text(NSLocalizedString("Tamam", comment: ""))
                     .font(.headline)
                     .foregroundColor(.white)
                     .frame(width: 120, height: 36)
@@ -105,7 +105,7 @@ struct QuickTunnelView: View {
     
     // Preset management
     private let defaultPresets: [QuickTunnelPreset] = [
-        QuickTunnelPreset(id: QuickTunnelPreset.customID, name: "Özel", url: "", details: "Özel URL girin", isBuiltIn: true, isCustomEntry: true),
+        QuickTunnelPreset(id: QuickTunnelPreset.customID, name: NSLocalizedString("Özel", comment: ""), url: "", details: NSLocalizedString("Özel URL girin", comment: ""), isBuiltIn: true, isCustomEntry: true),
         QuickTunnelPreset(id: "preset-react", name: "React", url: "http://localhost:3000", details: "React Development Server", isBuiltIn: true),
         QuickTunnelPreset(id: "preset-vue", name: "Vue.js", url: "http://localhost:8080", details: "Vue.js Development Server", isBuiltIn: true),
         QuickTunnelPreset(id: "preset-angular", name: "Angular", url: "http://localhost:4200", details: "Angular Development Server", isBuiltIn: true),
@@ -267,12 +267,12 @@ struct QuickTunnelView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Hızlı Tünel Başlat")
+                    Text(NSLocalizedString("Hızlı Tünel Başlat", comment: ""))
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
                     
-                    Text("Yerel sunucunuzu hızlıca internete açın")
+                    Text(NSLocalizedString("Yerel sunucunuzu hızlıca internete açın", comment: ""))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -299,10 +299,10 @@ struct QuickTunnelView: View {
     }
     
     private var modernPresetSelectionCard: some View {
-        QuickTunnelCard(title: "Hızlı Seçim", icon: "list.bullet") {
+        QuickTunnelCard(title: NSLocalizedString("Hızlı Seçim", comment: ""), icon: "list.bullet") {
             VStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Yaygın Sunucu Türleri")
+                    Text(NSLocalizedString("Yaygın Sunucu Türleri", comment: ""))
                         .font(.subheadline)
                         .fontWeight(.medium)
                     
@@ -345,7 +345,7 @@ struct QuickTunnelView: View {
                                 Image(systemName: "trash")
                             }
                             .buttonStyle(.plain)
-                            .help("Preset'i sil")
+                            .help(NSLocalizedString("Preset'i sil", comment: ""))
                         }
                     }
                     .padding(12)
@@ -371,32 +371,32 @@ struct QuickTunnelView: View {
                     .padding(.vertical, 4)
                 
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Özel Preset Ekle")
+                    Text(NSLocalizedString("Özel Preset Ekle", comment: ""))
                         .font(.subheadline)
                         .fontWeight(.medium)
                     
                     QuickTunnelTextField(
-                        title: "Ad",
+                        title: NSLocalizedString("Ad", comment: ""),
                         text: $newPresetName,
                         placeholder: "örn. Laravel",
                         icon: "tag"
                     )
                     
                     QuickTunnelTextField(
-                        title: "URL",
+                        title: NSLocalizedString("URL", comment: ""),
                         text: $newPresetURL,
                         placeholder: "http://localhost:8000",
                         icon: "globe"
                     )
                     
                     QuickTunnelTextField(
-                        title: "Açıklama",
+                        title: NSLocalizedString("Açıklama", comment: ""),
                         text: $newPresetDetails,
-                        placeholder: "Yerel geliştirme sunucusu",
+                        placeholder: NSLocalizedString("Yerel geliştirme sunucusu", comment: ""),
                         icon: "info.circle"
                     )
                     
-                    Button("Preset Ekle") {
+                    Button(NSLocalizedString("Preset Ekle", comment: "")) {
                         addUserPreset()
                     }
                     .buttonStyle(QuickTunnelPrimaryButtonStyle())
@@ -407,10 +407,10 @@ struct QuickTunnelView: View {
     }
     
     private var modernURLInputCard: some View {
-        QuickTunnelCard(title: "URL Yapılandırması", icon: "network") {
+        QuickTunnelCard(title: NSLocalizedString("URL Yapılandırması", comment: ""), icon: "network") {
             VStack(spacing: 16) {
                 QuickTunnelTextField(
-                    title: "Yerel URL",
+                    title: NSLocalizedString("Yerel URL", comment: ""),
                     text: $localURL,
                     placeholder: "http://localhost:3000",
                     icon: "globe"
@@ -421,7 +421,7 @@ struct QuickTunnelView: View {
                     Image(systemName: isFormValid ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                         .foregroundColor(isFormValid ? .green : .red)
                     
-                    Text(isFormValid ? "Geçerli URL formatı" : "Geçersiz URL formatı")
+                    Text(isFormValid ? NSLocalizedString("Geçerli URL formatı", comment: "") : NSLocalizedString("Geçersiz URL formatı", comment: ""))
                         .font(.caption)
                         .foregroundColor(isFormValid ? .green : .red)
                     
@@ -439,11 +439,11 @@ struct QuickTunnelView: View {
                 .font(.title3)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("Nasıl Çalışır?")
+                Text(NSLocalizedString("Nasıl Çalışır?", comment: ""))
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 
-                Text("Hızlı tüneller geçici URL'ler oluşturur ve sunucunuz kapandığında otomatik olarak sona erer. Kalıcı tüneller için 'Yönetilen Tünel' oluşturun.")
+                Text(NSLocalizedString("Hızlı tüneller geçici URL'ler oluşturur ve sunucunuz kapandığında otomatik olarak sona erer. Kalıcı tüneller için 'Yönetilen Tünel' oluşturun.", comment: ""))
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -460,17 +460,17 @@ struct QuickTunnelView: View {
     }
     
     private var modernStatusCard: some View {
-        QuickTunnelCard(title: "Başlatma Durumu", icon: "gearshape.fill") {
+        QuickTunnelCard(title: NSLocalizedString("Başlatma Durumu", comment: ""), icon: "gearshape.fill") {
             HStack(spacing: 12) {
                 ProgressView()
                     .scaleEffect(0.8)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(startingStatus.isEmpty ? "İşlem devam ediyor..." : startingStatus)
+                    Text(startingStatus.isEmpty ? NSLocalizedString("İşlem devam ediyor...", comment: "") : startingStatus)
                         .font(.subheadline)
                         .fontWeight(.medium)
                     
-                    Text(isStarting ? "cloudflared komutu hazırlanıyor..." : "URL hazır olduğunda bu sayfada göreceksiniz.")
+                    Text(isStarting ? NSLocalizedString("cloudflared komutu hazırlanıyor...", comment: "") : NSLocalizedString("URL hazır olduğunda bu sayfada göreceksiniz.", comment: ""))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -482,7 +482,7 @@ struct QuickTunnelView: View {
     
     private var modernActionBar: some View {
         HStack(spacing: 16) {
-            Button("İptal") {
+            Button(NSLocalizedString("İptal", comment: "")) {
                 if !isStarting {
                     withAnimation(.easeOut(duration: 0.3)) {
                         dismiss()
@@ -495,7 +495,7 @@ struct QuickTunnelView: View {
             Spacer()
             
             if activeTunnelID != nil {
-                Button("Tüneli Durdur") {
+                Button(NSLocalizedString("Tüneli Durdur", comment: "")) {
                     stopActiveTunnel()
                 }
                 .buttonStyle(QuickTunnelSecondaryButtonStyle())
@@ -510,7 +510,7 @@ struct QuickTunnelView: View {
                     } else {
                         Image(systemName: "bolt.circle.fill")
                     }
-                    Text("Tüneli Başlat")
+                    Text(NSLocalizedString("Tüneli Başlat", comment: ""))
                 }
             }
             .buttonStyle(QuickTunnelPrimaryButtonStyle())
@@ -575,8 +575,8 @@ struct QuickTunnelView: View {
     
     private func startQuickTunnelProcess() {
         guard isFormValid else {
-            customAlertTitle = "Hata"
-            customAlertMessage = "Lütfen geçerli bir yerel URL girin.\n\nÖrnek: http://localhost:3000"
+            customAlertTitle = NSLocalizedString("Hata", comment: "")
+            customAlertMessage = NSLocalizedString("Lütfen geçerli bir yerel URL girin.\n\nÖrnek: http://localhost:3000", comment: "")
             customAlertType = .error
             showCustomAlert = true
             return
@@ -587,7 +587,7 @@ struct QuickTunnelView: View {
         showCustomAlert = false
         quickTunnelError = nil
         activeTunnelURL = nil
-        startingStatus = "Hızlı tünel başlatılıyor..."
+        startingStatus = NSLocalizedString("Hızlı tünel başlatılıyor...", comment: "")
         isStarting = true
         
         tunnelManager.startQuickTunnel(localURL: cleanURL) { result in
@@ -598,16 +598,16 @@ struct QuickTunnelView: View {
                 case .success(let tunnelID):
                     self.activeTunnelID = tunnelID
                     self.activeTunnelURL = nil
-                    self.startingStatus = "URL hazırlanıyor..."
+                    self.startingStatus = NSLocalizedString("URL hazırlanıyor...", comment: "")
                     self.presetMessage = nil
                     self.presetError = nil
 
                 case .failure(let error):
-                    self.customAlertTitle = "Hata"
-                    self.customAlertMessage = "Hızlı tünel başlatılamadı:\n\n\(error.localizedDescription)"
+                    self.customAlertTitle = NSLocalizedString("Hata", comment: "")
+                    self.customAlertMessage = NSLocalizedString("Hızlı tünel başlatılamadı", comment: "") + ":\n\n\(error.localizedDescription)"
                     self.customAlertType = .error
                     self.showCustomAlert = true
-                    self.startingStatus = "Hata oluştu."
+                    self.startingStatus = NSLocalizedString("Hata oluştu.", comment: "")
                     self.activeTunnelID = nil
                     self.activeTunnelURL = nil
                 }
@@ -623,7 +623,7 @@ extension QuickTunnelView {
         if let active = tunnels.first(where: { $0.id == activeID }) {
             if let url = active.publicURL, url != activeTunnelURL {
                 activeTunnelURL = url
-                startingStatus = "Tünel hazır."
+                startingStatus = NSLocalizedString("Tünel hazır.", comment: "")
             }
             
             if let error = active.lastError, !error.isEmpty {
@@ -633,7 +633,7 @@ extension QuickTunnelView {
             }
         } else {
             if activeTunnelURL == nil && quickTunnelError == nil {
-                quickTunnelError = "Tünel beklenmedik şekilde sonlandı."
+                quickTunnelError = NSLocalizedString("Tünel beklenmedik şekilde sonlandı.", comment: "")
             }
             activeTunnelID = nil
             activeTunnelURL = nil
@@ -677,7 +677,7 @@ extension QuickTunnelView {
         newPresetName = ""
         newPresetURL = ""
         newPresetDetails = ""
-        presetMessage = "\"\(preset.name)\" preset'i eklendi."
+        presetMessage = "\"\(preset.name)\" " + NSLocalizedString("preset'i eklendi.", comment: "")
         presetError = nil
     }
     
@@ -685,7 +685,7 @@ extension QuickTunnelView {
         guard !preset.isBuiltIn else { return }
         userPresets.removeAll { $0.id == preset.id }
         persistUserPresets()
-        presetMessage = "\"\(preset.name)\" preset'i silindi."
+        presetMessage = "\"\(preset.name)\" " + NSLocalizedString("preset'i silindi.", comment: "")
         presetError = nil
         if selectedPreset == preset.id {
             selectedPreset = QuickTunnelPreset.customID
@@ -695,7 +695,7 @@ extension QuickTunnelView {
     private func stopActiveTunnel() {
         guard let id = activeTunnelID else { return }
         tunnelManager.stopQuickTunnel(id: id)
-        startingStatus = "Tünel durduruluyor..."
+        startingStatus = NSLocalizedString("Tünel durduruluyor...", comment: "")
         quickTunnelError = nil
     }
     
@@ -710,7 +710,7 @@ extension QuickTunnelView {
     }
     
     private func quickTunnelURLCard(url: String) -> some View {
-        QuickTunnelCard(title: "Genel URL", icon: "link") {
+        QuickTunnelCard(title: NSLocalizedString("Genel URL", comment: ""), icon: "link") {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Tünel çalışıyor")
                     .font(.subheadline)
@@ -744,7 +744,7 @@ extension QuickTunnelView {
     }
     
     private func quickTunnelErrorCard(message: String) -> some View {
-        QuickTunnelCard(title: "Tünel Hatası", icon: "exclamationmark.triangle.fill") {
+        QuickTunnelCard(title: NSLocalizedString("Tünel Hatası", comment: ""), icon: "exclamationmark.triangle.fill") {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Hızlı tünel başlatılamadı veya sonlandırıldı")
                     .font(.subheadline)

@@ -588,12 +588,12 @@ struct ModernToggleSwitch: View {
     VStack(spacing: 20) {
         ModernStatusIndicator(
             status: .online,
-            title: "Cloudflare Bağlantısı",
-            subtitle: "Tüm sistemler çalışıyor"
+            title: NSLocalizedString("Cloudflare Bağlantısı", comment: ""),
+            subtitle: NSLocalizedString("Tüm sistemler çalışıyor", comment: "")
         )
         
         ModernProgressCard(
-            title: "Tünel Kurulumu",
+            title: NSLocalizedString("Tünel Kurulumu", comment: ""),
             progress: 0.75,
             color: .blue,
             icon: "network",
@@ -601,8 +601,8 @@ struct ModernToggleSwitch: View {
         )
         
         ModernActionButton(
-            title: "Yeni Tünel Oluştur",
-            subtitle: "Hızlı ve kolay kurulum",
+            title: NSLocalizedString("Yeni Tünel Oluştur", comment: ""),
+            subtitle: NSLocalizedString("Hızlı ve kolay kurulum", comment: ""),
             icon: "plus.circle.fill",
             color: .green
         ) {
@@ -610,8 +610,8 @@ struct ModernToggleSwitch: View {
         }
         
         ModernToggleSwitch(
-            title: "Otomatik Başlatma",
-            subtitle: "Sistem açılışında otomatik başlat",
+            title: NSLocalizedString("Otomatik Başlatma", comment: ""),
+            subtitle: NSLocalizedString("Sistem açılışında otomatik başlat", comment: ""),
             color: .orange,
             isOn: .constant(true)
         )

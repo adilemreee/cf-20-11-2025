@@ -1,0 +1,204 @@
+/* 
+  Localizable.strings
+  CloudflaredManager
+
+  Created by GitHub Copilot.
+*/
+
+// Onboarding
+"Geri" = "Geri";
+"İleri" = "İleri";
+"Cloudflared Manager'a Hoşgeldiniz" = "Cloudflared Manager'a Hoşgeldiniz";
+"Cloudflare tünellerinizi kolayca yönetin, MAMP projelerinizi internete açın ve loglarınızı takip edin." = "Cloudflare tünellerinizi kolayca yönetin, MAMP projelerinizi internete açın ve loglarınızı takip edin.";
+"Cloudflared Yapılandırması" = "Cloudflared Yapılandırması";
+"Uygulamanın çalışması için 'cloudflared' komut satırı aracı gereklidir." = "Uygulamanın çalışması için 'cloudflared' komut satırı aracı gereklidir.";
+"Cloudflared Yolu:" = "Cloudflared Yolu:";
+"Yol..." = "Yol...";
+"Seç" = "Seç";
+"Yolu Kontrol Et" = "Yolu Kontrol Et";
+"Cloudflared bulundu ve çalıştırılabilir." = "Cloudflared bulundu ve çalıştırılabilir.";
+"Belirtilen yolda çalıştırılabilir dosya bulunamadı." = "Belirtilen yolda çalıştırılabilir dosya bulunamadı.";
+
+// Dashboard
+"Günaydın" = "Günaydın";
+"İyi Günler" = "İyi Günler";
+"İyi Akşamlar" = "İyi Akşamlar";
+"İyi Geceler" = "İyi Geceler";
+"Cloudflared Eksik" = "Cloudflared Eksik";
+"Dikkat Gerekiyor" = "Dikkat Gerekiyor";
+"Sistem Aktif" = "Sistem Aktif";
+"Hazır" = "Hazır";
+"Hızlı İşlemler" = "Hızlı İşlemler";
+"Ortam Durumu" = "Ortam Durumu";
+"Son Aktiviteler" = "Son Aktiviteler";
+"Tünel Oluştur" = "Tünel Oluştur";
+"Hızlı Tünel" = "Hızlı Tünel";
+"Ayarlar" = "Ayarlar";
+"Çıkış" = "Çıkış";
+
+// Menu Dashboard
+"Sistem Normal" = "Sistem Normal";
+"Aktif" = "Aktif";
+"Toplam" = "Toplam";
+"Hata" = "Hata";
+
+// MAMP Step
+"MAMP Entegrasyonu" = "MAMP Entegrasyonu";
+"MAMP kullanıyorsanız, projelerinizi otomatik algılamak için MAMP klasörünü seçin." = "MAMP kullanıyorsanız, projelerinizi otomatik algılamak için MAMP klasörünü seçin.";
+"MAMP Ana Dizini:" = "MAMP Ana Dizini:";
+"MAMP Kullanmıyorum (Atla)" = "MAMP Kullanmıyorum (Atla)";
+
+// Finish Step
+"Kurulum Tamamlandı!" = "Kurulum Tamamlandı!";
+"Artık tünellerinizi oluşturmaya ve yönetmeye başlayabilirsiniz." = "Artık tünellerinizi oluşturmaya ve yönetmeye başlayabilirsiniz.";
+"Uygulamayı Başlat" = "Uygulamayı Başlat";
+
+// Settings Tabs
+"Genel" = "Genel";
+"Yollar" = "Yollar";
+"Görünüm" = "Görünüm";
+"Bildirimler" = "Bildirimler";
+"Geçmiş" = "Geçmiş";
+"Yedekleme" = "Yedekleme";
+"Gelişmiş" = "Gelişmiş";
+"Hakkında" = "Hakkında";
+
+// Settings Status
+"Yapılandırma Gerekli" = "Yapılandırma Gerekli";
+"Durumu Kontrol Et" = "Durumu Kontrol Et";
+
+// Settings Subtitles
+"Temel uygulama ayarları ve yapılandırma" = "Temel uygulama ayarları ve yapılandırma";
+"Dosya yolları ve dizin ayarları" = "Dosya yolları ve dizin ayarları";
+"Görünüm ve tema tercihleri" = "Görünüm ve tema tercihleri";
+"Bildirim ayarları ve tercihler" = "Bildirim ayarları ve tercihler";
+"Bildirimler, hatalar ve log kayıtları" = "Bildirimler, hatalar ve log kayıtları";
+"Yedekleme ve geri yükleme işlemleri" = "Yedekleme ve geri yükleme işlemleri";
+"Gelişmiş özellikler ve araçlar" = "Gelişmiş özellikler ve araçlar";
+"Uygulama hakkında bilgiler" = "Uygulama hakkında bilgiler";
+
+// Create Managed Tunnel
+"Yeni Yönetilen Tünel" = "Yeni Yönetilen Tünel";
+"Cloudflare üzerinde yönetilen tünel oluşturun" = "Cloudflare üzerinde yönetilen tünel oluşturun";
+"Tünel Yapılandırması" = "Tünel Yapılandırması";
+"Tünel Adı" = "Tünel Adı";
+"Cloudflare'deki benzersiz ad" = "Cloudflare'deki benzersiz ad";
+"Config Dosya Adı" = "Config Dosya Adı";
+"Yerel .yml dosya adı" = "Yerel .yml dosya adı";
+"Hostname" = "Hostname";
+"Protokol" = "Protokol";
+"Yerel Port" = "Yerel Port";
+"Port numarası" = "Port numarası";
+"MAMP Entegrasyonu (Opsiyonel)" = "MAMP Entegrasyonu (Opsiyonel)";
+"MAMP vHost Güncelle" = "MAMP vHost Güncelle";
+"httpd-vhosts.conf ve httpd.conf dosyalarını otomatik yapılandır" = "httpd-vhosts.conf ve httpd.conf dosyalarını otomatik yapılandır";
+"Document Root" = "Document Root";
+"Oluşturma Durumu" = "Oluşturma Durumu";
+"Lütfen bekleyiniz..." = "Lütfen bekleyiniz...";
+"İptal" = "İptal";
+"Oluştur" = "Oluştur";
+
+// File Share
+"Hızlı Dosya Paylaşımı" = "Hızlı Dosya Paylaşımı";
+"Klasör seçin ve anında internete açın" = "Klasör seçin ve anında internete açın";
+"Paylaşılacak Klasör" = "Paylaşılacak Klasör";
+"Klasör Yolu" = "Klasör Yolu";
+"Yayında" = "Yayında";
+"Public URL" = "Public URL";
+"Tünel oluşturuluyor..." = "Tünel oluşturuluyor...";
+"Paylaşımı Durdur" = "Paylaşımı Durdur";
+"Paylaşımı Başlat" = "Paylaşımı Başlat";
+"Paylaşılacak Klasörü Seçin" = "Paylaşılacak Klasörü Seçin";
+"Hızlı tünel başlatılamadı" = "Hızlı tünel başlatılamadı";
+
+// Quick Tunnel
+"Özel" = "Özel";
+"Özel URL girin" = "Özel URL girin";
+"Hızlı Tünel Başlat" = "Hızlı Tünel Başlat";
+"Yerel sunucunuzu hızlıca internete açın" = "Yerel sunucunuzu hızlıca internete açın";
+"Tamam" = "Tamam";
+"Hızlı Seçim" = "Hızlı Seçim";
+"Yaygın Sunucu Türleri" = "Yaygın Sunucu Türleri";
+"Preset'i sil" = "Preset'i sil";
+"Özel Preset Ekle" = "Özel Preset Ekle";
+"Ad" = "Ad";
+"örn. Laravel" = "örn. Laravel";
+"URL" = "URL";
+"Açıklama" = "Açıklama";
+"Yerel geliştirme sunucusu" = "Yerel geliştirme sunucusu";
+"Preset Ekle" = "Preset Ekle";
+"URL Yapılandırması" = "URL Yapılandırması";
+"Yerel URL" = "Yerel URL";
+"Geçerli URL formatı" = "Geçerli URL formatı";
+"Geçersiz URL formatı" = "Geçersiz URL formatı";
+"Nasıl Çalışır?" = "Nasıl Çalışır?";
+"Hızlı tüneller geçici URL'ler oluşturur ve sunucunuz kapandığında otomatik olarak sona erer. Kalıcı tüneller için 'Yönetilen Tünel' oluşturun." = "Hızlı tüneller geçici URL'ler oluşturur ve sunucunuz kapandığında otomatik olarak sona erer. Kalıcı tüneller için 'Yönetilen Tünel' oluşturun.";
+"Başlatma Durumu" = "Başlatma Durumu";
+"İşlem devam ediyor..." = "İşlem devam ediyor...";
+"cloudflared komutu hazırlanıyor..." = "cloudflared komutu hazırlanıyor...";
+"URL hazır olduğunda bu sayfada göreceksiniz." = "URL hazır olduğunda bu sayfada göreceksiniz.";
+"Tüneli Durdur" = "Tüneli Durdur";
+"Tüneli Başlat" = "Tüneli Başlat";
+"Lütfen geçerli bir yerel URL girin.\n\nÖrnek: http://localhost:3000" = "Lütfen geçerli bir yerel URL girin.\n\nÖrnek: http://localhost:3000";
+"Hızlı tünel başlatılıyor..." = "Hızlı tünel başlatılıyor...";
+"URL hazırlanıyor..." = "URL hazırlanıyor...";
+"Hata oluştu." = "Hata oluştu.";
+"Tünel hazır." = "Tünel hazır.";
+"Tünel beklenmedik şekilde sonlandı." = "Tünel beklenmedik şekilde sonlandı.";
+"preset'i eklendi." = "preset'i eklendi.";
+"preset'i silindi." = "preset'i silindi.";
+"Tünel durduruluyor..." = "Tünel durduruluyor...";
+"Genel URL" = "Genel URL";
+"Tünel çalışıyor" = "Tünel çalışıyor";
+"Kopyala" = "Kopyala";
+"Tarayıcıda Aç" = "Tarayıcıda Aç";
+"Tünel Hatası" = "Tünel Hatası";
+"Hızlı tünel başlatılamadı veya sonlandırıldı" = "Hızlı tünel başlatılamadı veya sonlandırıldı";
+"Tekrar Dene" = "Tekrar Dene";
+
+// Content View
+"Modern Tünel Yönetim Aracı" = "Modern Tünel Yönetim Aracı";
+"cloudflared hazır" = "cloudflared hazır";
+"cloudflared eksik" = "cloudflared eksik";
+"MAMP Dizini" = "MAMP Dizini";
+"Gösterge Paneli" = "Gösterge Paneli";
+"Tünelleri ve durum özetini tek ekranda takip edin" = "Tünelleri ve durum özetini tek ekranda takip edin";
+"Hızlı Tünel Oluştur" = "Hızlı Tünel Oluştur";
+"Yerel projelerinizi saniyeler içinde paylaşın" = "Yerel projelerinizi saniyeler içinde paylaşın";
+"Ayarları Yapılandır" = "Ayarları Yapılandır";
+"cloudflared, MAMP ve diğer yolları özelleştirin" = "cloudflared, MAMP ve diğer yolları özelleştirin";
+"Temel Bilgiler" = "Temel Bilgiler";
+"Durum Kontrol Aralığı" = "Durum Kontrol Aralığı";
+"Başlangıç Kontrol Listesi" = "Başlangıç Kontrol Listesi";
+"cloudflared yolunu doğrulayın" = "cloudflared yolunu doğrulayın";
+"Hepsi hazır." = "Hepsi hazır.";
+"Ayarlar'dan farklı bir yol seçebilirsiniz." = "Ayarlar'dan farklı bir yol seçebilirsiniz.";
+"Kontrol Et" = "Kontrol Et";
+"cloudflared yolu kontrol ediliyor..." = "cloudflared yolu kontrol ediliyor...";
+"Cloudflare hesabınıza giriş yapın" = "Cloudflare hesabınıza giriş yapın";
+"Tarayıcıda açılan pencereyi takip edin." = "Tarayıcıda açılan pencereyi takip edin.";
+"Giriş Yap" = "Giriş Yap";
+"MAMP proje klasörünü kontrol edin" = "MAMP proje klasörünü kontrol edin";
+"MAMP dizini bulundu." = "MAMP dizini bulundu.";
+"MAMP dizini bulunamadı, yolu Ayarlar'dan güncelleyin." = "MAMP dizini bulunamadı, yolu Ayarlar'dan güncelleyin.";
+"Klasörü Aç" = "Klasörü Aç";
+"Hazırım, Devam Et" = "Hazırım, Devam Et";
+"Uygulama menü çubuğunda çalışmaya devam edecek" = "Uygulama menü çubuğunda çalışmaya devam edecek";
+"Gösterge Paneli açılıyor..." = "Gösterge Paneli açılıyor...";
+"Hızlı tünel penceresi açılıyor..." = "Hızlı tünel penceresi açılıyor...";
+"Ayarlar penceresi açıldı." = "Ayarlar penceresi açıldı.";
+"MAMP dizini Finder'da açıldı." = "MAMP dizini Finder'da açıldı.";
+"Cloudflare giriş kontrolü başlatıldı..." = "Cloudflare giriş kontrolü başlatıldı...";
+
+// Tunnel Manager
+"cloudflared bulunamadı: %@" = "cloudflared bulunamadı: %@";
+"Giriş Başlatıldı" = "Giriş Başlatıldı";
+"Cloudflare giriş işlemi için tarayıcı açılıyor..." = "Cloudflare giriş işlemi için tarayıcı açılıyor...";
+"Giriş Başarılı" = "Giriş Başarılı";
+"Cloudflare hesabına başarıyla giriş yapıldı." = "Cloudflare hesabına başarıyla giriş yapıldı.";
+"Cloudflare girişinde bilinmeyen hata (Kod: %d)" = "Cloudflare girişinde bilinmeyen hata (Kod: %d)";
+"Process başlatılamadı: %@" = "Process başlatılamadı: %@";
+"İnternet Bağlantısı Yok" = "İnternet Bağlantısı Yok";
+"Hızlı tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin." = "Hızlı tünel başlatılamadı. Lütfen internet bağlantınızı kontrol edin.";
+"İnternet bağlantısı yok." = "İnternet bağlantısı yok.";
+"Geçersiz yerel URL formatı. (örn: http://localhost:8000)" = "Geçersiz yerel URL formatı. (örn: http://localhost:8000)";

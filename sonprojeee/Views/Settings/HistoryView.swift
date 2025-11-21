@@ -9,9 +9,17 @@ struct HistoryView: View {
     @State private var exportContent = ""
     
     enum HistoryTab: String, CaseIterable {
-        case notifications = "Bildirimler"
-        case errors = "Hatalar"
-        case logs = "Loglar"
+        case notifications
+        case errors
+        case logs
+        
+        var displayName: String {
+            switch self {
+            case .notifications: return NSLocalizedString("Bildirimler", comment: "")
+            case .errors: return NSLocalizedString("Hatalar", comment: "")
+            case .logs: return NSLocalizedString("Loglar", comment: "")
+            }
+        }
         
         var icon: String {
             switch self {
@@ -42,7 +50,7 @@ struct HistoryView: View {
                     
                     HStack(spacing: 12) {
                         Button(action: exportCurrent) {
-                            Label("Dışa Aktar", systemImage: "square.and.arrow.up")
+                            Label(NSLocalizedString("Dışa Aktar", comment: ""), systemImage: "square.and.arrow.up")
                                 .font(.caption.bold())
                                 .foregroundColor(currentAccentColor)
                                 .padding(.horizontal, 12)
@@ -53,7 +61,7 @@ struct HistoryView: View {
                         .buttonStyle(.plain)
                         
                         Button(action: clearCurrent) {
-                            Label("Temizle", systemImage: "trash")
+                            Label(NSLocalizedString("Temizle", comment: ""), systemImage: "trash")
                                 .font(.caption.bold())
                                 .foregroundColor(.red)
                                 .padding(.horizontal, 12)
@@ -77,7 +85,7 @@ struct HistoryView: View {
                             }) {
                                 HStack(spacing: 6) {
                                     Image(systemName: tab.icon)
-                                    Text(tab.rawValue)
+                                    Text(tab.displayName)
                                 }
                                 .font(.subheadline.bold())
                                 .foregroundColor(selectedTab == tab ? .white : .secondary)
@@ -105,7 +113,7 @@ struct HistoryView: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.secondary)
                             .font(.caption)
-                        TextField("Ara...", text: $searchText)
+                        TextField(NSLocalizedString("Ara...", comment: ""), text: $searchText)
                             .textFieldStyle(.plain)
                             .font(.subheadline)
                         if !searchText.isEmpty {
@@ -154,8 +162,8 @@ struct HistoryView: View {
             if filteredNotifications.isEmpty {
                 emptyStateView(
                     icon: "bell.slash",
-                    title: searchText.isEmpty ? "Henüz bildirim yok" : "Eşleşen bildirim bulunamadı",
-                    subtitle: searchText.isEmpty ? "Bildirimler burada görünecek" : nil
+                    title: searchText.isEmpty ? NSLocalizedString("Henüz bildirim yok", comment: "") : NSLocalizedString("Eşleşen bildirim bulunamadı", comment: ""),
+                    subtitle: searchText.isEmpty ? NSLocalizedString("Bildirimler burada görünecek", comment: "") : nil
                 )
             } else {
                 ForEach(filteredNotifications) { entry in
@@ -170,8 +178,8 @@ struct HistoryView: View {
             if filteredErrors.isEmpty {
                 emptyStateView(
                     icon: "checkmark.circle",
-                    title: searchText.isEmpty ? "Henüz hata kaydı yok" : "Eşleşen hata bulunamadı",
-                    subtitle: searchText.isEmpty ? "Harika! Hiç hata yok" : nil
+                    title: searchText.isEmpty ? NSLocalizedString("Henüz hata kaydı yok", comment: "") : NSLocalizedString("Eşleşen hata bulunamadı", comment: ""),
+                    subtitle: searchText.isEmpty ? NSLocalizedString("Harika! Hiç hata yok", comment: "") : nil
                 )
             } else {
                 ForEach(filteredErrors) { entry in
@@ -186,8 +194,8 @@ struct HistoryView: View {
             if filteredLogs.isEmpty {
                 emptyStateView(
                     icon: "doc.text",
-                    title: searchText.isEmpty ? "Henüz log kaydı yok" : "Eşleşen log bulunamadı",
-                    subtitle: searchText.isEmpty ? "Log kayıtları burada görünecek" : nil
+                    title: searchText.isEmpty ? NSLocalizedString("Henüz log kaydı yok", comment: "") : NSLocalizedString("Eşleşen log bulunamadı", comment: ""),
+                    subtitle: searchText.isEmpty ? NSLocalizedString("Log kayıtları burada görünecek", comment: "") : nil
                 )
             } else {
                 ForEach(filteredLogs) { entry in
@@ -257,8 +265,8 @@ struct HistoryView: View {
         alert.messageText = "Geçmişi Temizle"
         alert.informativeText = "Seçili kategorideki tüm kayıtlar silinecek. Bu işlem geri alınamaz."
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "Temizle")
-        alert.addButton(withTitle: "İptal")
+        alert.addButton(withTitle: NSLocalizedString("Temizle", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("İptal", comment: ""))
         
         if alert.runModal() == .alertFirstButtonReturn {
             switch selectedTab {
@@ -496,7 +504,7 @@ struct ExportSheet: View {
     var body: some View {
         VStack(spacing: 16) {
             HStack {
-                Text("Dışa Aktar")
+                Text(NSLocalizedString("Dışa Aktar", comment: ""))
                     .font(.headline)
                 
                 Spacer()
