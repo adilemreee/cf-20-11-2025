@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F9C928242DAFE89C0082F5EE"
-               BuildableName = "sonprojeee.app"
+               BuildableName = "TunnelManager Pro.app"
                BlueprintName = "sonprojeee"
                ReferencedContainer = "container:sonprojeee.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F9C928242DAFE89C0082F5EE"
-            BuildableName = "sonprojeee.app"
+            BuildableName = "TunnelManager Pro.app"
             BlueprintName = "sonprojeee"
             ReferencedContainer = "container:sonprojeee.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F9C928242DAFE89C0082F5EE"
-            BuildableName = "sonprojeee.app"
+            BuildableName = "TunnelManager Pro.app"
             BlueprintName = "sonprojeee"
             ReferencedContainer = "container:sonprojeee.xcodeproj">
          </BuildableReference>

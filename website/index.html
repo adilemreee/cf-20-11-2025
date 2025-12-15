@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudflared Manager · macOS için güvenli tünel merkezi</title>
+  <meta name="description" content="Cloudflared Manager ile web sitelerinizi, SSH ve veritabanı tünellerinizi tek yerden yönetin. Modern arayüz, menü çubuğu kısayolları ve hızlı indirme.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+
+  <header class="hero section" id="top">
+    <nav class="nav">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M48 24c-2.3-6.2-8-10.6-14.8-10.6-8.7 0-15.8 7-15.8 15.6v.1C12.5 31 9 34.9 9 39.7 9 45 13.5 49.3 19 49.3h27.3C52.7 49.3 57 45 57 39.7 57 34.8 53.2 30.7 48 30.1V24z" fill="url(#g1)"></path>
+            <defs>
+              <linearGradient id="g1" x1="12" y1="16" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#facc6b"></stop>
+                <stop offset="1" stop-color="#ff6b2d"></stop>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <p class="eyebrow" data-i18n="brand_tagline">Cloudflared Manager</p>
+          <strong data-i18n="brand_subtitle">macOS için Tunnel Studio</strong>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#features" data-i18n="nav_features">Özellikler</a>
+        <a class="pill" href="#download" data-i18n="nav_download">İndir</a>
+        <button class="btn ghost lang-toggle" type="button" aria-label="Language toggle">EN</button>
+      </div>
+    </nav>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow glow" data-i18n="hero_eyebrow">Yeni nesil Cloudflare Tunnel deneyimi</p>
+        <h1 data-i18n="hero_title">Lokaldeki her servisi <span class="accent">tek tıkla</span> internete açın.</h1>
+        <p class="lede" data-i18n="hero_lede">Menü çubuğundan hızlı kontrol, 3 farklı tünel tipi, otomatik DNS yönlendirme ve gelişmiş yedekleme. Modern bir macOS deneyimi için tasarlandı.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#download" data-i18n="cta_download">macOS için indir</a>
+          <a class="btn ghost" href="#download" data-i18n="cta_preview">Önizleme gör</a>
+        </div>
+        <div class="meta-row">
+          <span class="chip" data-i18n="chip_os">macOS 13+</span>
+          <span class="chip" data-i18n="chip_ui">SwiftUI · Menü Çubuğu</span>
+          <span class="chip" data-i18n="chip_cf">Cloudflare Zero Trust</span>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <p class="stat-number" data-count="4800">0</p>
+            <p class="stat-label" data-i18n="stat_tunnels">Başlatılan tünel</p>
+          </div>
+          <div>
+            <p class="stat-number" data-count="22">0</p>
+            <p class="stat-label" data-i18n="stat_updates">Saniyede durum güncellemesi</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <div class="hero-visual glassy">
+          <div class="floating-label" data-i18n="hero_preview_label">Önizleme</div>
+          <img src="assets/Screenshot%202025-11-21%20at%2012.24.22.png" alt="Menü bar önizleme" class="hero-screenshot" data-i18n-alt="hero_image_alt">
+          <div class="hero-visual-meta">
+            <span class="chip" data-i18n="hero_chip_menu">Menü çubuğu</span>
+            <span class="chip" data-i18n="hero_chip_quick">Hızlı tünel</span>
+            <span class="chip" data-i18n="hero_chip_status">Durum & link</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="belt reveal">
+    <div class="belt-item" data-i18n="belt_swiftui">SwiftUI 4.0</div>
+    <div class="belt-item" data-i18n="belt_theme">11 renk teması</div>
+    <div class="belt-item" data-i18n="belt_menu">Menü çubuğu kontrolleri</div>
+    <div class="belt-item" data-i18n="belt_backup">Yedekleme + otomasyon</div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="section-heading">
+      <p class="eyebrow glow" data-i18n="features_eyebrow">Özellikler</p>
+      <h2 data-i18n="features_title">Tek panel, hızlı kurulum, akıcı paylaşımlar.</h2>
+      <p class="muted" data-i18n="features_desc">Gereksiz detay yok: menü çubuğundan başlat/durdur, hızlı link paylaş, gerektiğinde yedekle.</p>
+    </div>
+    <div class="feature-grid">
+      <article class="card reveal">
+        <div class="icon cloud"></div>
+        <h3 data-i18n="feature1_title">Tek panel kontrol</h3>
+        <p data-i18n="feature1_desc">HTTP, TCP ve hızlı tünelleri aynı yerden aç/kapat, durum LED'iyle izle.</p>
+      </article>
+      <article class="card reveal">
+        <div class="icon bolt"></div>
+        <h3 data-i18n="feature2_title">Hızlı paylaş</h3>
+        <p data-i18n="feature2_desc">Geçici URL'lerle demo ve testleri saniyeler içinde gönder.</p>
+      </article>
+      <article class="card reveal">
+        <div class="icon palette"></div>
+        <h3 data-i18n="feature3_title">Yedekle & tema</h3>
+        <p data-i18n="feature3_desc">11 vurgu rengi, açık/koyu ve tek tuşla yedekleme ile hafif kurulum.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="download">
+    <div class="cta-grid">
+      <div class="cta-copy reveal">
+        <p class="eyebrow glow" data-i18n="download_eyebrow">İndirme</p>
+        <h2 data-i18n="download_title">Kurulum 3 adımda hazır.</h2>
+        <p class="muted" data-i18n="download_desc">DMG'yi indirip Uygulamalar'a taşıyın, Homebrew ile cloudflared'ı kurun, Cloudflare hesabınızı bağlayın.</p>
+        <div class="download-actions">
+          <a class="btn primary" href="https://github.com/adilemreee/cf-20-11-2025/releases/tag/tunnelmanagerpro" target="_blank" rel="noreferrer" data-i18n="download_btn">DMG indir</a>
+          <button class="btn ghost" data-copy="brew install cloudflare/cloudflare/cloudflared" data-i18n="download_copy">brew komutunu kopyala</button>
+        </div>
+        <div class="stepper">
+          <div class="step">
+            <span class="step-id">1</span>
+            <div>
+              <p class="step-title" data-i18n="step1_title">DMG'yi indir</p>
+              <p class="muted" data-i18n="step1_desc">Sürükle-bırak ile Uygulamalar klasörüne taşı.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-id">2</span>
+            <div>
+              <p class="step-title" data-i18n="step2_title">cloudflared kurulumu</p>
+              <p class="muted" data-i18n="step2_desc">Homebrew komutu veya manuel kurulum destekli.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-id">3</span>
+            <div>
+              <p class="step-title" data-i18n="step3_title">Giriş yap</p>
+              <p class="muted" data-i18n="step3_desc">`cloudflared login` ile domain'ini seç, tüneli başlat.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-panel glassy reveal">
+        <div class="panel-head">
+          <p class="eyebrow" data-i18n="version_label">Sürüm</p>
+          <span class="pill">v1.0.0</span>
+        </div>
+        <h3>Cloudflared Manager</h3>
+        <p class="muted" data-i18n="platforms">macOS 13+ (Intel & Apple Silicon)</p>
+        <ul class="micro-list tight">
+          <li data-i18n="list_update">Otomatik güncelleme bildirimi</li>
+          <li data-i18n="list_logs">Log ve geçmiş export'u</li>
+          <li data-i18n="list_backup">Yedekleme & geri yükleme</li>
+          <li data-i18n="list_theme">Koyu/Açık tema ve 11 vurgu</li>
+        </ul>
+        <div class="sys-req">
+          <div>
+            <p class="eyebrow" data-i18n="req_min">Minimum</p>
+            <p data-i18n="req_min_desc">4 GB RAM · 300 MB disk</p>
+          </div>
+          <div>
+            <p class="eyebrow" data-i18n="req_dep">Bağımlılık</p>
+            <p data-i18n="req_dep_desc">cloudflared CLI (brew)</p>
+          </div>
+        </div>
+        <div class="download-cards">
+          <div class="mini-card ghost">
+            <p class="mini-title" data-i18n="card_dmg_title">DMG Paketi</p>
+            <p class="mini-desc" data-i18n="card_dmg_desc">Kod imzalı, otomatik güncelleme uyarıları.</p>
+            <a class="text-link" href="https://github.com/adilemreee/cf-20-11-2025/releases/tag/tunnelmanagerpro" target="_blank" rel="noreferrer" data-i18n="card_dmg_link">Releases sayfası →</a>
+          </div>
+          <div class="mini-card ghost">
+            <p class="mini-title" data-i18n="card_cli_title">Terminal kurulumu</p>
+            <p class="mini-desc" data-i18n="card_cli_desc">`brew install cloudflare/cloudflare/cloudflared`</p>
+            <a class="text-link copyable" data-copy="cloudflared login" href="#" data-i18n="card_cli_link">cloudflared login komutunu kopyala</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="faq">
+    <div class="section-heading">
+      <p class="eyebrow glow" data-i18n="faq_eyebrow">SSS</p>
+      <h2 data-i18n="faq_title">Sık sorulan sorular.</h2>
+      <p class="muted" data-i18n="faq_desc">Kısa cevaplarla kurulum ve güvenlik detayları.</p>
+    </div>
+    <div class="faq-grid">
+      <article class="card reveal">
+        <h3 data-i18n="faq1_title">Hangi macOS sürümü?</h3>
+        <p data-i18n="faq1_desc">Ventura 13.0 ve üzeri, Intel veya Apple Silicon desteklenir.</p>
+      </article>
+      <article class="card reveal">
+        <h3 data-i18n="faq2_title">Cloudflare hesabı gerekli mi?</h3>
+        <p data-i18n="faq2_desc">Evet, giriş Cloudflare üzerinden yapılır. Ücretsiz plan yeterlidir.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div>
+      <p class="eyebrow">Cloudflared Manager</p>
+      <p class="muted" data-i18n="footer_desc">macOS menü çubuğundan Cloudflare Tunnel gücünü kontrol edin.</p>
+    </div>
+    <div class="footer-actions">
+      <a class="btn primary" href="#download" data-i18n="footer_cta">Hemen indir</a>
+      <a class="text-link" href="#top" data-i18n="footer_top">Yukarı çık</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

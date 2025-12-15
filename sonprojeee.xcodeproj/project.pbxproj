@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		F9C928252DAFE89C0082F5EE /* sonprojeee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sonprojeee.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9C928252DAFE89C0082F5EE /* TunnelManager Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TunnelManager Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -40,7 +40,7 @@
 		F9C928262DAFE89C0082F5EE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F9C928252DAFE89C0082F5EE /* sonprojeee.app */,
+				F9C928252DAFE89C0082F5EE /* TunnelManager Pro.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,8 +66,8 @@
 			name = sonprojeee;
 			packageProductDependencies = (
 			);
-			productName = sonprojeee;
-			productReference = F9C928252DAFE89C0082F5EE /* sonprojeee.app */;
+			productName = "TunnelManager Pro";
+			productReference = F9C928252DAFE89C0082F5EE /* TunnelManager Pro.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -279,7 +279,7 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sonprojeee/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cloudflared Manager";
+				INFOPLIST_KEY_CFBundleDisplayName = "TunnelManager Pro";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -289,7 +289,7 @@
 				);
 				MARKETING_VERSION = 6.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = adilemre.sonprojeee1;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "TunnelManager Pro";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -329,7 +329,7 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sonprojeee/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cloudflared Manager";
+				INFOPLIST_KEY_CFBundleDisplayName = "TunnelManager Pro";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -339,7 +339,7 @@
 				);
 				MARKETING_VERSION = 6.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = adilemre.sonprojeee1;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "TunnelManager Pro";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
